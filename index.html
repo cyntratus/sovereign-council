@@ -561,7 +561,7 @@ async function callGemini() {
   const body = {
     system_instruction: { parts: [{ text: G_SYS }] },
     contents: geminiHistory,
-    generationConfig: { temperature: 0.85, maxOutputTokens: 1200, thinking_level: "medium" }
+    generationConfig: { temperature: 0.85, maxOutputTokens: 1200 }
   };
   const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
   if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Gemini HTTP ${res.status}`); }
