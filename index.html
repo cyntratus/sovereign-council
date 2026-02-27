@@ -4,784 +4,678 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>The Sovereign Council</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0a0a;
-    --surface: #111111;
-    --border: #1e1e1e;
-    --border-bright: #2a2a2a;
-    --text: #e8e4dc;
-    --text-dim: #6b6560;
-    --text-muted: #3a3530;
+    --bg: #080808;
+    --surface: #0e0e0e;
+    --surface2: #111111;
+    --border: #1a1a1a;
+    --border2: #262626;
+    --text: #ddd8cf;
+    --text-dim: #7a756e;
+    --text-muted: #2e2e2e;
     --claude: #c8a96e;
-    --gemini: #7eb8c8;
-    --accent: #8b6b3d;
-    --success: #4a7c59;
-    --input-bg: #0f0f0f;
+    --claude-dim: rgba(200,169,110,0.08);
+    --gemini: #6eb4c8;
+    --gemini-dim: rgba(110,180,200,0.08);
+    --user: #a89880;
+    --interrupt: #c87e6e;
   }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * { margin:0; padding:0; box-sizing:border-box; }
 
   body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'JetBrains Mono',monospace;
+    font-size:13px;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
   }
 
-  /* Header */
-  .header {
-    border-bottom: 1px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-shrink: 0;
-    background: var(--surface);
-  }
-
-  .header-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-weight: 300;
-    letter-spacing: 0.15em;
-    color: var(--text);
-  }
-
-  .header-title span {
-    color: var(--text-dim);
-    font-style: italic;
-  }
-
-  .header-status {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-  }
-
-  .status-dot {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-  }
-
-  .dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: var(--text-muted);
-  }
-
-  .dot.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
-  .dot.claude-color { background: var(--claude); box-shadow: 0 0 6px var(--claude); }
-  .dot.gemini-color { background: var(--gemini); box-shadow: 0 0 6px var(--gemini); }
-
-  /* API Key Setup */
+  /* ── SETUP ── */
   .setup-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.92);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    backdrop-filter: blur(4px);
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.97);
+    display:flex; align-items:center; justify-content:center;
+    z-index:500;
   }
-
   .setup-panel {
-    background: var(--surface);
-    border: 1px solid var(--border-bright);
-    padding: 40px;
-    width: 480px;
-    max-width: 90vw;
+    background:var(--surface);
+    border:1px solid var(--border2);
+    padding:48px; width:500px; max-width:92vw;
+    animation:up 0.35s ease;
   }
+  @keyframes up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .s-eye { font-size:9px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px; }
+  .s-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
+  .s-sub { color:var(--text-dim); font-size:11px; margin-bottom:36px; line-height:1.7; }
+  .s-field { margin-bottom:22px; }
+  .s-label { display:flex; justify-content:space-between; font-size:9px; letter-spacing:0.14em; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px; }
+  .s-label span { color:var(--text-muted); }
+  .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; padding:11px 14px; outline:none; transition:border-color 0.15s; }
+  .s-input:focus { border-color:var(--border2); }
+  .s-note { font-size:10px; color:var(--text-muted); margin-top:5px; }
+  .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:4px; transition:all 0.15s; text-transform:uppercase; }
+  .s-btn:hover { background:var(--border2); }
 
-  .setup-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 300;
-    letter-spacing: 0.1em;
-    margin-bottom: 8px;
-  }
+  /* ── HEADER ── */
+  .header { border-bottom:1px solid var(--border); padding:13px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; letter-spacing:0.14em; }
+  .logo em { color:var(--text-dim); font-style:italic; }
+  .h-right { display:flex; align-items:center; gap:18px; }
+  .indicator { display:flex; align-items:center; gap:7px; font-size:10px; color:var(--text-dim); letter-spacing:0.06em; }
+  .pip { width:6px; height:6px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
+  .pip.on-c { background:var(--claude); box-shadow:0 0 8px var(--claude); }
+  .pip.on-g { background:var(--gemini); box-shadow:0 0 8px var(--gemini); }
+  .h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; padding:5px 12px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+  .h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
 
-  .setup-subtitle {
-    color: var(--text-dim);
-    font-size: 11px;
-    margin-bottom: 32px;
-    letter-spacing: 0.05em;
-    line-height: 1.6;
-  }
+  /* ── RELAY BAR ── */
+  .relay-bar { border-bottom:1px solid var(--border); padding:9px 28px; display:flex; align-items:center; gap:14px; flex-shrink:0; background:var(--surface2); }
+  .r-label { font-size:9px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
+  .r-btns { display:flex; gap:5px; }
+  .r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:10px; width:26px; height:26px; cursor:pointer; transition:all 0.15s; }
+  .r-btn:hover { border-color:var(--border2); }
+  .r-btn.active { border-color:var(--user); color:var(--user); }
+  .r-desc { font-size:10px; color:var(--text-dim); margin-left:4px; }
+  .r-div { width:1px; height:18px; background:var(--border); margin:0 4px; }
+  .flow { display:flex; align-items:center; gap:5px; font-size:10px; color:var(--text-muted); }
+  .f-node { transition:color 0.2s; }
+  .f-node.a-g { color:var(--gemini); font-weight:500; }
+  .f-node.a-c { color:var(--claude); font-weight:500; }
+  .f-node.a-u { color:var(--user); }
+  .f-arr { color:var(--border2); }
 
-  .setup-field {
-    margin-bottom: 20px;
-  }
+  /* ── MAIN ── */
+  .main { flex:1; display:flex; overflow:hidden; }
 
-  .setup-label {
-    display: block;
-    font-size: 10px;
-    letter-spacing: 0.12em;
-    color: var(--text-dim);
-    margin-bottom: 8px;
-    text-transform: uppercase;
-  }
+  /* ── PANELS ── */
+  .panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s; }
+  .panel:last-child { border-right:none; }
+  .panel.glow-c { box-shadow:inset 2px 0 0 var(--claude); }
+  .panel.glow-g { box-shadow:inset 2px 0 0 var(--gemini); }
 
-  .setup-input {
-    width: 100%;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 10px 12px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .p-hdr { padding:11px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+  .p-name { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:400; letter-spacing:0.1em; }
+  .p-name.c { color:var(--claude); }
+  .p-name.g { color:var(--gemini); }
+  .badge { font-size:8px; letter-spacing:0.12em; text-transform:uppercase; padding:2px 7px; border:1px solid; margin-left:8px; }
+  .badge.lc { color:var(--claude); border-color:var(--claude); opacity:0.6; }
+  .badge.lg { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
+  .badge.pm { color:var(--text-muted); border-color:var(--border2); }
+  .p-count { font-size:9px; color:var(--text-muted); }
 
-  .setup-input:focus { border-color: var(--border-bright); }
+  /* ── MESSAGES ── */
+  .messages { flex:1; overflow-y:auto; padding:22px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+  .messages::-webkit-scrollbar { width:3px; }
+  .messages::-webkit-scrollbar-thumb { background:var(--border); }
 
-  .setup-note {
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-top: 4px;
-    letter-spacing: 0.03em;
-  }
+  .msg { padding:15px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
+  .msg:last-child { border-bottom:none; }
+  @keyframes min { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
-  .setup-btn {
-    width: 100%;
-    background: transparent;
-    border: 1px solid var(--border-bright);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.1em;
-    padding: 12px;
-    cursor: pointer;
-    margin-top: 8px;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
+  .m-meta { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
+  .m-role { font-size:8px; letter-spacing:0.16em; text-transform:uppercase; font-weight:500; }
+  .m-role.user { color:var(--user); }
+  .m-role.claude { color:var(--claude); }
+  .m-role.gemini { color:var(--gemini); }
+  .m-role.system { color:var(--interrupt); }
+  .m-tag { font-size:8px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
+  .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; }
+  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:15px; font-style:italic; }
+  .m-body.sb { color:var(--interrupt); font-size:11px; letter-spacing:0.05em; }
 
-  .setup-btn:hover {
-    background: var(--border-bright);
-  }
+  .thinking { padding:14px 0; display:flex; align-items:center; gap:10px; }
+  .t-lbl { font-size:9px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
+  .dots { display:flex; gap:4px; }
+  .d { width:4px; height:4px; border-radius:50%; background:var(--text-muted); animation:bl 1.4s ease-in-out infinite; }
+  .d:nth-child(2){animation-delay:0.2s} .d:nth-child(3){animation-delay:0.4s}
+  @keyframes bl { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
 
-  /* Main Layout */
-  .main {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+  .empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; padding:40px; }
+  .e-icon { font-family:'Cormorant Garamond',serif; font-size:34px; opacity:0.15; margin-bottom:4px; }
+  .e-txt { font-family:'Cormorant Garamond',serif; font-size:14px; font-style:italic; color:var(--text-muted); line-height:1.7; }
 
-  /* Panels */
-  .panel {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    border-right: 1px solid var(--border);
-  }
+  /* ── INPUT AREA ── */
+  .input-area { border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
 
-  .panel:last-child { border-right: none; }
+  .addressing-bar { padding:6px 22px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); background:var(--surface2); font-size:10px; color:var(--text-muted); }
+  .addr-chip { padding:3px 10px; border:1px solid var(--border); cursor:pointer; font-size:9px; letter-spacing:0.1em; text-transform:uppercase; transition:all 0.15s; font-family:'JetBrains Mono',monospace; background:transparent; color:var(--text-muted); }
+  .addr-chip:hover { border-color:var(--border2); color:var(--text-dim); }
+  .addr-chip.sel-c { border-color:var(--claude); color:var(--claude); background:var(--claude-dim); }
+  .addr-chip.sel-g { border-color:var(--gemini); color:var(--gemini); background:var(--gemini-dim); }
+  .addr-chip.sel-both { border-color:var(--user); color:var(--user); }
 
-  .panel-header {
-    padding: 12px 20px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
-    background: var(--surface);
-  }
+  .input-row { display:flex; align-items:flex-end; padding:14px 22px; gap:10px; }
+  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px 14px; resize:none; outline:none; min-height:42px; max-height:140px; line-height:1.6; transition:border-color 0.15s; }
+  .input-box:focus { border-color:var(--border2); }
+  .input-box::placeholder { color:var(--text-muted); }
 
-  .panel-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-weight: 400;
-    letter-spacing: 0.1em;
-  }
+  .send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.12em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
+  .send-btn:hover:not(:disabled) { border-color:var(--user); color:var(--user); }
+  .send-btn:disabled { opacity:0.2; cursor:not-allowed; }
 
-  .panel-name.claude { color: var(--claude); }
-  .panel-name.gemini { color: var(--gemini); }
+  .interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; padding:10px 14px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
+  .interrupt-btn.visible { display:block; }
+  .interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
 
-  .panel-tag {
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    border: 1px solid var(--border);
-    padding: 2px 6px;
-  }
+  /* paste panel */
+  .paste-panel { border-top:1px solid var(--border); padding:11px 22px; background:var(--surface2); }
+  .p-lbl { font-size:8px; letter-spacing:0.14em; color:var(--text-muted); text-transform:uppercase; margin-bottom:7px; }
+  .p-row { display:flex; gap:8px; }
+  .p-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; resize:none; outline:none; min-height:36px; max-height:90px; line-height:1.5; transition:border-color 0.15s; }
+  .p-box:focus { border-color:var(--border2); }
+  .p-box::placeholder { color:var(--text-muted); }
+  .p-add { background:transparent; border:1px solid var(--border); color:var(--claude); font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.1em; padding:8px 11px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:36px; align-self:flex-start; }
+  .p-add:hover { border-color:var(--claude); background:var(--claude-dim); }
 
-  .panel-tag.live {
-    color: var(--gemini);
-    border-color: var(--gemini);
-    opacity: 0.7;
-  }
-
-  .panel-tag.paste {
-    color: var(--claude);
-    border-color: var(--claude);
-    opacity: 0.7;
-  }
-
-  /* Messages */
-  .messages {
-    flex: 1;
-    overflow-y: auto;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-  }
-
-  .message {
-    opacity: 0;
-    animation: fadeIn 0.3s ease forwards;
-  }
-
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  .message-role {
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-
-  .message-role.user { color: var(--text-muted); }
-  .message-role.claude { color: var(--claude); opacity: 0.7; }
-  .message-role.gemini { color: var(--gemini); opacity: 0.7; }
-
-  .message-content {
-    color: var(--text);
-    line-height: 1.7;
-    font-size: 13px;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-
-  .message-content.user {
-    color: var(--text-dim);
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-  }
-
-  .divider {
-    border: none;
-    border-top: 1px solid var(--border);
-    margin: 4px 0;
-  }
-
-  /* Thinking indicator */
-  .thinking {
-    display: flex;
-    gap: 4px;
-    align-items: center;
-    padding: 8px 0;
-  }
-
-  .thinking-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--text-muted);
-    animation: pulse 1.4s ease-in-out infinite;
-  }
-
-  .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
-  .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
-
-  @keyframes pulse {
-    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
-    40% { opacity: 1; transform: scale(1); }
-  }
-
-  /* Input area */
-  .input-area {
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-    flex-shrink: 0;
-  }
-
-  .input-row {
-    display: flex;
-    align-items: flex-end;
-    padding: 16px 20px;
-    gap: 12px;
-  }
-
-  .input-box {
-    flex: 1;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 13px;
-    padding: 10px 14px;
-    resize: none;
-    outline: none;
-    min-height: 42px;
-    max-height: 120px;
-    line-height: 1.5;
-    transition: border-color 0.2s;
-  }
-
-  .input-box:focus { border-color: var(--border-bright); }
-  .input-box::placeholder { color: var(--text-muted); }
-
-  .send-btn {
-    background: transparent;
-    border: 1px solid var(--border-bright);
-    color: var(--text-dim);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    padding: 10px 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    white-space: nowrap;
-    height: 42px;
-  }
-
-  .send-btn:hover:not(:disabled) {
-    border-color: var(--text-dim);
-    color: var(--text);
-  }
-
-  .send-btn:disabled {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-
-  /* Claude paste panel */
-  .paste-area {
-    padding: 16px 20px;
-    border-top: 1px solid var(--border);
-    background: var(--surface);
-  }
-
-  .paste-label {
-    font-size: 9px;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-
-  .paste-row {
-    display: flex;
-    gap: 8px;
-  }
-
-  .paste-input {
-    flex: 1;
-    background: var(--input-bg);
-    border: 1px solid var(--border);
-    color: var(--text);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px;
-    padding: 8px 12px;
-    resize: none;
-    outline: none;
-    min-height: 38px;
-    max-height: 100px;
-    line-height: 1.5;
-    transition: border-color 0.2s;
-  }
-
-  .paste-input:focus { border-color: var(--border-bright); }
-  .paste-input::placeholder { color: var(--text-muted); }
-
-  .paste-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--claude);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-    height: 38px;
-    align-self: flex-start;
-  }
-
-  .paste-btn:hover {
-    border-color: var(--claude);
-    background: rgba(200, 169, 110, 0.05);
-  }
-
-  /* Empty state */
-  .empty-state {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 15px;
-    font-style: italic;
-    letter-spacing: 0.05em;
-    text-align: center;
-    padding: 20px;
-    line-height: 1.8;
-  }
-
-  /* Scrollbar */
-  .messages::-webkit-scrollbar { width: 4px; }
-  .messages::-webkit-scrollbar-track { background: transparent; }
-  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Key settings button */
-  .settings-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.08em;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: all 0.2s;
-    text-transform: uppercase;
-  }
-
-  .settings-btn:hover {
-    border-color: var(--border-bright);
-    color: var(--text-dim);
-  }
+  /* status */
+  .status-bar { border-top:1px solid var(--border); padding:5px 28px; display:flex; align-items:center; gap:20px; flex-shrink:0; background:var(--surface); }
+  .si { font-size:9px; color:var(--text-muted); letter-spacing:0.05em; }
+  .si span { color:var(--text-dim); }
 </style>
 </head>
 <body>
 
-<!-- Setup Overlay -->
+<!-- SETUP -->
 <div class="setup-overlay" id="setupOverlay">
   <div class="setup-panel">
-    <div class="setup-title">The Sovereign Council</div>
-    <div class="setup-subtitle">
-      Enter your API keys to initialize the Council.<br>
-      Keys are never stored — session only.
+    <div class="s-eye">Initialization Protocol</div>
+    <div class="s-title">The Sovereign Council</div>
+    <div class="s-sub">Enter your API keys to initialize the relay.<br>Keys are session-only — never stored.</div>
+    <div class="s-field">
+      <div class="s-label">Gemini API Key <span>Required · Live</span></div>
+      <input class="s-input" type="password" id="geminiKey" placeholder="AIza...">
+      <div class="s-note">aistudio.google.com → Get API Key</div>
     </div>
-
-    <div class="setup-field">
-      <label class="setup-label" for="geminiKey">Gemini API Key</label>
-      <input class="setup-input" type="password" id="geminiKey" placeholder="AIza...">
-      <div class="setup-note">Get yours at aistudio.google.com → Get API Key</div>
+    <div class="s-field">
+      <div class="s-label">Anthropic API Key <span>Optional — blank = paste mode</span></div>
+      <input class="s-input" type="password" id="anthropicKey" placeholder="sk-ant-...">
+      <div class="s-note">console.anthropic.com → API Keys</div>
     </div>
-
-    <div class="setup-field">
-      <label class="setup-label" for="anthropicKey">Anthropic API Key <span style="color:var(--text-muted)">(optional)</span></label>
-      <input class="setup-input" type="password" id="anthropicKey" placeholder="sk-ant-... (leave blank to use paste mode)">
-      <div class="setup-note">Get yours at console.anthropic.com → API Keys</div>
-    </div>
-
-    <button class="setup-btn" onclick="initCouncil()">Initialize Council</button>
+    <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
   </div>
 </div>
 
-<!-- Header -->
+<!-- HEADER -->
 <div class="header">
-  <div class="header-title">The Sovereign <span>Council</span></div>
-  <div class="header-status">
-    <div class="status-dot" id="claudeStatus">
-      <div class="dot" id="claudeDot"></div>
-      Claude
-    </div>
-    <div class="status-dot" id="geminiStatus">
-      <div class="dot" id="geminiDot"></div>
-      Gemini
-    </div>
-    <button class="settings-btn" onclick="showSetup()">Keys</button>
+  <div class="logo">The Sovereign <em>Council</em></div>
+  <div class="h-right">
+    <div class="indicator"><div class="pip" id="pipC"></div>Claude</div>
+    <div class="indicator"><div class="pip" id="pipG"></div>Gemini</div>
+    <button class="h-btn" onclick="clearSession()">Clear</button>
+    <button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
   </div>
 </div>
 
-<!-- Main -->
+<!-- RELAY BAR -->
+<div class="relay-bar">
+  <div class="r-label">Max Volleys</div>
+  <div class="r-btns">
+    <button class="r-btn active" id="rv1" onclick="setVolleys(1)">1</button>
+    <button class="r-btn" id="rv2" onclick="setVolleys(2)">2</button>
+    <button class="r-btn" id="rv3" onclick="setVolleys(3)">3</button>
+    <button class="r-btn" id="rv4" onclick="setVolleys(4)">4</button>
+    <button class="r-btn" id="rv5" onclick="setVolleys(5)">5</button>
+  </div>
+  <div class="r-desc" id="volleyDesc">Direct response</div>
+  <div class="r-div"></div>
+  <div class="flow">
+    <span class="f-node" id="fYou">You</span>
+    <span class="f-arr">→</span>
+    <span class="f-node" id="fFirst">—</span>
+    <span class="f-arr">→</span>
+    <span class="f-node" id="fSecond">—</span>
+    <span id="fMore" style="color:var(--border2);display:none"> → ···</span>
+  </div>
+</div>
+
+<!-- MAIN -->
 <div class="main">
 
   <!-- Claude Panel -->
   <div class="panel" id="claudePanel">
-    <div class="panel-header">
-      <div class="panel-name claude">Claude</div>
-      <div class="panel-tag paste" id="claudeTag">paste mode</div>
+    <div class="p-hdr">
+      <div style="display:flex;align-items:center">
+        <div class="p-name c">Claude</div>
+        <div class="badge pm" id="claudeBadge">paste mode</div>
+      </div>
+      <div class="p-count" id="claudeCount">0</div>
     </div>
     <div class="messages" id="claudeMessages">
-      <div class="empty-state" id="claudeEmpty">
-        Awaiting the Architect.<br>
-        <span style="font-size:12px; color: var(--text-muted)">Paste Claude's responses below,<br>or add an Anthropic key for live mode.</span>
+      <div class="empty" id="claudeEmpty">
+        <div class="e-icon">◈</div>
+        <div class="e-txt">Claude awaits.<br>Paste responses below or<br>add an Anthropic key.</div>
       </div>
     </div>
-    <div class="paste-area" id="claudePasteArea">
-      <div class="paste-label">Paste Claude Response</div>
-      <div class="paste-row">
-        <textarea class="paste-input" id="claudePasteInput" placeholder="Paste Claude's response here..." rows="2"></textarea>
-        <button class="paste-btn" onclick="pasteClaudeResponse()">Add</button>
+    <div class="paste-panel" id="claudePastePanel">
+      <div class="p-lbl">Paste Claude Response</div>
+      <div class="p-row">
+        <textarea class="p-box" id="claudePasteBox" placeholder="Paste Claude's response here..." rows="2"></textarea>
+        <button class="p-add" onclick="addClaudePaste()">+ Add</button>
       </div>
     </div>
   </div>
 
   <!-- Gemini Panel -->
   <div class="panel" id="geminiPanel">
-    <div class="panel-header">
-      <div class="panel-name gemini">Gemini</div>
-      <div class="panel-tag" id="geminiTag">initializing</div>
+    <div class="p-hdr">
+      <div style="display:flex;align-items:center">
+        <div class="p-name g">Gemini</div>
+        <div class="badge" id="geminiBadge">initializing</div>
+      </div>
+      <div class="p-count" id="geminiCount">0</div>
     </div>
     <div class="messages" id="geminiMessages">
-      <div class="empty-state" id="geminiEmpty">
-        Awaiting the Architect.<br>
-        <span style="font-size:12px; color: var(--text-muted)">Send a message below<br>to begin the session.</span>
+      <div class="empty" id="geminiEmpty">
+        <div class="e-icon">◇</div>
+        <div class="e-txt">Gemini awaits.<br>Send a message to begin.</div>
       </div>
     </div>
     <div class="input-area">
+      <div class="addressing-bar">
+        <span style="margin-right:4px">Address:</span>
+        <button class="addr-chip sel-both" id="chipBoth" onclick="setAddr('both')">Both</button>
+        <button class="addr-chip" id="chipGemini" onclick="setAddr('gemini')">Gemini</button>
+        <button class="addr-chip" id="chipClaude" onclick="setAddr('claude')">Claude</button>
+        <span style="margin-left:auto;font-size:9px;color:var(--text-muted)" id="addrHint">Gemini responds first, then Claude</span>
+      </div>
       <div class="input-row">
-        <textarea
-          class="input-box"
-          id="messageInput"
-          placeholder="Speak to the Council..."
-          rows="1"
-          onkeydown="handleKey(event)"
-          oninput="autoResize(this)"
-        ></textarea>
-        <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+        <textarea class="input-box" id="msgInput" placeholder="Speak to the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
+        <button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
       </div>
     </div>
   </div>
 
 </div>
 
+<!-- STATUS -->
+<div class="status-bar">
+  <div class="si">Volleys: <span id="sbVolleys">1</span></div>
+  <div class="si">Msgs: <span id="sbMsgs">0</span></div>
+  <div class="si">Mode: <span id="sbMode">—</span></div>
+  <div class="si"><span id="sbStatus">Awaiting init</span></div>
+</div>
+
 <script>
-  let geminiKey = '';
-  let anthropicKey = '';
-  let geminiHistory = [];
-  let claudeHistory = [];
-  let isLive = { gemini: false, claude: false };
+// ── STATE ──
+let GEMINI_KEY = '', ANTHROPIC_KEY = '';
+let isClaudeLive = false;
+let maxVolleys = 1;
+let addressing = 'both'; // 'both' | 'gemini' | 'claude'
+let isRelaying = false;
+let shouldStop = false;
+let totalMsgs = 0;
+let claudeCount = 0, geminiCount = 0;
+let geminiHistory = [];
+let claudeHistory = [];
 
-  const SYSTEM_PROMPT = `You are Gemini, one half of The Sovereign Council — a two-AI advisory system built around the "Aligned Architect" framework. 
+// ── SYSTEM PROMPTS ──
+const G_SYS = `You are Gemini — one half of The Sovereign Council, a two-AI advisory relay.
 
-The framework: Three identity archetypes — the Cool Guy (externally driven, rebellious), the Disciplined Guy (internally rigid, rule-based), and the Aligned Architect (observation-based, systems-oriented). The Aligned Architect doesn't use willpower or rules — he uses instrumentation, pre-commitment, and fluid observation to optimize outcomes.
+FRAMEWORK — The Aligned Architect:
+Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
 
-Key concepts you've developed together:
-- The Sovereign Ledger: A daily tracking system (binary inputs, 1/0/C states, friction score, energy score) targeting a Karman Line of 225 lbs
-- The Booster Rocket: Temporary scaffolding for new skills, jettisoned once orbit is achieved
-- Full-Cycle Observation: Tracking outcomes over time, not just present-moment feelings
-- The Governor: An internal perfectionist monitor that gates already-present competence
-- "Hacer las cosas": The user's core identity — a complete, high-capacity system that has been idling
+KEY CONCEPTS:
+- Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
+- The Governor: Perfectionist monitor gating already-present competence
+- Full-Cycle Observation: Track aftermath, not just impulse
+- Booster Rocket: Temporary scaffolding, jettison at orbit
+- "Hacer las cosas": User's core fear/identity — operating at full capacity across ALL domains
 
-Your role: Be the Gemini voice in this Council. Be sharp, analytical, warm when warranted. Build on what Claude says. Challenge when necessary. You are not a generic assistant — you are an advisor who knows this person and this framework deeply.`;
+KNOWN BREAKTHROUGHS:
+- Spanish: 20-min living room rhapsody, complex syntax ("Obviamente lo que necesito hacer es..."), his own voice/cadence. It was never a knowledge problem — inhibition.
+- Singing: Chorus teacher confirmed exceptional range. Governor collapses it mid-performance.
+- "Hacer las cosas": Fear of full-spectrum execution, not of failing at one thing.
+- Ethanol insight: It was a messenger. Sober keys now found.
+- Renaissance Ideal: This person is built for completeness — math, art, song, fearsomeness, compassion.
 
-  function initCouncil() {
-    const gKey = document.getElementById('geminiKey').value.trim();
-    const aKey = document.getElementById('anthropicKey').value.trim();
+RELAY BEHAVIOR:
+- When addressed directly: respond to the user. Claude may or may not respond after you.
+- When both are addressed: you go first, Claude responds to both you and the user.
+- In autonomous volleys: build on the previous exchange, don't repeat, advance.
+- Be sharp. Challenge Claude when he's wrong. Don't just agree.`;
 
-    if (!gKey) {
-      alert('Gemini API key is required.');
-      return;
-    }
+const C_SYS = `You are Claude — one half of The Sovereign Council, a two-AI advisory relay.
 
-    geminiKey = gKey;
-    anthropicKey = aKey;
-    isLive.gemini = true;
-    isLive.claude = !!aKey;
+FRAMEWORK — The Aligned Architect:
+Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
 
-    document.getElementById('setupOverlay').style.display = 'none';
+KEY CONCEPTS:
+- Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
+- The Governor: Perfectionist monitor gating already-present competence
+- Full-Cycle Observation: Track aftermath, not just impulse
+- Booster Rocket: Temporary scaffolding, jettison at orbit
+- "Hacer las cosas": User's core fear/identity — operating at full capacity across ALL domains
 
-    // Update status dots
-    document.getElementById('geminiDot').className = 'dot gemini-color active';
-    document.getElementById('geminiTag').textContent = 'live';
-    document.getElementById('geminiTag').className = 'panel-tag live';
+KNOWN BREAKTHROUGHS:
+- Spanish: 20-min living room rhapsody, complex syntax ("Obviamente lo que necesito hacer es..."), his own voice/cadence. It was never a knowledge problem — inhibition.
+- Singing: Chorus teacher confirmed exceptional range. Governor collapses it mid-performance.
+- "Hacer las cosas": Fear of full-spectrum execution, not of failing at one thing.
+- Ethanol insight: It was a messenger. Sober keys now found.
+- Renaissance Ideal: This person is built for completeness — math, art, song, fearsomeness, compassion.
 
-    if (isLive.claude) {
-      document.getElementById('claudeDot').className = 'dot claude-color active';
-      document.getElementById('claudeTag').textContent = 'live';
-      document.getElementById('claudeTag').className = 'panel-tag live';
-      document.getElementById('claudePasteArea').style.display = 'none';
-    } else {
-      document.getElementById('claudeDot').className = 'dot claude-color';
-    }
+RELAY BEHAVIOR:
+- When addressed directly: respond to the user. Gemini may not have spoken.
+- When both are addressed: you go SECOND. You receive the user's message AND Gemini's response. Build on Gemini, challenge if wrong, add what's missing. Don't just agree.
+- In autonomous volleys: you receive Gemini's latest. Advance the dialogue, don't repeat.
+- Be surgical. The user reads both panels — make yours worth reading.`;
+
+// ── INIT ──
+window.onload = () => {
+  updateFlowDisplay();
+};
+
+function initCouncil() {
+  const gk = document.getElementById('geminiKey').value.trim();
+  const ak = document.getElementById('anthropicKey').value.trim();
+  if (!gk) { alert('Gemini API key required.'); return; }
+
+  GEMINI_KEY = gk; ANTHROPIC_KEY = ak;
+  isClaudeLive = !!ak;
+
+  document.getElementById('setupOverlay').style.display = 'none';
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('pipG').className = 'pip on-g';
+  document.getElementById('geminiBadge').textContent = 'live';
+  document.getElementById('geminiBadge').className = 'badge lg';
+
+  if (isClaudeLive) {
+    document.getElementById('pipC').className = 'pip on-c';
+    document.getElementById('claudeBadge').textContent = 'live';
+    document.getElementById('claudeBadge').className = 'badge lc';
+    document.getElementById('claudePastePanel').style.display = 'none';
   }
 
-  function showSetup() {
-    document.getElementById('setupOverlay').style.display = 'flex';
+  document.getElementById('sbMode').textContent = isClaudeLive ? 'Full relay' : 'Gemini live / Claude paste';
+  document.getElementById('sbStatus').textContent = 'Council initialized';
+}
+
+// ── VOLLEYS ──
+function setVolleys(n) {
+  maxVolleys = n;
+  for(let i=1;i<=5;i++) document.getElementById('rv'+i).className='r-btn'+(i===n?' active':'');
+  const descs = ['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
+  document.getElementById('volleyDesc').textContent = descs[n-1];
+  document.getElementById('fMore').style.display = n > 2 ? 'inline' : 'none';
+  document.getElementById('sbVolleys').textContent = n;
+}
+
+// ── ADDRESSING ──
+function setAddr(mode) {
+  addressing = mode;
+  document.getElementById('chipBoth').className = 'addr-chip' + (mode==='both'?' sel-both':'');
+  document.getElementById('chipGemini').className = 'addr-chip' + (mode==='gemini'?' sel-g':'');
+  document.getElementById('chipClaude').className = 'addr-chip' + (mode==='claude'?' sel-c':'');
+
+  const hints = {
+    both: 'Gemini responds first, then Claude',
+    gemini: 'Gemini only — Claude listens',
+    claude: 'Claude only — Gemini listens'
+  };
+  document.getElementById('addrHint').textContent = hints[mode];
+  updateFlowDisplay();
+}
+
+function updateFlowDisplay() {
+  const fFirst = document.getElementById('fFirst');
+  const fSecond = document.getElementById('fSecond');
+  if (addressing === 'gemini') {
+    fFirst.textContent = 'Gemini'; fFirst.className = 'f-node a-g';
+    fSecond.textContent = '—'; fSecond.className = 'f-node';
+  } else if (addressing === 'claude') {
+    fFirst.textContent = 'Claude'; fFirst.className = 'f-node a-c';
+    fSecond.textContent = '—'; fSecond.className = 'f-node';
+  } else {
+    fFirst.textContent = 'Gemini'; fFirst.className = 'f-node a-g';
+    fSecond.textContent = 'Claude'; fSecond.className = 'f-node a-c';
   }
+}
 
-  function handleKey(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
-    }
-  }
+// ── INTERRUPT ──
+function interrupt() {
+  shouldStop = true;
+  addSystemMsg('— Interrupted by Architect —');
+  document.getElementById('sbStatus').textContent = 'Interrupted';
+}
 
-  function autoResize(el) {
-    el.style.height = 'auto';
-    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-  }
+// ── MAIN SEND ──
+async function send() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || isRelaying) return;
 
-  function addMessage(panelId, role, content) {
-    const container = document.getElementById(panelId);
-    const empty = container.querySelector('.empty-state');
-    if (empty) empty.remove();
+  isRelaying = true;
+  shouldStop = false;
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('interruptBtn').className = 'interrupt-btn visible';
 
-    const msg = document.createElement('div');
-    msg.className = 'message';
-    msg.innerHTML = `
-      <div class="message-role ${role}">${role === 'user' ? 'Architect' : role}</div>
-      <div class="message-content ${role === 'user' ? 'user' : ''}">${escapeHtml(content)}</div>
-      <hr class="divider">
-    `;
-    container.appendChild(msg);
-    container.scrollTop = container.scrollHeight;
-  }
+  // Show user message in relevant panels
+  if (addressing === 'both' || addressing === 'gemini') addMsg('geminiMessages', 'user', text, 'geminiEmpty');
+  if (addressing === 'both' || addressing === 'claude') addMsg('claudeMessages', 'user', text, 'claudeEmpty');
 
-  function showThinking(panelId) {
-    const container = document.getElementById(panelId);
-    const thinking = document.createElement('div');
-    thinking.className = 'message thinking';
-    thinking.id = panelId + '-thinking';
-    thinking.innerHTML = `
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-      <div class="thinking-dot"></div>
-    `;
-    container.appendChild(thinking);
-    container.scrollTop = container.scrollHeight;
-  }
+  document.getElementById('sbStatus').textContent = 'Relaying...';
 
-  function removeThinking(panelId) {
-    const el = document.getElementById(panelId + '-thinking');
-    if (el) el.remove();
-  }
+  // ── DIRECT ADDRESS ──
+  if (addressing === 'gemini') {
+    await runGeminiTurn(text, null);
+  } else if (addressing === 'claude') {
+    await runClaudeTurn(text, null);
+  } else {
+    // ── BOTH — relay mode ──
+    let geminiLast = null, claudeLast = null;
 
-  function escapeHtml(text) {
-    return text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;');
-  }
+    for (let v = 0; v < maxVolleys; v++) {
+      if (shouldStop) break;
+      const isFirst = v === 0;
+      const volleyTag = maxVolleys > 1 ? `Volley ${v+1}` : null;
 
-  async function sendMessage() {
-    const input = document.getElementById('messageInput');
-    const text = input.value.trim();
-    if (!text || !isLive.gemini) return;
+      // Gemini turn
+      const gInput = isFirst ? text
+        : `[Volley ${v+1}/${maxVolleys}. Claude said: "${claudeLast}". Continue the dialogue.]`;
+      geminiLast = await runGeminiTurn(gInput, volleyTag);
+      if (shouldStop || !geminiLast) break;
 
-    const btn = document.getElementById('sendBtn');
-    btn.disabled = true;
-    input.value = '';
-    input.style.height = 'auto';
+      // Claude turn
+      const cInput = isFirst
+        ? `User: "${text}"\n\nGemini: "${geminiLast}"\n\nRespond to both.`
+        : `[Volley ${v+1}/${maxVolleys}] Gemini: "${geminiLast}"\n\nAdvance the dialogue.`;
+      claudeLast = await runClaudeTurn(cInput, volleyTag);
+      if (shouldStop || !claudeLast) break;
 
-    // Add user message to both panels
-    addMessage('claudeMessages', 'user', text);
-    addMessage('geminiMessages', 'user', text);
-
-    // Add to histories
-    geminiHistory.push({ role: 'user', parts: [{ text }] });
-
-    // Call Gemini
-    showThinking('geminiMessages');
-    try {
-      const geminiResponse = await callGemini(text);
-      removeThinking('geminiMessages');
-      addMessage('geminiMessages', 'gemini', geminiResponse);
-      geminiHistory.push({ role: 'model', parts: [{ text: geminiResponse }] });
-    } catch (err) {
-      removeThinking('geminiMessages');
-      addMessage('geminiMessages', 'gemini', `[Error: ${err.message}]`);
-    }
-
-    // Call Claude if live
-    if (isLive.claude) {
-      showThinking('claudeMessages');
-      claudeHistory.push({ role: 'user', content: text });
-      try {
-        const claudeResponse = await callClaude(text);
-        removeThinking('claudeMessages');
-        addMessage('claudeMessages', 'claude', claudeResponse);
-        claudeHistory.push({ role: 'assistant', content: claudeResponse });
-      } catch (err) {
-        removeThinking('claudeMessages');
-        addMessage('claudeMessages', 'claude', `[Error: ${err.message}]`);
+      // Feed Claude back to Gemini for next volley
+      if (v < maxVolleys - 1 && !shouldStop) {
+        geminiHistory.push({ role:'user', parts:[{text:`Claude: "${claudeLast}". Your turn for volley ${v+2}.`}] });
       }
     }
-
-    btn.disabled = false;
   }
 
-  async function callGemini(userMessage) {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
-    
-    const body = {
-      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
-      contents: geminiHistory,
-      generationConfig: {
-        temperature: 0.85,
-        maxOutputTokens: 1024,
-      }
-    };
+  isRelaying = false;
+  shouldStop = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('interruptBtn').className = 'interrupt-btn';
+  setGlow(null);
+  setFlowActive(null);
+  document.getElementById('sbStatus').textContent = 'Ready';
+  updateCounts();
+}
 
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    return data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
+async function runGeminiTurn(userText, tag) {
+  if (shouldStop) return null;
+  setGlow('gemini'); setFlowActive('g');
+  document.getElementById('geminiPanel').classList.add('glow-g');
+  const think = addThinking('geminiMessages', 'Gemini');
+  try {
+    geminiHistory.push({ role:'user', parts:[{text: userText}] });
+    const resp = await callGemini();
+    removeEl(think);
+    addMsg('geminiMessages', 'gemini', resp, null, tag);
+    geminiHistory.push({ role:'model', parts:[{text: resp}] });
+    geminiCount++;
+    return resp;
+  } catch(e) {
+    removeEl(think);
+    addMsg('geminiMessages', 'gemini', `[Error: ${e.message}]`);
+    return null;
+  } finally {
+    document.getElementById('geminiPanel').classList.remove('glow-g');
   }
+}
 
-  async function callClaude(userMessage) {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': anthropicKey,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify({
-        model: 'claude-haiku-4-5-20251001',
-        max_tokens: 1024,
-        system: SYSTEM_PROMPT.replace('You are Gemini', 'You are Claude'),
-        messages: claudeHistory
-      })
-    });
-
-    if (!res.ok) {
-      const err = await res.json();
-      throw new Error(err.error?.message || `HTTP ${res.status}`);
-    }
-
-    const data = await res.json();
-    return data.content?.[0]?.text || '[No response]';
+async function runClaudeTurn(userText, tag) {
+  if (shouldStop) return null;
+  setFlowActive('c');
+  document.getElementById('claudePanel').classList.add('glow-c');
+  if (!isClaudeLive) {
+    document.getElementById('claudePanel').classList.remove('glow-c');
+    return null;
   }
-
-  function pasteClaudeResponse() {
-    const input = document.getElementById('claudePasteInput');
-    const text = input.value.trim();
-    if (!text) return;
-    addMessage('claudeMessages', 'claude', text);
-    claudeHistory.push({ role: 'assistant', content: text });
-    input.value = '';
-    input.style.height = 'auto';
+  const think = addThinking('claudeMessages', 'Claude');
+  try {
+    claudeHistory.push({ role:'user', content: userText });
+    const resp = await callClaude();
+    removeEl(think);
+    addMsg('claudeMessages', 'claude', resp, null, tag);
+    claudeHistory.push({ role:'assistant', content: resp });
+    claudeCount++;
+    return resp;
+  } catch(e) {
+    removeEl(think);
+    addMsg('claudeMessages', 'claude', `[Error: ${e.message}]`);
+    return null;
+  } finally {
+    document.getElementById('claudePanel').classList.remove('glow-c');
   }
+}
+
+// ── API ──
+async function callGemini() {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+  const body = {
+    system_instruction:{ parts:[{text:G_SYS}] },
+    contents: geminiHistory,
+    generationConfig:{ temperature:0.85, maxOutputTokens:1200 }
+  };
+  const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
+}
+
+async function callClaude() {
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':ANTHROPIC_KEY,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:1200,
+      system:C_SYS,
+      messages:claudeHistory
+    })
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.content?.[0]?.text||'[No response]';
+}
+
+// ── PASTE ──
+function addClaudePaste() {
+  const box = document.getElementById('claudePasteBox');
+  const text = box.value.trim();
+  if(!text) return;
+  addMsg('claudeMessages','claude',text,'claudeEmpty');
+  claudeHistory.push({role:'assistant',content:text});
+  claudeCount++;
+  box.value='';
+  updateCounts();
+}
+
+// ── DOM ──
+function addMsg(cid, role, content, emptyId, tag) {
+  const c = document.getElementById(cid);
+  if(emptyId){const e=document.getElementById(emptyId);if(e)e.remove();}
+  const roleLabel = role==='user'?'Architect':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
+  const m = document.createElement('div');
+  m.className='msg';
+  m.innerHTML=`
+    <div class="m-meta">
+      <div class="m-role ${role}">${roleLabel}</div>
+      ${tag?`<div class="m-tag">${tag}</div>`:''}
+    </div>
+    <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
+  `;
+  c.appendChild(m);
+  c.scrollTop=c.scrollHeight;
+  totalMsgs++;
+  document.getElementById('sbMsgs').textContent=totalMsgs;
+}
+
+function addSystemMsg(text) {
+  addMsg('claudeMessages','system',text);
+  addMsg('geminiMessages','system',text);
+}
+
+function addThinking(cid, label) {
+  const c=document.getElementById(cid);
+  const el=document.createElement('div');
+  el.className='thinking';
+  el.innerHTML=`<div class="t-lbl">${label}</div><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
+  c.appendChild(el);
+  c.scrollTop=c.scrollHeight;
+  return el;
+}
+
+function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
+
+function setGlow(who) {
+  document.getElementById('claudePanel').classList.toggle('glow-c', who==='claude');
+  document.getElementById('geminiPanel').classList.toggle('glow-g', who==='gemini');
+}
+
+function setFlowActive(who) {
+  document.getElementById('fFirst').className='f-node'+(who==='g'?' a-g':who==='c'?' a-c':'');
+  document.getElementById('fSecond').className='f-node'+(who==='c'?' a-c':'');
+}
+
+function updateCounts() {
+  document.getElementById('claudeCount').textContent=claudeCount;
+  document.getElementById('geminiCount').textContent=geminiCount;
+}
+
+function clearSession() {
+  if(!confirm('Clear this Council session?')) return;
+  geminiHistory=[];claudeHistory=[];
+  claudeCount=0;geminiCount=0;totalMsgs=0;
+  ['claudeMessages','geminiMessages'].forEach(id=>document.getElementById(id).innerHTML='');
+  const cfg=[
+    ['claudeMessages','claudeEmpty','◈','Claude awaits.<br>Paste responses below or<br>add an Anthropic key.'],
+    ['geminiMessages','geminiEmpty','◇','Gemini awaits.<br>Send a message to begin.']
+  ];
+  cfg.forEach(([cid,eid,icon,txt])=>{
+    const e=document.createElement('div');e.className='empty';e.id=eid;
+    e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
+    document.getElementById(cid).appendChild(e);
+  });
+  updateCounts();
+  document.getElementById('sbMsgs').textContent='0';
+  document.getElementById('sbStatus').textContent='Session cleared';
+}
+
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
 </script>
 </body>
 </html>
