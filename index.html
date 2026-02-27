@@ -557,7 +557,7 @@ async function runClaudeTurn(userText, tag) {
 
 // ── API ──
 async function callGemini() {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_KEY}`;
   const body = {
     system_instruction:{ parts:[{text:G_SYS}] },
     contents: geminiHistory,
