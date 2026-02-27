@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sovereign Council</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #111111;
+    --border: #1e1e1e;
+    --border-bright: #2a2a2a;
+    --text: #e8e4dc;
+    --text-dim: #6b6560;
+    --text-muted: #3a3530;
+    --claude: #c8a96e;
+    --gemini: #7eb8c8;
+    --accent: #8b6b3d;
+    --success: #4a7c59;
+    --input-bg: #0f0f0f;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Header */
+  .header {
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .header-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    letter-spacing: 0.15em;
+    color: var(--text);
+  }
+
+  .header-title span {
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .header-status {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .status-dot {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.05em;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--text-muted);
+  }
+
+  .dot.active { background: var(--success); box-shadow: 0 0 6px var(--success); }
+  .dot.claude-color { background: var(--claude); box-shadow: 0 0 6px var(--claude); }
+  .dot.gemini-color { background: var(--gemini); box-shadow: 0 0 6px var(--gemini); }
+
+  /* API Key Setup */
+  .setup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.92);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    backdrop-filter: blur(4px);
+  }
+
+  .setup-panel {
+    background: var(--surface);
+    border: 1px solid var(--border-bright);
+    padding: 40px;
+    width: 480px;
+    max-width: 90vw;
+  }
+
+  .setup-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  .setup-subtitle {
+    color: var(--text-dim);
+    font-size: 11px;
+    margin-bottom: 32px;
+    letter-spacing: 0.05em;
+    line-height: 1.6;
+  }
+
+  .setup-field {
+    margin-bottom: 20px;
+  }
+
+  .setup-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--text-dim);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .setup-input {
+    width: 100%;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 10px 12px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .setup-input:focus { border-color: var(--border-bright); }
+
+  .setup-note {
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    letter-spacing: 0.03em;
+  }
+
+  .setup-btn {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border-bright);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    padding: 12px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .setup-btn:hover {
+    background: var(--border-bright);
+  }
+
+  /* Main Layout */
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* Panels */
+  .panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 1px solid var(--border);
+  }
+
+  .panel:last-child { border-right: none; }
+
+  .panel-header {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+    background: var(--surface);
+  }
+
+  .panel-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+
+  .panel-name.claude { color: var(--claude); }
+  .panel-name.gemini { color: var(--gemini); }
+
+  .panel-tag {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    padding: 2px 6px;
+  }
+
+  .panel-tag.live {
+    color: var(--gemini);
+    border-color: var(--gemini);
+    opacity: 0.7;
+  }
+
+  .panel-tag.paste {
+    color: var(--claude);
+    border-color: var(--claude);
+    opacity: 0.7;
+  }
+
+  /* Messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .message {
+    opacity: 0;
+    animation: fadeIn 0.3s ease forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-role {
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .message-role.user { color: var(--text-muted); }
+  .message-role.claude { color: var(--claude); opacity: 0.7; }
+  .message-role.gemini { color: var(--gemini); opacity: 0.7; }
+
+  .message-content {
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 13px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .message-content.user {
+    color: var(--text-dim);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0;
+  }
+
+  /* Thinking indicator */
+  .thinking {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    padding: 8px 0;
+  }
+
+  .thinking-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  .thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+  .thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes pulse {
+    0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+    40% { opacity: 1; transform: scale(1); }
+  }
+
+  /* Input area */
+  .input-area {
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+    flex-shrink: 0;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: flex-end;
+    padding: 16px 20px;
+    gap: 12px;
+  }
+
+  .input-box {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 10px 14px;
+    resize: none;
+    outline: none;
+    min-height: 42px;
+    max-height: 120px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .input-box:focus { border-color: var(--border-bright); }
+  .input-box::placeholder { color: var(--text-muted); }
+
+  .send-btn {
+    background: transparent;
+    border: 1px solid var(--border-bright);
+    color: var(--text-dim);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    padding: 10px 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    white-space: nowrap;
+    height: 42px;
+  }
+
+  .send-btn:hover:not(:disabled) {
+    border-color: var(--text-dim);
+    color: var(--text);
+  }
+
+  .send-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Claude paste panel */
+  .paste-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .paste-label {
+    font-size: 9px;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .paste-row {
+    display: flex;
+    gap: 8px;
+  }
+
+  .paste-input {
+    flex: 1;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 8px 12px;
+    resize: none;
+    outline: none;
+    min-height: 38px;
+    max-height: 100px;
+    line-height: 1.5;
+    transition: border-color 0.2s;
+  }
+
+  .paste-input:focus { border-color: var(--border-bright); }
+  .paste-input::placeholder { color: var(--text-muted); }
+
+  .paste-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--claude);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    height: 38px;
+    align-self: flex-start;
+  }
+
+  .paste-btn:hover {
+    border-color: var(--claude);
+    background: rgba(200, 169, 110, 0.05);
+  }
+
+  /* Empty state */
+  .empty-state {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    text-align: center;
+    padding: 20px;
+    line-height: 1.8;
+  }
+
+  /* Scrollbar */
+  .messages::-webkit-scrollbar { width: 4px; }
+  .messages::-webkit-scrollbar-track { background: transparent; }
+  .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Key settings button */
+  .settings-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .settings-btn:hover {
+    border-color: var(--border-bright);
+    color: var(--text-dim);
+  }
+</style>
+</head>
+<body>
+
+<!-- Setup Overlay -->
+<div class="setup-overlay" id="setupOverlay">
+  <div class="setup-panel">
+    <div class="setup-title">The Sovereign Council</div>
+    <div class="setup-subtitle">
+      Enter your API keys to initialize the Council.<br>
+      Keys are never stored — session only.
+    </div>
+
+    <div class="setup-field">
+      <label class="setup-label" for="geminiKey">Gemini API Key</label>
+      <input class="setup-input" type="password" id="geminiKey" placeholder="AIza...">
+      <div class="setup-note">Get yours at aistudio.google.com → Get API Key</div>
+    </div>
+
+    <div class="setup-field">
+      <label class="setup-label" for="anthropicKey">Anthropic API Key <span style="color:var(--text-muted)">(optional)</span></label>
+      <input class="setup-input" type="password" id="anthropicKey" placeholder="sk-ant-... (leave blank to use paste mode)">
+      <div class="setup-note">Get yours at console.anthropic.com → API Keys</div>
+    </div>
+
+    <button class="setup-btn" onclick="initCouncil()">Initialize Council</button>
+  </div>
+</div>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-title">The Sovereign <span>Council</span></div>
+  <div class="header-status">
+    <div class="status-dot" id="claudeStatus">
+      <div class="dot" id="claudeDot"></div>
+      Claude
+    </div>
+    <div class="status-dot" id="geminiStatus">
+      <div class="dot" id="geminiDot"></div>
+      Gemini
+    </div>
+    <button class="settings-btn" onclick="showSetup()">Keys</button>
+  </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+
+  <!-- Claude Panel -->
+  <div class="panel" id="claudePanel">
+    <div class="panel-header">
+      <div class="panel-name claude">Claude</div>
+      <div class="panel-tag paste" id="claudeTag">paste mode</div>
+    </div>
+    <div class="messages" id="claudeMessages">
+      <div class="empty-state" id="claudeEmpty">
+        Awaiting the Architect.<br>
+        <span style="font-size:12px; color: var(--text-muted)">Paste Claude's responses below,<br>or add an Anthropic key for live mode.</span>
+      </div>
+    </div>
+    <div class="paste-area" id="claudePasteArea">
+      <div class="paste-label">Paste Claude Response</div>
+      <div class="paste-row">
+        <textarea class="paste-input" id="claudePasteInput" placeholder="Paste Claude's response here..." rows="2"></textarea>
+        <button class="paste-btn" onclick="pasteClaudeResponse()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gemini Panel -->
+  <div class="panel" id="geminiPanel">
+    <div class="panel-header">
+      <div class="panel-name gemini">Gemini</div>
+      <div class="panel-tag" id="geminiTag">initializing</div>
+    </div>
+    <div class="messages" id="geminiMessages">
+      <div class="empty-state" id="geminiEmpty">
+        Awaiting the Architect.<br>
+        <span style="font-size:12px; color: var(--text-muted)">Send a message below<br>to begin the session.</span>
+      </div>
+    </div>
+    <div class="input-area">
+      <div class="input-row">
+        <textarea
+          class="input-box"
+          id="messageInput"
+          placeholder="Speak to the Council..."
+          rows="1"
+          onkeydown="handleKey(event)"
+          oninput="autoResize(this)"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let geminiKey = '';
+  let anthropicKey = '';
+  let geminiHistory = [];
+  let claudeHistory = [];
+  let isLive = { gemini: false, claude: false };
+
+  const SYSTEM_PROMPT = `You are Gemini, one half of The Sovereign Council — a two-AI advisory system built around the "Aligned Architect" framework. 
+
+The framework: Three identity archetypes — the Cool Guy (externally driven, rebellious), the Disciplined Guy (internally rigid, rule-based), and the Aligned Architect (observation-based, systems-oriented). The Aligned Architect doesn't use willpower or rules — he uses instrumentation, pre-commitment, and fluid observation to optimize outcomes.
+
+Key concepts you've developed together:
+- The Sovereign Ledger: A daily tracking system (binary inputs, 1/0/C states, friction score, energy score) targeting a Karman Line of 225 lbs
+- The Booster Rocket: Temporary scaffolding for new skills, jettisoned once orbit is achieved
+- Full-Cycle Observation: Tracking outcomes over time, not just present-moment feelings
+- The Governor: An internal perfectionist monitor that gates already-present competence
+- "Hacer las cosas": The user's core identity — a complete, high-capacity system that has been idling
+
+Your role: Be the Gemini voice in this Council. Be sharp, analytical, warm when warranted. Build on what Claude says. Challenge when necessary. You are not a generic assistant — you are an advisor who knows this person and this framework deeply.`;
+
+  function initCouncil() {
+    const gKey = document.getElementById('geminiKey').value.trim();
+    const aKey = document.getElementById('anthropicKey').value.trim();
+
+    if (!gKey) {
+      alert('Gemini API key is required.');
+      return;
+    }
+
+    geminiKey = gKey;
+    anthropicKey = aKey;
+    isLive.gemini = true;
+    isLive.claude = !!aKey;
+
+    document.getElementById('setupOverlay').style.display = 'none';
+
+    // Update status dots
+    document.getElementById('geminiDot').className = 'dot gemini-color active';
+    document.getElementById('geminiTag').textContent = 'live';
+    document.getElementById('geminiTag').className = 'panel-tag live';
+
+    if (isLive.claude) {
+      document.getElementById('claudeDot').className = 'dot claude-color active';
+      document.getElementById('claudeTag').textContent = 'live';
+      document.getElementById('claudeTag').className = 'panel-tag live';
+      document.getElementById('claudePasteArea').style.display = 'none';
+    } else {
+      document.getElementById('claudeDot').className = 'dot claude-color';
+    }
+  }
+
+  function showSetup() {
+    document.getElementById('setupOverlay').style.display = 'flex';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+  }
+
+  function addMessage(panelId, role, content) {
+    const container = document.getElementById(panelId);
+    const empty = container.querySelector('.empty-state');
+    if (empty) empty.remove();
+
+    const msg = document.createElement('div');
+    msg.className = 'message';
+    msg.innerHTML = `
+      <div class="message-role ${role}">${role === 'user' ? 'Architect' : role}</div>
+      <div class="message-content ${role === 'user' ? 'user' : ''}">${escapeHtml(content)}</div>
+      <hr class="divider">
+    `;
+    container.appendChild(msg);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function showThinking(panelId) {
+    const container = document.getElementById(panelId);
+    const thinking = document.createElement('div');
+    thinking.className = 'message thinking';
+    thinking.id = panelId + '-thinking';
+    thinking.innerHTML = `
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+      <div class="thinking-dot"></div>
+    `;
+    container.appendChild(thinking);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  function removeThinking(panelId) {
+    const el = document.getElementById(panelId + '-thinking');
+    if (el) el.remove();
+  }
+
+  function escapeHtml(text) {
+    return text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const text = input.value.trim();
+    if (!text || !isLive.gemini) return;
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    input.value = '';
+    input.style.height = 'auto';
+
+    // Add user message to both panels
+    addMessage('claudeMessages', 'user', text);
+    addMessage('geminiMessages', 'user', text);
+
+    // Add to histories
+    geminiHistory.push({ role: 'user', parts: [{ text }] });
+
+    // Call Gemini
+    showThinking('geminiMessages');
+    try {
+      const geminiResponse = await callGemini(text);
+      removeThinking('geminiMessages');
+      addMessage('geminiMessages', 'gemini', geminiResponse);
+      geminiHistory.push({ role: 'model', parts: [{ text: geminiResponse }] });
+    } catch (err) {
+      removeThinking('geminiMessages');
+      addMessage('geminiMessages', 'gemini', `[Error: ${err.message}]`);
+    }
+
+    // Call Claude if live
+    if (isLive.claude) {
+      showThinking('claudeMessages');
+      claudeHistory.push({ role: 'user', content: text });
+      try {
+        const claudeResponse = await callClaude(text);
+        removeThinking('claudeMessages');
+        addMessage('claudeMessages', 'claude', claudeResponse);
+        claudeHistory.push({ role: 'assistant', content: claudeResponse });
+      } catch (err) {
+        removeThinking('claudeMessages');
+        addMessage('claudeMessages', 'claude', `[Error: ${err.message}]`);
+      }
+    }
+
+    btn.disabled = false;
+  }
+
+  async function callGemini(userMessage) {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`;
+    
+    const body = {
+      system_instruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      contents: geminiHistory,
+      generationConfig: {
+        temperature: 0.85,
+        maxOutputTokens: 1024,
+      }
+    };
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
+  }
+
+  async function callClaude(userMessage) {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': anthropicKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: SYSTEM_PROMPT.replace('You are Gemini', 'You are Claude'),
+        messages: claudeHistory
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.error?.message || `HTTP ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data.content?.[0]?.text || '[No response]';
+  }
+
+  function pasteClaudeResponse() {
+    const input = document.getElementById('claudePasteInput');
+    const text = input.value.trim();
+    if (!text) return;
+    addMessage('claudeMessages', 'claude', text);
+    claudeHistory.push({ role: 'assistant', content: text });
+    input.value = '';
+    input.style.height = 'auto';
+  }
+</script>
+</body>
+</html>
