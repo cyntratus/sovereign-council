@@ -559,14 +559,14 @@ async function runClaudeTurn(userText, tag) {
 async function callGemini() {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_KEY}`;
   const body = {
-    system_instruction:{ parts:[{text:G_SYS}] },
+    system_instruction: { parts: [{ text: G_SYS }] },
     contents: geminiHistory,
-    generationConfig:{ temperature:0.85, maxOutputTokens:1200 }
+    generationConfig: { temperature: 0.85, maxOutputTokens: 1200, thinking_level: "medium" }
   };
-  const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
-  const d=await res.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Gemini HTTP ${res.status}`); }
+  const d = await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
 }
 
 async function callClaude() {
