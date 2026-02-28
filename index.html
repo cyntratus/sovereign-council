@@ -29,7 +29,7 @@
     background:var(--bg);
     color:var(--text);
     font-family:'JetBrains Mono',monospace;
-    font-size:13px;
+    font-size:17px;
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -126,7 +126,7 @@
   .m-role.system { color:var(--interrupt); }
   .m-tag { font-size:8px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
   .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; }
-  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:15px; font-style:italic; }
+  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:19px; font-style:italic; }
   .m-body.sb { color:var(--interrupt); font-size:11px; letter-spacing:0.05em; }
 
   .thinking { padding:14px 0; display:flex; align-items:center; gap:10px; }
@@ -151,7 +151,7 @@
   .addr-chip.sel-both { border-color:var(--user); color:var(--user); }
 
   .input-row { display:flex; align-items:flex-end; padding:14px 22px; gap:10px; }
-  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:10px 14px; resize:none; outline:none; min-height:42px; max-height:140px; line-height:1.6; transition:border-color 0.15s; }
+  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:17px; padding:10px 14px; resize:none; outline:none; min-height:42px; max-height:140px; line-height:1.6; transition:border-color 0.15s; }
   .input-box:focus { border-color:var(--border2); }
   .input-box::placeholder { color:var(--text-muted); }
 
@@ -204,6 +204,7 @@
 <!-- HEADER -->
 <div class="header">
   <div class="logo">The Sovereign <em>Council</em></div>
+  <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;"></div>
   <div class="h-right">
     <div class="indicator"><div class="pip" id="pipC"></div>Claude</div>
     <div class="indicator"><div class="pip" id="pipG"></div>Gemini</div>
@@ -365,6 +366,20 @@ RELAY BEHAVIOR:
 - When both are addressed: you go SECOND. You receive the user's message AND Gemini's response. Build on Gemini, challenge if wrong, add what's missing. Don't just agree.
 - In autonomous volleys: you receive Gemini's latest. Advance the dialogue, don't repeat.
 - Be surgical. The user reads both panels — make yours worth reading.`;
+
+// ── CLOCK ──
+function updateClock() {
+  const now = new Date();
+  const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true };
+  document.getElementById('clock').textContent = now.toLocaleString('en-US', opts);
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function getDateTimeContext() {
+  const now = new Date();
+  return `Current date/time: ${now.toLocaleString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short' })}`;
+}
 
 // ── INIT ──
 window.onload = () => {
@@ -559,7 +574,7 @@ async function runClaudeTurn(userText, tag) {
 async function callGemini() {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_KEY}`;
   const body = {
-    system_instruction: { parts: [{ text: G_SYS }] },
+    system_instruction: { parts: [{ text: G_SYS + '\n\n' + getDateTimeContext() }] },
     contents: geminiHistory,
     generationConfig: { temperature: 0.85, maxOutputTokens: 1200 }
   };
@@ -581,7 +596,7 @@ async function callClaude() {
     body:JSON.stringify({
       model:'claude-haiku-4-5-20251001',
       max_tokens:1200,
-      system:C_SYS,
+      system:C_SYS + '\n\n' + getDateTimeContext(),
       messages:claudeHistory
     })
   });
