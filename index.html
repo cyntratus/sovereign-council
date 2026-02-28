@@ -585,24 +585,30 @@ async function callGemini() {
 }
 
 async function callClaude() {
-  const res = await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':ANTHROPIC_KEY,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-haiku-4-5-20251001',
-      max_tokens:1200,
-      system:C_SYS + '\n\n' + getDateTimeContext(),
-      messages:claudeHistory
-    })
-  });
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
-  const d=await res.json();
-  return d.content?.[0]?.text||'[No response]';
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':ANTHROPIC_KEY,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:1200,
+        system:C_SYS + '\n\n' + getDateTimeContext(),
+        messages:claudeHistory
+      })
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+    const d=await res.json();
+    return d.content?.[0]?.text||'[No response]';
+  } catch(e) {
+    console.error('callClaude error:', e);
+    console.error('claudeHistory at time of error:', JSON.stringify(claudeHistory));
+    throw e;
+  }
 }
 
 // ── PASTE ──
