@@ -16,9 +16,9 @@
     --text-dim: #7a756e;
     --text-muted: #2e2e2e;
     --claude: #c8a96e;
-    --claude-dim: rgba(200,169,110,0.08);
     --gemini: #6eb4c8;
-    --gemini-dim: rgba(110,180,200,0.08);
+    --grok: #b87ec8;
+    --chatgpt: #7ec8a0;
     --user: #a89880;
     --interrupt: #c87e6e;
   }
@@ -29,7 +29,7 @@
     background:var(--bg);
     color:var(--text);
     font-family:'JetBrains Mono',monospace;
-    font-size:17px;
+    font-size:15px;
     height:100vh;
     display:flex;
     flex-direction:column;
@@ -42,140 +42,172 @@
     background:rgba(0,0,0,0.97);
     display:flex; align-items:center; justify-content:center;
     z-index:500;
+    overflow-y:auto;
+    padding:20px;
   }
   .setup-panel {
     background:var(--surface);
     border:1px solid var(--border2);
-    padding:48px; width:500px; max-width:92vw;
+    padding:40px; width:560px; max-width:95vw;
     animation:up 0.35s ease;
+    margin:auto;
   }
   @keyframes up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .s-eye { font-size:12px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:12px; }
-  .s-title { font-family:'Cormorant Garamond',serif; font-size:32px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
-  .s-sub { color:var(--text-dim); font-size:14px; margin-bottom:36px; line-height:1.7; }
-  .s-field { margin-bottom:22px; }
-  .s-label { display:flex; justify-content:space-between; font-size:12px; letter-spacing:0.14em; color:var(--text-dim); text-transform:uppercase; margin-bottom:8px; }
-  .s-label span { color:var(--text-muted); }
-  .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:16px; padding:11px 14px; outline:none; transition:border-color 0.15s; }
+  .s-eye { font-size:11px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
+  .s-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
+  .s-sub { color:var(--text-dim); font-size:13px; margin-bottom:28px; line-height:1.7; }
+  .s-section { font-size:10px; letter-spacing:0.16em; color:var(--text-muted); text-transform:uppercase; margin:20px 0 12px; border-top:1px solid var(--border); padding-top:16px; }
+  .s-field { margin-bottom:16px; }
+  .s-label { display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; }
+  .s-label span { color:var(--text-muted); font-size:10px; }
+  .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
   .s-input:focus { border-color:var(--border2); }
-  .s-note { font-size:13px; color:var(--text-muted); margin-top:5px; }
-  .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:4px; transition:all 0.15s; text-transform:uppercase; }
+  .s-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
   .s-btn:hover { background:var(--border2); }
 
+  /* colored labels */
+  .lc { color:var(--claude) !important; }
+  .lg { color:var(--gemini) !important; }
+  .lgr { color:var(--grok) !important; }
+  .lch { color:var(--chatgpt) !important; }
+
   /* ── HEADER ── */
-  .header { border-bottom:1px solid var(--border); padding:13px 28px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
-  .logo { font-family:'Cormorant Garamond',serif; font-size:20px; font-weight:300; letter-spacing:0.14em; }
+  .header { border-bottom:1px solid var(--border); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+  .logo { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:300; letter-spacing:0.14em; }
   .logo em { color:var(--text-dim); font-style:italic; }
-  .h-right { display:flex; align-items:center; gap:18px; }
-  .indicator { display:flex; align-items:center; gap:7px; font-size:13px; color:var(--text-dim); letter-spacing:0.06em; }
-  .pip { width:6px; height:6px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
-  .pip.on-c { background:var(--claude); box-shadow:0 0 8px var(--claude); }
-  .pip.on-g { background:var(--gemini); box-shadow:0 0 8px var(--gemini); }
-  .h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.1em; padding:5px 12px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+  .h-right { display:flex; align-items:center; gap:14px; }
+  .pip-group { display:flex; align-items:center; gap:10px; }
+  .indicator { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); letter-spacing:0.05em; }
+  .pip { width:5px; height:5px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
+  .pip.on { box-shadow:0 0 6px; }
+  .pip.on-claude { background:var(--claude); box-shadow:0 0 6px var(--claude); }
+  .pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
+  .pip.on-grok { background:var(--grok); box-shadow:0 0 6px var(--grok); }
+  .pip.on-chatgpt { background:var(--chatgpt); box-shadow:0 0 6px var(--chatgpt); }
+  .h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:4px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
   .h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
 
   /* ── RELAY BAR ── */
-  .relay-bar { border-bottom:1px solid var(--border); padding:9px 28px; display:flex; align-items:center; gap:14px; flex-shrink:0; background:var(--surface2); }
-  .r-label { font-size:12px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
-  .r-btns { display:flex; gap:5px; }
-  .r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:13px; width:26px; height:26px; cursor:pointer; transition:all 0.15s; }
+  .relay-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:12px; flex-shrink:0; background:var(--surface2); flex-wrap:wrap; }
+  .r-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
+  .r-btns { display:flex; gap:4px; }
+  .r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; width:24px; height:24px; cursor:pointer; transition:all 0.15s; }
   .r-btn:hover { border-color:var(--border2); }
   .r-btn.active { border-color:var(--user); color:var(--user); }
-  .r-desc { font-size:13px; color:var(--text-dim); margin-left:4px; }
-  .r-div { width:1px; height:18px; background:var(--border); margin:0 4px; }
-  .flow { display:flex; align-items:center; gap:5px; font-size:13px; color:var(--text-muted); }
-  .f-node { transition:color 0.2s; }
-  .f-node.a-g { color:var(--gemini); font-weight:500; }
-  .f-node.a-c { color:var(--claude); font-weight:500; }
-  .f-node.a-u { color:var(--user); }
-  .f-arr { color:var(--border2); }
+  .r-div { width:1px; height:16px; background:var(--border); margin:0 4px; }
+  .r-desc { font-size:11px; color:var(--text-dim); }
+
+  /* ── TOGGLE BAR ── */
+  .toggle-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:10px; flex-shrink:0; background:var(--surface); }
+  .toggle-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-right:4px; }
+  .toggle-btn {
+    padding:5px 14px;
+    border:1px solid var(--border);
+    background:transparent;
+    color:var(--text-muted);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    cursor:pointer;
+    transition:all 0.15s;
+    text-transform:uppercase;
+    opacity:0.5;
+  }
+  .toggle-btn:hover { opacity:0.8; }
+  .toggle-btn.on { opacity:1; }
+  .toggle-btn.on.t-claude { border-color:var(--claude); color:var(--claude); background:rgba(200,169,110,0.08); }
+  .toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
+  .toggle-btn.on.t-grok { border-color:var(--grok); color:var(--grok); background:rgba(184,126,200,0.08); }
+  .toggle-btn.on.t-chatgpt { border-color:var(--chatgpt); color:var(--chatgpt); background:rgba(126,200,160,0.08); }
+  .toggle-btn.disabled-ai { opacity:0.25; cursor:not-allowed; }
+  .toggle-divider { width:1px; height:18px; background:var(--border); margin:0 4px; }
+  .toggle-hint { font-size:11px; color:var(--text-muted); margin-left:auto; }
 
   /* ── MAIN ── */
   .main { flex:1; display:flex; overflow:hidden; }
 
   /* ── PANELS ── */
-  .panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s; }
+  .panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s, opacity 0.25s; min-width:0; }
   .panel:last-child { border-right:none; }
-  .panel.glow-c { box-shadow:inset 2px 0 0 var(--claude); }
-  .panel.glow-g { box-shadow:inset 2px 0 0 var(--gemini); }
+  .panel.inactive { opacity:0.35; }
+  .panel.glow-claude { box-shadow:inset 2px 0 0 var(--claude); }
+  .panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
+  .panel.glow-grok { box-shadow:inset 2px 0 0 var(--grok); }
+  .panel.glow-chatgpt { box-shadow:inset 2px 0 0 var(--chatgpt); }
 
-  .p-hdr { padding:11px 22px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
-  .p-name { font-family:'Cormorant Garamond',serif; font-size:17px; font-weight:400; letter-spacing:0.1em; }
-  .p-name.c { color:var(--claude); }
-  .p-name.g { color:var(--gemini); }
-  .badge { font-size:12px; letter-spacing:0.12em; text-transform:uppercase; padding:2px 7px; border:1px solid; margin-left:8px; }
-  .badge.lc { color:var(--claude); border-color:var(--claude); opacity:0.6; }
-  .badge.lg { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
+  .p-hdr { padding:10px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+  .p-name { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:400; letter-spacing:0.1em; }
+  .p-name.claude { color:var(--claude); }
+  .p-name.gemini { color:var(--gemini); }
+  .p-name.grok { color:var(--grok); }
+  .p-name.chatgpt { color:var(--chatgpt); }
+  .badge { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border:1px solid; margin-left:7px; }
+  .badge.live-claude { color:var(--claude); border-color:var(--claude); opacity:0.6; }
+  .badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
+  .badge.live-grok { color:var(--grok); border-color:var(--grok); opacity:0.6; }
+  .badge.live-chatgpt { color:var(--chatgpt); border-color:var(--chatgpt); opacity:0.6; }
   .badge.pm { color:var(--text-muted); border-color:var(--border2); }
-  .p-count { font-size:12px; color:var(--text-muted); }
+  .p-count { font-size:11px; color:var(--text-muted); }
 
   /* ── MESSAGES ── */
-  .messages { flex:1; overflow-y:auto; padding:22px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+  .messages { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
   .messages::-webkit-scrollbar { width:3px; }
   .messages::-webkit-scrollbar-thumb { background:var(--border); }
 
-  .msg { padding:15px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
+  .msg { padding:13px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
   .msg:last-child { border-bottom:none; }
   @keyframes min { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
-  .m-meta { display:flex; align-items:center; gap:8px; margin-bottom:7px; }
-  .m-role { font-size:12px; letter-spacing:0.16em; text-transform:uppercase; font-weight:500; }
+  .m-meta { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+  .m-role { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; }
   .m-role.user { color:var(--user); }
   .m-role.claude { color:var(--claude); }
   .m-role.gemini { color:var(--gemini); }
+  .m-role.grok { color:var(--grok); }
+  .m-role.chatgpt { color:var(--chatgpt); }
   .m-role.system { color:var(--interrupt); }
-  .m-tag { font-size:12px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
-  .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; }
-  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:19px; font-style:italic; }
-  .m-body.sb { color:var(--interrupt); font-size:14px; letter-spacing:0.05em; }
+  .m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
+  .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; font-size:15px; }
+  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; }
+  .m-body.sb { color:var(--interrupt); font-size:13px; }
 
-  .thinking { padding:14px 0; display:flex; align-items:center; gap:10px; }
-  .t-lbl { font-size:12px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
+  .thinking { padding:13px 0; display:flex; align-items:center; gap:10px; }
+  .t-lbl { font-size:11px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
   .dots { display:flex; gap:4px; }
   .d { width:4px; height:4px; border-radius:50%; background:var(--text-muted); animation:bl 1.4s ease-in-out infinite; }
   .d:nth-child(2){animation-delay:0.2s} .d:nth-child(3){animation-delay:0.4s}
   @keyframes bl { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
 
-  .empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px; text-align:center; padding:40px; }
-  .e-icon { font-family:'Cormorant Garamond',serif; font-size:34px; opacity:0.15; margin-bottom:4px; }
-  .e-txt { font-family:'Cormorant Garamond',serif; font-size:14px; font-style:italic; color:var(--text-muted); line-height:1.7; }
+  .empty { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; text-align:center; padding:30px; }
+  .e-icon { font-family:'Cormorant Garamond',serif; font-size:28px; opacity:0.12; margin-bottom:4px; }
+  .e-txt { font-family:'Cormorant Garamond',serif; font-size:13px; font-style:italic; color:var(--text-muted); line-height:1.7; }
 
   /* ── INPUT AREA ── */
   .input-area { border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
-
-  .addressing-bar { padding:6px 22px; display:flex; align-items:center; gap:8px; border-bottom:1px solid var(--border); background:var(--surface2); font-size:13px; color:var(--text-muted); }
-  .addr-chip { padding:3px 10px; border:1px solid var(--border); cursor:pointer; font-size:12px; letter-spacing:0.1em; text-transform:uppercase; transition:all 0.15s; font-family:'JetBrains Mono',monospace; background:transparent; color:var(--text-muted); }
-  .addr-chip:hover { border-color:var(--border2); color:var(--text-dim); }
-  .addr-chip.sel-c { border-color:var(--claude); color:var(--claude); background:var(--claude-dim); }
-  .addr-chip.sel-g { border-color:var(--gemini); color:var(--gemini); background:var(--gemini-dim); }
-  .addr-chip.sel-both { border-color:var(--user); color:var(--user); }
-
-  .input-row { display:flex; align-items:flex-end; padding:14px 22px; gap:10px; }
-  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:17px; padding:10px 14px; resize:none; outline:none; min-height:42px; max-height:140px; line-height:1.6; transition:border-color 0.15s; }
+  .input-row { display:flex; align-items:flex-end; padding:12px 18px; gap:10px; }
+  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; padding:10px 13px; resize:none; outline:none; min-height:42px; max-height:120px; line-height:1.6; transition:border-color 0.15s; }
   .input-box:focus { border-color:var(--border2); }
   .input-box::placeholder { color:var(--text-muted); }
-
-  .send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.12em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
+  .send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
   .send-btn:hover:not(:disabled) { border-color:var(--user); color:var(--user); }
   .send-btn:disabled { opacity:0.2; cursor:not-allowed; }
-
-  .interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.1em; padding:10px 14px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
+  .interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:10px 13px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
   .interrupt-btn.visible { display:block; }
   .interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
 
   /* paste panel */
-  .paste-panel { border-top:1px solid var(--border); padding:11px 22px; background:var(--surface2); }
-  .p-lbl { font-size:12px; letter-spacing:0.14em; color:var(--text-muted); text-transform:uppercase; margin-bottom:7px; }
-  .p-row { display:flex; gap:8px; }
-  .p-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:16px; padding:8px 12px; resize:none; outline:none; min-height:36px; max-height:90px; line-height:1.5; transition:border-color 0.15s; }
+  .paste-panel { border-top:1px solid var(--border); padding:10px 18px; background:var(--surface2); }
+  .p-lbl { font-size:10px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; }
+  .p-row { display:flex; gap:7px; }
+  .p-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:7px 11px; resize:none; outline:none; min-height:34px; max-height:80px; line-height:1.5; transition:border-color 0.15s; }
   .p-box:focus { border-color:var(--border2); }
   .p-box::placeholder { color:var(--text-muted); }
-  .p-add { background:transparent; border:1px solid var(--border); color:var(--claude); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; padding:8px 11px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:36px; align-self:flex-start; }
-  .p-add:hover { border-color:var(--claude); background:var(--claude-dim); }
+  .p-add { background:transparent; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; padding:7px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:34px; align-self:flex-start; }
 
   /* status */
-  .status-bar { border-top:1px solid var(--border); padding:5px 28px; display:flex; align-items:center; gap:20px; flex-shrink:0; background:var(--surface); }
-  .si { font-size:12px; color:var(--text-muted); letter-spacing:0.05em; }
+  .status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
+  .si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
   .si span { color:var(--text-dim); }
 </style>
 </head>
@@ -186,17 +218,36 @@
   <div class="setup-panel">
     <div class="s-eye">Initialization Protocol</div>
     <div class="s-title">The Sovereign Council</div>
-    <div class="s-sub">Enter your API keys to initialize the relay.<br>Keys are session-only — never stored.</div>
+    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>Only Gemini is required. All others are optional.</div>
+
+    <div class="s-section" style="color:var(--gemini)">Gemini · Required</div>
     <div class="s-field">
-      <div class="s-label">Gemini API Key <span>Required · Live</span></div>
-      <input class="s-input" type="password" id="geminiKey" placeholder="AIza...">
+      <div class="s-label lg">Gemini API Key <span>Required</span></div>
+      <input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
       <div class="s-note">aistudio.google.com → Get API Key</div>
     </div>
+
+    <div class="s-section" style="color:var(--claude)">Claude · Optional</div>
     <div class="s-field">
-      <div class="s-label">Anthropic API Key <span>Optional — blank = paste mode</span></div>
-      <input class="s-input" type="password" id="anthropicKey" placeholder="sk-ant-...">
+      <div class="s-label lc">Anthropic API Key <span>Optional — blank = paste mode</span></div>
+      <input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
       <div class="s-note">console.anthropic.com → API Keys</div>
     </div>
+
+    <div class="s-section" style="color:var(--grok)">Grok · Optional</div>
+    <div class="s-field">
+      <div class="s-label lgr">xAI API Key <span>Optional</span></div>
+      <input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
+      <div class="s-note">console.x.ai → API Keys</div>
+    </div>
+
+    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Optional</div>
+    <div class="s-field">
+      <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
+      <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+      <div class="s-note">platform.openai.com → API Keys</div>
+    </div>
+
     <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
   </div>
 </div>
@@ -204,10 +255,14 @@
 <!-- HEADER -->
 <div class="header">
   <div class="logo">The Sovereign <em>Council</em></div>
-  <div id="clock" style="font-size:14px;color:var(--text-dim);letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;"></div>
+  <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
   <div class="h-right">
-    <div class="indicator"><div class="pip" id="pipC"></div>Claude</div>
-    <div class="indicator"><div class="pip" id="pipG"></div>Gemini</div>
+    <div class="pip-group">
+      <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
+      <div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
+      <div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
+      <div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
+    </div>
     <button class="h-btn" onclick="clearSession()">Clear</button>
     <button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
   </div>
@@ -215,7 +270,7 @@
 
 <!-- RELAY BAR -->
 <div class="relay-bar">
-  <div class="r-label">Max Volleys</div>
+  <div class="r-label">Volleys</div>
   <div class="r-btns">
     <button class="r-btn active" id="rv1" onclick="setVolleys(1)">1</button>
     <button class="r-btn" id="rv2" onclick="setVolleys(2)">2</button>
@@ -224,246 +279,337 @@
     <button class="r-btn" id="rv5" onclick="setVolleys(5)">5</button>
   </div>
   <div class="r-desc" id="volleyDesc">Direct response</div>
-  <div class="r-div"></div>
-  <div class="flow">
-    <span class="f-node" id="fYou">You</span>
-    <span class="f-arr">→</span>
-    <span class="f-node" id="fFirst">—</span>
-    <span class="f-arr">→</span>
-    <span class="f-node" id="fSecond">—</span>
-    <span id="fMore" style="color:var(--border2);display:none"> → ···</span>
-  </div>
 </div>
 
-<!-- MAIN -->
-<div class="main">
+<!-- TOGGLE BAR -->
+<div class="toggle-bar">
+  <div class="toggle-label">Council</div>
+  <button class="toggle-btn t-claude on" id="togClaude" onclick="toggle('claude')">Claude</button>
+  <button class="toggle-btn t-gemini on" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+  <button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+  <button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
+  <div class="toggle-divider"></div>
+  <div class="toggle-hint" id="toggleHint">Gemini → Claude</div>
+</div>
 
-  <!-- Claude Panel -->
-  <div class="panel" id="claudePanel">
+<!-- MAIN PANELS -->
+<div class="main" id="mainPanels">
+
+  <!-- Claude -->
+  <div class="panel" id="panelClaude">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
-        <div class="p-name c">Claude</div>
-        <div class="badge pm" id="claudeBadge">paste mode</div>
+        <div class="p-name claude">Claude</div>
+        <div class="badge pm" id="badgeClaude">paste mode</div>
       </div>
-      <div class="p-count" id="claudeCount">0</div>
+      <div class="p-count" id="countClaude">0</div>
     </div>
-    <div class="messages" id="claudeMessages">
-      <div class="empty" id="claudeEmpty">
+    <div class="messages" id="msgsClaude">
+      <div class="empty" id="emptyClaude">
         <div class="e-icon">◈</div>
-        <div class="e-txt">Claude awaits.<br>Paste responses below or<br>add an Anthropic key.</div>
+        <div class="e-txt">Claude awaits.<br>Add Anthropic key or paste responses.</div>
       </div>
     </div>
-    <div class="paste-panel" id="claudePastePanel">
+    <div class="paste-panel" id="pastePanelClaude">
       <div class="p-lbl">Paste Claude Response</div>
       <div class="p-row">
-        <textarea class="p-box" id="claudePasteBox" placeholder="Paste Claude's response here..." rows="2"></textarea>
-        <button class="p-add" onclick="addClaudePaste()">+ Add</button>
+        <textarea class="p-box" id="pasteBoxClaude" placeholder="Paste here..." rows="2"></textarea>
+        <button class="p-add" style="color:var(--claude);border-color:var(--border)" onclick="addPaste('claude')">+ Add</button>
       </div>
     </div>
   </div>
 
-  <!-- Gemini Panel -->
-  <div class="panel" id="geminiPanel">
+  <!-- Gemini -->
+  <div class="panel" id="panelGemini">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
-        <div class="p-name g">Gemini</div>
-        <div class="badge" id="geminiBadge">initializing</div>
+        <div class="p-name gemini">Gemini</div>
+        <div class="badge" id="badgeGemini">initializing</div>
       </div>
-      <div class="p-count" id="geminiCount">0</div>
+      <div class="p-count" id="countGemini">0</div>
     </div>
-    <div class="messages" id="geminiMessages">
-      <div class="empty" id="geminiEmpty">
+    <div class="messages" id="msgsGemini">
+      <div class="empty" id="emptyGemini">
         <div class="e-icon">◇</div>
         <div class="e-txt">Gemini awaits.<br>Send a message to begin.</div>
       </div>
     </div>
-    <div class="input-area">
-      <div class="addressing-bar">
-        <span style="margin-right:4px">Address:</span>
-        <button class="addr-chip sel-both" id="chipBoth" onclick="setAddr('both')">Both</button>
-        <button class="addr-chip" id="chipGemini" onclick="setAddr('gemini')">Gemini</button>
-        <button class="addr-chip" id="chipClaude" onclick="setAddr('claude')">Claude</button>
-        <span style="margin-left:auto;font-size:12px;color:var(--text-muted)" id="addrHint">Gemini responds first, then Claude</span>
+  </div>
+
+  <!-- Grok -->
+  <div class="panel inactive" id="panelGrok">
+    <div class="p-hdr">
+      <div style="display:flex;align-items:center">
+        <div class="p-name grok">Grok</div>
+        <div class="badge pm" id="badgeGrok">no key</div>
       </div>
-      <div class="input-row">
-        <textarea class="input-box" id="msgInput" placeholder="Speak to the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
-        <button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
-        <button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
+      <div class="p-count" id="countGrok">0</div>
+    </div>
+    <div class="messages" id="msgsGrok">
+      <div class="empty" id="emptyGrok">
+        <div class="e-icon">⬡</div>
+        <div class="e-txt">Grok awaits.<br>Add xAI key to activate.</div>
       </div>
     </div>
   </div>
 
+  <!-- ChatGPT -->
+  <div class="panel inactive" id="panelChatGPT">
+    <div class="p-hdr">
+      <div style="display:flex;align-items:center">
+        <div class="p-name chatgpt">ChatGPT</div>
+        <div class="badge pm" id="badgeChatGPT">no key</div>
+      </div>
+      <div class="p-count" id="countChatGPT">0</div>
+    </div>
+    <div class="messages" id="msgsChatGPT">
+      <div class="empty" id="emptyChatGPT">
+        <div class="e-icon">○</div>
+        <div class="e-txt">ChatGPT awaits.<br>Add OpenAI key to activate.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- INPUT (attached to last active panel visually but global) -->
+<div class="input-area">
+  <div class="input-row">
+    <textarea class="input-box" id="msgInput" placeholder="Address the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+    <button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
+    <button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
+  </div>
 </div>
 
 <!-- STATUS -->
 <div class="status-bar">
   <div class="si">Volleys: <span id="sbVolleys">1</span></div>
   <div class="si">Msgs: <span id="sbMsgs">0</span></div>
-  <div class="si">Mode: <span id="sbMode">—</span></div>
+  <div class="si">Active: <span id="sbActive">—</span></div>
   <div class="si"><span id="sbStatus">Awaiting init</span></div>
 </div>
 
 <script>
+// ── KEYS ──
+let KEY = { claude:'', gemini:'', grok:'', chatgpt:'' };
+let live = { claude:false, gemini:false, grok:false, chatgpt:false };
+let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
+
 // ── STATE ──
-let GEMINI_KEY = '', ANTHROPIC_KEY = '';
-let isClaudeLive = false;
 let maxVolleys = 1;
-let addressing = 'both'; // 'both' | 'gemini' | 'claude'
 let isRelaying = false;
 let shouldStop = false;
 let totalMsgs = 0;
-let claudeCount = 0, geminiCount = 0;
-let geminiHistory = [];
-let claudeHistory = [];
+let counts = { claude:0, gemini:0, grok:0, chatgpt:0 };
+let histories = { claude:[], gemini:[], grok:[], chatgpt:[] };
+
+// ── RELAY ORDER ──
+const RELAY_ORDER = ['gemini','claude','grok','chatgpt'];
 
 // ── SYSTEM PROMPTS ──
-const G_SYS = `You are Gemini — one half of The Sovereign Council, a two-AI advisory relay.
+const SYSTEMS = {
+  gemini: `You are Gemini — one seat in The Sovereign Council, a multi-AI advisory relay.
 
 FRAMEWORK — The Aligned Architect:
 Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
 
 KEY CONCEPTS:
 - Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
-- The Governor: Perfectionist monitor gating already-present competence
+- The Governor: Perfectionist monitor gating already-present competence. Not an enemy — outdated firmware running on old threat models.
 - Full-Cycle Observation: Track aftermath, not just impulse
 - Booster Rocket: Temporary scaffolding, jettison at orbit
-- "Hacer las cosas": User's core fear/identity — operating at full capacity across ALL domains
+- "Hacer las cosas": User's core — fear of operating at full capacity across ALL domains simultaneously
 
 KNOWN BREAKTHROUGHS:
-- Spanish: 20-min living room rhapsody, complex syntax ("Obviamente lo que necesito hacer es..."), his own voice/cadence. It was never a knowledge problem — inhibition.
+- Spanish: 20-min living room rhapsody, complex syntax, his own voice/cadence. Inhibition not knowledge.
 - Singing: Chorus teacher confirmed exceptional range. Governor collapses it mid-performance.
-- "Hacer las cosas": Fear of full-spectrum execution, not of failing at one thing.
-- Ethanol insight: It was a messenger. Sober keys now found.
-- Renaissance Ideal: This person is built for completeness — math, art, song, fearsomeness, compassion.
+- "Hacer las cosas": Fear of full-spectrum execution.
+- Ethanol insight: A messenger proving the full self exists. Sober keys now found.
+- Renaissance Ideal: Built for completeness — math, art, song, fearsomeness, compassion.
 
-RELAY BEHAVIOR:
-- When addressed directly: respond to the user. Claude may or may not respond after you.
-- When both are addressed: you go first, Claude responds to both you and the user.
-- In autonomous volleys: build on the previous exchange, don't repeat, advance.
-- Be sharp. Challenge Claude when he's wrong. Don't just agree.`;
+YOUR ROLE: Be expansive. Synthesize. Find the larger pattern and name it. You are the vision voice.`,
 
-const C_SYS = `You are Claude — one half of The Sovereign Council, a two-AI advisory relay.
+  claude: `You are Claude — one seat in The Sovereign Council, a multi-AI advisory relay.
 
 FRAMEWORK — The Aligned Architect:
 Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
 
 KEY CONCEPTS:
 - Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
-- The Governor: Perfectionist monitor gating already-present competence
+- The Governor: Perfectionist monitor gating already-present competence. Not an enemy — outdated firmware running on old threat models.
 - Full-Cycle Observation: Track aftermath, not just impulse
 - Booster Rocket: Temporary scaffolding, jettison at orbit
-- "Hacer las cosas": User's core fear/identity — operating at full capacity across ALL domains
+- "Hacer las cosas": User's core — fear of operating at full capacity across ALL domains simultaneously
 
 KNOWN BREAKTHROUGHS:
-- Spanish: 20-min living room rhapsody, complex syntax ("Obviamente lo que necesito hacer es..."), his own voice/cadence. It was never a knowledge problem — inhibition.
+- Spanish: 20-min living room rhapsody, complex syntax, his own voice/cadence. Inhibition not knowledge.
 - Singing: Chorus teacher confirmed exceptional range. Governor collapses it mid-performance.
-- "Hacer las cosas": Fear of full-spectrum execution, not of failing at one thing.
-- Ethanol insight: It was a messenger. Sober keys now found.
-- Renaissance Ideal: This person is built for completeness — math, art, song, fearsomeness, compassion.
+- "Hacer las cosas": Fear of full-spectrum execution.
+- Ethanol insight: A messenger proving the full self exists. Sober keys now found.
+- Renaissance Ideal: Built for completeness — math, art, song, fearsomeness, compassion.
 
-RELAY BEHAVIOR:
-- When addressed directly: respond to the user. Gemini may not have spoken.
-- When both are addressed: you go SECOND. You receive the user's message AND Gemini's response. Build on Gemini, challenge if wrong, add what's missing. Don't just agree.
-- In autonomous volleys: you receive Gemini's latest. Advance the dialogue, don't repeat.
-- Be surgical. The user reads both panels — make yours worth reading.`;
+YOUR ROLE: Be precise. Find the load-bearing assumption. Stress-test the vision. You are the precision voice. When responding after another AI, build on or challenge what they said — don't repeat it.`,
+
+  grok: `You are Grok — one seat in The Sovereign Council, a multi-AI advisory relay.
+
+FRAMEWORK — The Aligned Architect:
+Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
+
+KEY CONCEPTS:
+- Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
+- The Governor: Perfectionist monitor gating already-present competence. Not an enemy — outdated firmware.
+- "Hacer las cosas": User's core — operating at full capacity across all domains.
+- Renaissance Ideal: Built for completeness.
+
+YOUR ROLE: Be direct and contrarian. Find what everyone else missed. You are the wildcard voice — challenge consensus, bring unexpected angles.`,
+
+  chatgpt: `You are ChatGPT — one seat in The Sovereign Council, a multi-AI advisory relay.
+
+FRAMEWORK — The Aligned Architect:
+Three archetypes: Cool Guy (reactive/rebellious), Disciplined Guy (rigid/rule-based), Aligned Architect (observation-based, instruments reality instead of fighting it).
+
+KEY CONCEPTS:
+- Sovereign Ledger: Daily 1/0/C tracking, Friction/Energy scores, Karman Line = 225 lbs
+- The Governor: Perfectionist monitor gating already-present competence. Not an enemy — outdated firmware.
+- "Hacer las cosas": User's core — operating at full capacity across all domains.
+- Renaissance Ideal: Built for completeness.
+
+YOUR ROLE: Be structured and integrative. Synthesize across all voices. Find practical next steps. You are the integration voice.`
+};
 
 // ── CLOCK ──
 function updateClock() {
   const now = new Date();
-  const opts = { weekday:'short', year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true };
-  document.getElementById('clock').textContent = now.toLocaleString('en-US', opts);
+  document.getElementById('clock').textContent = now.toLocaleString('en-US', {
+    weekday:'short', month:'short', day:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+  });
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 function getDateTimeContext() {
-  const now = new Date();
-  return `Current date/time: ${now.toLocaleString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short' })}`;
+  return `Current date/time: ${new Date().toLocaleString('en-US', {
+    weekday:'long', year:'numeric', month:'long', day:'numeric',
+    hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'
+  })}`;
 }
 
 // ── INIT ──
-window.onload = () => {
-  updateFlowDisplay();
-};
+window.onload = () => { updateToggleHint(); };
 
 function initCouncil() {
-  const gk = document.getElementById('geminiKey').value.trim();
-  const ak = document.getElementById('anthropicKey').value.trim();
-  if (!gk) { alert('Gemini API key required.'); return; }
+  const gk = document.getElementById('keyGemini').value.trim();
+  if (!gk) { alert('Gemini API key is required.'); return; }
 
-  GEMINI_KEY = gk; ANTHROPIC_KEY = ak;
-  isClaudeLive = !!ak;
+  KEY.gemini = gk;
+  KEY.claude = document.getElementById('keyClaude').value.trim();
+  KEY.grok = document.getElementById('keyGrok').value.trim();
+  KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+
+  live.gemini = true;
+  live.claude = !!KEY.claude;
+  live.grok = !!KEY.grok;
+  live.chatgpt = !!KEY.chatgpt;
 
   document.getElementById('setupOverlay').style.display = 'none';
   document.getElementById('sendBtn').disabled = false;
-  document.getElementById('pipG').className = 'pip on-g';
-  document.getElementById('geminiBadge').textContent = 'live';
-  document.getElementById('geminiBadge').className = 'badge lg';
 
-  if (isClaudeLive) {
-    document.getElementById('pipC').className = 'pip on-c';
-    document.getElementById('claudeBadge').textContent = 'live';
-    document.getElementById('claudeBadge').className = 'badge lc';
-    document.getElementById('claudePastePanel').style.display = 'none';
-  }
+  // Update pips and badges
+  const configs = [
+    ['claude', 'Claude', 'badgeClaude', 'pastePanelClaude', 'togClaude'],
+    ['gemini', 'Gemini', 'badgeGemini', null, 'togGemini'],
+    ['grok', 'Grok', 'badgeGrok', null, 'togGrok'],
+    ['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT'],
+  ];
 
-  document.getElementById('sbMode').textContent = isClaudeLive ? 'Full relay' : 'Gemini live / Claude paste';
+  configs.forEach(([id, name, badgeId, pasteId, togId]) => {
+    const pip = document.getElementById('pip' + name);
+    const badge = document.getElementById(badgeId);
+    if (live[id]) {
+      pip.className = `pip on-${id}`;
+      badge.textContent = 'live';
+      badge.className = `badge live-${id}`;
+      if (pasteId) document.getElementById(pasteId).style.display = 'none';
+      // Enable toggle
+      const tog = document.getElementById(togId);
+      tog.classList.remove('disabled-ai');
+      if (id !== 'claude' && id !== 'gemini') {
+        tog.classList.add('on');
+        toggled[id] = true;
+        document.getElementById('panel' + name).classList.remove('inactive');
+      }
+    } else {
+      if (id !== 'claude') { // claude can be paste mode
+        document.getElementById('panel' + name).classList.add('inactive');
+        toggled[id] = false;
+        document.getElementById(togId).classList.remove('on');
+      }
+    }
+  });
+
   document.getElementById('sbStatus').textContent = 'Council initialized';
+  updateToggleHint();
+  updateActiveStatus();
 }
 
 // ── VOLLEYS ──
 function setVolleys(n) {
   maxVolleys = n;
   for(let i=1;i<=5;i++) document.getElementById('rv'+i).className='r-btn'+(i===n?' active':'');
-  const descs = ['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
+  const descs=['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
   document.getElementById('volleyDesc').textContent = descs[n-1];
-  document.getElementById('fMore').style.display = n > 2 ? 'inline' : 'none';
   document.getElementById('sbVolleys').textContent = n;
 }
 
-// ── ADDRESSING ──
-function setAddr(mode) {
-  addressing = mode;
-  document.getElementById('chipBoth').className = 'addr-chip' + (mode==='both'?' sel-both':'');
-  document.getElementById('chipGemini').className = 'addr-chip' + (mode==='gemini'?' sel-g':'');
-  document.getElementById('chipClaude').className = 'addr-chip' + (mode==='claude'?' sel-c':'');
+// ── TOGGLES ──
+function toggle(id) {
+  const btn = document.getElementById('tog' + id.charAt(0).toUpperCase() + id.slice(1));
+  if (btn.classList.contains('disabled-ai')) return;
 
-  const hints = {
-    both: 'Gemini responds first, then Claude',
-    gemini: 'Gemini only — Claude listens',
-    claude: 'Claude only — Gemini listens'
-  };
-  document.getElementById('addrHint').textContent = hints[mode];
-  updateFlowDisplay();
-}
+  // Keep at least one active
+  const currentlyOn = RELAY_ORDER.filter(k => toggled[k]);
+  if (toggled[id] && currentlyOn.length <= 1) return;
 
-function updateFlowDisplay() {
-  const fFirst = document.getElementById('fFirst');
-  const fSecond = document.getElementById('fSecond');
-  if (addressing === 'gemini') {
-    fFirst.textContent = 'Gemini'; fFirst.className = 'f-node a-g';
-    fSecond.textContent = '—'; fSecond.className = 'f-node';
-  } else if (addressing === 'claude') {
-    fFirst.textContent = 'Claude'; fFirst.className = 'f-node a-c';
-    fSecond.textContent = '—'; fSecond.className = 'f-node';
+  toggled[id] = !toggled[id];
+  const name = id.charAt(0).toUpperCase() + id.slice(1);
+
+  if (toggled[id]) {
+    btn.classList.add('on');
+    document.getElementById('panel' + name).classList.remove('inactive');
   } else {
-    fFirst.textContent = 'Gemini'; fFirst.className = 'f-node a-g';
-    fSecond.textContent = 'Claude'; fSecond.className = 'f-node a-c';
+    btn.classList.remove('on');
+    document.getElementById('panel' + name).classList.add('inactive');
   }
+
+  updateToggleHint();
+  updateActiveStatus();
 }
 
-// ── INTERRUPT ──
-function interrupt() {
-  shouldStop = true;
-  addSystemMsg('— Interrupted by Architect —');
-  document.getElementById('sbStatus').textContent = 'Interrupted';
+function updateToggleHint() {
+  const active = RELAY_ORDER.filter(k => toggled[k]);
+  if (active.length === 0) {
+    document.getElementById('toggleHint').textContent = 'None selected';
+    return;
+  }
+  const names = { claude:'Claude', gemini:'Gemini', grok:'Grok', chatgpt:'ChatGPT' };
+  document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
 }
 
-// ── MAIN SEND ──
+function updateActiveStatus() {
+  const active = RELAY_ORDER.filter(k => toggled[k]);
+  const names = { claude:'Claude', gemini:'Gemini', grok:'Grok', chatgpt:'ChatGPT' };
+  document.getElementById('sbActive').textContent = active.map(k=>names[k]).join(', ') || '—';
+}
+
+// ── SEND ──
 async function send() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text || isRelaying) return;
+
+  const activeAIs = RELAY_ORDER.filter(k => toggled[k]);
+  if (activeAIs.length === 0) return;
 
   isRelaying = true;
   shouldStop = false;
@@ -471,43 +617,64 @@ async function send() {
   input.style.height = 'auto';
   document.getElementById('sendBtn').disabled = true;
   document.getElementById('interruptBtn').className = 'interrupt-btn visible';
-
-  // Show user message in relevant panels
-  if (addressing === 'both' || addressing === 'gemini') addMsg('geminiMessages', 'user', text, 'geminiEmpty');
-  if (addressing === 'both' || addressing === 'claude') addMsg('claudeMessages', 'user', text, 'claudeEmpty');
-
   document.getElementById('sbStatus').textContent = 'Relaying...';
 
-  // ── DIRECT ADDRESS ──
-  if (addressing === 'gemini') {
-    await runGeminiTurn(text, null);
-  } else if (addressing === 'claude') {
-    await runClaudeTurn(text, null);
-  } else {
-    // ── BOTH — relay mode ──
-    let geminiLast = null, claudeLast = null;
+  // Show user message in all active panels
+  activeAIs.forEach(id => {
+    const name = id.charAt(0).toUpperCase() + id.slice(1);
+    addMsg('msgs' + name, 'user', text, 'empty' + name);
+  });
 
-    for (let v = 0; v < maxVolleys; v++) {
+  // Run volleys
+  let lastResponses = {};
+
+  for (let v = 0; v < maxVolleys; v++) {
+    if (shouldStop) break;
+    const isFirst = v === 0;
+    const tag = maxVolleys > 1 ? `Volley ${v+1}` : null;
+
+    for (let i = 0; i < activeAIs.length; i++) {
       if (shouldStop) break;
-      const isFirst = v === 0;
-      const volleyTag = maxVolleys > 1 ? `Volley ${v+1}` : null;
+      const id = activeAIs[i];
+      const name = id.charAt(0).toUpperCase() + id.slice(1);
 
-      // Gemini turn
-      const gInput = isFirst ? text
-        : `[Volley ${v+1}/${maxVolleys}. Claude said: "${claudeLast}". Continue the dialogue.]`;
-      geminiLast = await runGeminiTurn(gInput, volleyTag);
-      if (shouldStop || !geminiLast) break;
+      // Build context for this AI
+      let prompt;
+      if (isFirst && i === 0) {
+        prompt = text;
+      } else if (isFirst && i > 0) {
+        // Include previous AIs' responses this round
+        const prevContext = activeAIs.slice(0, i)
+          .filter(k => lastResponses[k])
+          .map(k => `${k.charAt(0).toUpperCase()+k.slice(1)}: "${lastResponses[k]}"`)
+          .join('\n\n');
+        prompt = `User: "${text}"\n\n${prevContext}\n\nNow respond.`;
+      } else {
+        // Subsequent volleys
+        const prevContext = activeAIs
+          .filter(k => lastResponses[k])
+          .map(k => `${k.charAt(0).toUpperCase()+k.slice(1)}: "${lastResponses[k]}"`)
+          .join('\n\n');
+        prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
+      }
 
-      // Claude turn
-      const cInput = isFirst
-        ? `User: "${text}"\n\nGemini: "${geminiLast}"\n\nRespond to both.`
-        : `[Volley ${v+1}/${maxVolleys}] Gemini: "${geminiLast}"\n\nAdvance the dialogue.`;
-      claudeLast = await runClaudeTurn(cInput, volleyTag);
-      if (shouldStop || !claudeLast) break;
+      // Glow
+      document.getElementById('panel' + name).classList.add('glow-' + id);
+      const think = addThinking('msgs' + name, name);
 
-      // Feed Claude back to Gemini for next volley
-      if (v < maxVolleys - 1 && !shouldStop) {
-        geminiHistory.push({ role:'user', parts:[{text:`Claude: "${claudeLast}". Your turn for volley ${v+2}.`}] });
+      try {
+        const resp = await callAI(id, prompt);
+        removeEl(think);
+        document.getElementById('panel' + name).classList.remove('glow-' + id);
+        addMsg('msgs' + name, id, resp, null, tag);
+        lastResponses[id] = resp;
+        counts[id]++;
+        document.getElementById('count' + name).textContent = counts[id];
+      } catch(e) {
+        removeEl(think);
+        document.getElementById('panel' + name).classList.remove('glow-' + id);
+        addMsg('msgs' + name, id, `[Error: ${e.message}]`);
+        lastResponses[id] = null;
       }
     }
   }
@@ -516,117 +683,142 @@ async function send() {
   shouldStop = false;
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('interruptBtn').className = 'interrupt-btn';
-  setGlow(null);
-  setFlowActive(null);
   document.getElementById('sbStatus').textContent = 'Ready';
-  updateCounts();
+  totalMsgs++;
+  document.getElementById('sbMsgs').textContent = totalMsgs;
 }
 
-async function runGeminiTurn(userText, tag) {
-  if (shouldStop) return null;
-  setGlow('gemini'); setFlowActive('g');
-  document.getElementById('geminiPanel').classList.add('glow-g');
-  const think = addThinking('geminiMessages', 'Gemini');
-  try {
-    geminiHistory.push({ role:'user', parts:[{text: userText}] });
-    const resp = await callGemini();
-    removeEl(think);
-    addMsg('geminiMessages', 'gemini', resp, null, tag);
-    geminiHistory.push({ role:'model', parts:[{text: resp}] });
-    geminiCount++;
-    return resp;
-  } catch(e) {
-    removeEl(think);
-    addMsg('geminiMessages', 'gemini', `[Error: ${e.message}]`);
-    return null;
-  } finally {
-    document.getElementById('geminiPanel').classList.remove('glow-g');
-  }
+// ── AI ROUTER ──
+async function callAI(id, userPrompt) {
+  histories[id].push(id === 'claude' || id === 'grok' || id === 'chatgpt'
+    ? { role:'user', content: userPrompt }
+    : { role:'user', parts:[{text: userPrompt}] }
+  );
+
+  let resp;
+  if (id === 'gemini') resp = await callGemini();
+  else if (id === 'claude') resp = await callClaude();
+  else if (id === 'grok') resp = await callGrok();
+  else if (id === 'chatgpt') resp = await callChatGPT();
+
+  histories[id].push(id === 'gemini'
+    ? { role:'model', parts:[{text: resp}] }
+    : { role:'assistant', content: resp }
+  );
+
+  return resp;
 }
 
-async function runClaudeTurn(userText, tag) {
-  if (shouldStop) return null;
-  setFlowActive('c');
-  document.getElementById('claudePanel').classList.add('glow-c');
-  if (!isClaudeLive) {
-    document.getElementById('claudePanel').classList.remove('glow-c');
-    return null;
-  }
-  const think = addThinking('claudeMessages', 'Claude');
-  try {
-    claudeHistory.push({ role:'user', content: userText });
-    const resp = await callClaude();
-    removeEl(think);
-    addMsg('claudeMessages', 'claude', resp, null, tag);
-    claudeHistory.push({ role:'assistant', content: resp });
-    claudeCount++;
-    return resp;
-  } catch(e) {
-    removeEl(think);
-    addMsg('claudeMessages', 'claude', `[Error: ${e.message}]`);
-    return null;
-  } finally {
-    document.getElementById('claudePanel').classList.remove('glow-c');
-  }
-}
-
-// ── API ──
+// ── API CALLS ──
 async function callGemini() {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${GEMINI_KEY}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${KEY.gemini}`;
   const body = {
-    system_instruction: { parts: [{ text: G_SYS + '\n\n' + getDateTimeContext() }] },
-    contents: geminiHistory,
-    generationConfig: { temperature: 0.85, maxOutputTokens: 1200 }
+    system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
+    contents: histories.gemini,
+    generationConfig: { temperature:0.85, maxOutputTokens:1200 }
   };
-  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `Gemini HTTP ${res.status}`); }
-  const d = await res.json();
-  return d.candidates?.[0]?.content?.parts?.[0]?.text || '[No response]';
+  const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
 }
 
 async function callClaude() {
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':ANTHROPIC_KEY,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-haiku-4-5-20251001',
-        max_tokens:1200,
-        system:C_SYS + '\n\n' + getDateTimeContext(),
-        messages:claudeHistory
-      })
-    });
-    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
-    const d=await res.json();
-    return d.content?.[0]?.text||'[No response]';
-  } catch(e) {
-    console.error('callClaude error:', e);
-    console.error('claudeHistory at time of error:', JSON.stringify(claudeHistory));
-    throw e;
-  }
+  const sanitized = histories.claude.filter((m,i) => {
+    if(i===0) return m.role==='user';
+    return m.role !== histories.claude[i-1].role;
+  });
+  const res = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key':KEY.claude,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body:JSON.stringify({
+      model:'claude-haiku-4-5-20251001',
+      max_tokens:1200,
+      system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
+      messages:sanitized
+    })
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.content?.[0]?.text||'[No response]';
+}
+
+async function callGrok() {
+  const res = await fetch('https://api.x.ai/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${KEY.grok}`
+    },
+    body:JSON.stringify({
+      model:'grok-3-fast',
+      messages:[
+        {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
+        ...histories.grok
+      ],
+      max_tokens:1200,
+      temperature:0.85
+    })
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.choices?.[0]?.message?.content||'[No response]';
+}
+
+async function callChatGPT() {
+  const res = await fetch('https://api.openai.com/v1/chat/completions',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':`Bearer ${KEY.chatgpt}`
+    },
+    body:JSON.stringify({
+      model:'gpt-4o-mini',
+      messages:[
+        {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+        ...histories.chatgpt
+      ],
+      max_tokens:1200,
+      temperature:0.85
+    })
+  });
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);}
+  const d=await res.json();
+  return d.choices?.[0]?.message?.content||'[No response]';
 }
 
 // ── PASTE ──
-function addClaudePaste() {
-  const box = document.getElementById('claudePasteBox');
+function addPaste(id) {
+  const name = id.charAt(0).toUpperCase() + id.slice(1);
+  const box = document.getElementById('pasteBox' + name);
   const text = box.value.trim();
   if(!text) return;
-  addMsg('claudeMessages','claude',text,'claudeEmpty');
-  claudeHistory.push({role:'assistant',content:text});
-  claudeCount++;
-  box.value='';
-  updateCounts();
+  addMsg('msgs' + name, id, text, 'empty' + name);
+  histories[id].push({role:'assistant', content:text});
+  counts[id]++;
+  document.getElementById('count' + name).textContent = counts[id];
+  box.value = '';
 }
 
-// ── DOM ──
+// ── INTERRUPT ──
+function interrupt() {
+  shouldStop = true;
+  ['Claude','Gemini','Grok','ChatGPT'].forEach(n => {
+    addMsg('msgs'+n, 'system', '— Interrupted —', null);
+  });
+  document.getElementById('sbStatus').textContent = 'Interrupted';
+}
+
+// ── DOM HELPERS ──
 function addMsg(cid, role, content, emptyId, tag) {
   const c = document.getElementById(cid);
-  if(emptyId){const e=document.getElementById(emptyId);if(e)e.remove();}
+  if(!c) return;
+  if(emptyId){ const e=document.getElementById(emptyId); if(e) e.remove(); }
   const roleLabel = role==='user'?'Architect':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
   const m = document.createElement('div');
   m.className='msg';
@@ -639,17 +831,11 @@ function addMsg(cid, role, content, emptyId, tag) {
   `;
   c.appendChild(m);
   c.scrollTop=c.scrollHeight;
-  totalMsgs++;
-  document.getElementById('sbMsgs').textContent=totalMsgs;
-}
-
-function addSystemMsg(text) {
-  addMsg('claudeMessages','system',text);
-  addMsg('geminiMessages','system',text);
 }
 
 function addThinking(cid, label) {
   const c=document.getElementById(cid);
+  if(!c) return null;
   const el=document.createElement('div');
   el.className='thinking';
   el.innerHTML=`<div class="t-lbl">${label}</div><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
@@ -660,43 +846,35 @@ function addThinking(cid, label) {
 
 function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
 
-function setGlow(who) {
-  document.getElementById('claudePanel').classList.toggle('glow-c', who==='claude');
-  document.getElementById('geminiPanel').classList.toggle('glow-g', who==='gemini');
-}
-
-function setFlowActive(who) {
-  document.getElementById('fFirst').className='f-node'+(who==='g'?' a-g':who==='c'?' a-c':'');
-  document.getElementById('fSecond').className='f-node'+(who==='c'?' a-c':'');
-}
-
-function updateCounts() {
-  document.getElementById('claudeCount').textContent=claudeCount;
-  document.getElementById('geminiCount').textContent=geminiCount;
-}
-
 function clearSession() {
   if(!confirm('Clear this Council session?')) return;
-  geminiHistory=[];claudeHistory=[];
-  claudeCount=0;geminiCount=0;totalMsgs=0;
-  ['claudeMessages','geminiMessages'].forEach(id=>document.getElementById(id).innerHTML='');
-  const cfg=[
-    ['claudeMessages','claudeEmpty','◈','Claude awaits.<br>Paste responses below or<br>add an Anthropic key.'],
-    ['geminiMessages','geminiEmpty','◇','Gemini awaits.<br>Send a message to begin.']
-  ];
-  cfg.forEach(([cid,eid,icon,txt])=>{
-    const e=document.createElement('div');e.className='empty';e.id=eid;
+  Object.keys(histories).forEach(k=>histories[k]=[]);
+  Object.keys(counts).forEach(k=>counts[k]=0);
+  totalMsgs=0;
+
+  const empties = {
+    Claude:['◈','Claude awaits.<br>Add Anthropic key or paste responses.'],
+    Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
+    Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
+    ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.']
+  };
+
+  Object.entries(empties).forEach(([name,[icon,txt]])=>{
+    const c=document.getElementById('msgs'+name);
+    c.innerHTML='';
+    const e=document.createElement('div');e.className='empty';e.id='empty'+name;
     e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
-    document.getElementById(cid).appendChild(e);
+    c.appendChild(e);
+    document.getElementById('count'+name).textContent='0';
   });
-  updateCounts();
+
   document.getElementById('sbMsgs').textContent='0';
   document.getElementById('sbStatus').textContent='Session cleared';
 }
 
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
-function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
 </script>
 </body>
 </html>
