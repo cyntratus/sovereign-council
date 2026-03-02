@@ -756,7 +756,7 @@ async function callGrok() {
       'Authorization':`Bearer ${KEY.grok}`
     },
     body:JSON.stringify({
-      model:'grok-4-1-fast',
+      model:'grok-4-1-fast-reasoning',
       messages:[
         {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
         ...histories.grok
@@ -778,7 +778,7 @@ async function callChatGPT() {
       'Authorization':`Bearer ${KEY.chatgpt}`
     },
     body:JSON.stringify({
-      model:'gpt-4o-mini',
+      model:'gpt-5-mini',
       messages:[
         {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
         ...histories.chatgpt
