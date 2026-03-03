@@ -818,15 +818,8 @@ async function callGrok() {
 async function callChatGPT() {
   activeController = new AbortController();
   const timeout = setTimeout(() => activeController.abort(), 30000);
-
-  // Build input array from history + current system context
-  const input = [
-    { role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext() },
-    ...histories.chatgpt
-  ];
-
   try {
-    const res = await fetch('https://api.openai.com/v1/responses',{
+    const res = await fetch('https://api.openai.com/v1/chat/completions',{
       method:'POST',
       signal: activeController.signal,
       headers:{
@@ -834,9 +827,12 @@ async function callChatGPT() {
         'Authorization':`Bearer ${KEY.chatgpt}`
       },
       body:JSON.stringify({
-        model:'gpt-5-mini',
-        input: input,
-        max_output_tokens:1200,
+        model:'gpt-4o-mini',
+        messages:[
+          {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+          ...histories.chatgpt
+        ],
+        max_tokens:1200,
         temperature:0.85
       })
     });
@@ -846,11 +842,10 @@ async function callChatGPT() {
       throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
     }
     const d=await res.json();
-    // Responses API returns output_text directly
-    return d.output_text || d.output?.[0]?.content?.[0]?.text || '[No response]';
+    return d.choices?.[0]?.message?.content||'[No response]';
   } catch(e) {
     clearTimeout(timeout);
-    if(e.name === 'AbortError') throw new Error('ChatGPT: no response — check CORS or API key');
+    if(e.name==='AbortError') throw new Error('ChatGPT timed out — CORS likely blocking direct browser access');
     throw e;
   } finally {
     activeController = null;
