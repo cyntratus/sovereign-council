@@ -218,34 +218,34 @@
   <div class="setup-panel">
     <div class="s-eye">Initialization Protocol</div>
     <div class="s-title">The Sovereign Council</div>
-    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>Only Gemini is required. All others are optional.</div>
+    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>The full Council runs: ChatGPT → Gemini → Grok → Claude.</div>
 
-    <div class="s-section" style="color:var(--gemini)">Gemini · Required</div>
+    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister · Required</div>
     <div class="s-field">
-      <div class="s-label lg">Gemini API Key <span>Required</span></div>
+      <div class="s-label lch">OpenAI API Key <span>Required</span></div>
+      <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+      <div class="s-note">platform.openai.com → API Keys</div>
+    </div>
+
+    <div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Vision · Optional</div>
+    <div class="s-field">
+      <div class="s-label lg">Gemini API Key <span>Optional</span></div>
       <input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
       <div class="s-note">aistudio.google.com → Get API Key</div>
     </div>
 
-    <div class="s-section" style="color:var(--claude)">Claude · Optional</div>
-    <div class="s-field">
-      <div class="s-label lc">Anthropic API Key <span>Optional — blank = paste mode</span></div>
-      <input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
-      <div class="s-note">console.anthropic.com → API Keys</div>
-    </div>
-
-    <div class="s-section" style="color:var(--grok)">Grok · Optional</div>
+    <div class="s-section" style="color:var(--grok)">Grok · Adversarial Counsel · Optional</div>
     <div class="s-field">
       <div class="s-label lgr">xAI API Key <span>Optional</span></div>
       <input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
       <div class="s-note">console.x.ai → API Keys</div>
     </div>
 
-    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Optional</div>
+    <div class="s-section" style="color:var(--claude)">Claude · Minister of Precision · Optional</div>
     <div class="s-field">
-      <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
-      <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
-      <div class="s-note">platform.openai.com → API Keys</div>
+      <div class="s-label lc">Anthropic API Key <span>Optional — blank = paste mode</span></div>
+      <input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
+      <div class="s-note">console.anthropic.com → API Keys</div>
     </div>
 
     <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
@@ -467,18 +467,18 @@ function getDateTimeContext() {
 window.onload = () => { updateToggleHint(); };
 
 function initCouncil() {
-  const gk = document.getElementById('keyGemini').value.trim();
-  if (!gk) { alert('Gemini API key is required.'); return; }
+  const ck = document.getElementById('keyChatGPT').value.trim();
+  if (!ck) { alert('ChatGPT API key is required — ChatGPT is the Prime Minister.'); return; }
 
-  KEY.gemini = gk;
-  KEY.claude = document.getElementById('keyClaude').value.trim();
+  KEY.chatgpt = ck;
+  KEY.gemini = document.getElementById('keyGemini').value.trim();
   KEY.grok = document.getElementById('keyGrok').value.trim();
-  KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+  KEY.claude = document.getElementById('keyClaude').value.trim();
 
-  live.gemini = true;
-  live.claude = !!KEY.claude;
+  live.chatgpt = true;
+  live.gemini = !!KEY.gemini;
   live.grok = !!KEY.grok;
-  live.chatgpt = !!KEY.chatgpt;
+  live.claude = !!KEY.claude;
 
   document.getElementById('setupOverlay').style.display = 'none';
   document.getElementById('sendBtn').disabled = false;
