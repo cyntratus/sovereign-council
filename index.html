@@ -420,6 +420,10 @@ let totalMsgs = 0;
 let counts = { claude:0, gemini:0, grok:0, chatgpt:0 };
 let histories = { claude:[], gemini:[], grok:[], chatgpt:[] };
 
+// ── NAME LOOKUP (handles ChatGPT casing) ──
+const AI_NAMES = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+function aiName(id) { return AI_NAMES[id] || id.charAt(0).toUpperCase() + id.slice(1); }
+
 // ── RELAY ORDER ──
 const RELAY_ORDER = ['chatgpt','gemini','grok','claude'];
 
@@ -551,7 +555,9 @@ function initCouncil() {
 
 // ── ACTIVATE PANEL ──
 function activatePanel(id) {
-  const name = id.charAt(0).toUpperCase() + id.slice(1);
+  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+  const name = names[id];
+
   const inputEl = document.getElementById('inlineKey' + name);
   if (!inputEl) return;
   const key = inputEl.value.trim();
@@ -561,33 +567,21 @@ function activatePanel(id) {
   live[id] = true;
   toggled[id] = true;
 
-  // Update pip
   document.getElementById('pip' + name).className = `pip on-${id}`;
 
-  // Update badge
   const badge = document.getElementById('badge' + name);
   badge.textContent = 'live';
   badge.className = `badge live-${id}`;
 
-  // Remove inactive class from panel
   document.getElementById('panel' + name).classList.remove('inactive');
 
-  // Enable toggle button
   const tog = document.getElementById('tog' + name);
   tog.classList.remove('disabled-ai');
   tog.classList.add('on');
 
-  // Hide paste panel for claude if it exists (now live)
-  if (id === 'claude') {
-    const pp = document.getElementById(null);
-    if (pp) pp.style.display = 'none';
-  }
-
-  // Remove the key form from empty state
   const form = inputEl.closest('.panel-key-form');
   if (form) form.remove();
 
-  // Update hints
   updateToggleHint();
   updateActiveStatus();
   document.getElementById('sbStatus').textContent = name + ' activated';
@@ -604,7 +598,7 @@ function setVolleys(n) {
 
 // ── TOGGLES ──
 function toggle(id) {
-  const btn = document.getElementById('tog' + id.charAt(0).toUpperCase() + id.slice(1));
+  const btn = document.getElementById('tog' + aiName(id));
   if (btn.classList.contains('disabled-ai')) return;
 
   // Keep at least one live AI active
@@ -612,7 +606,7 @@ function toggle(id) {
   if (toggled[id] && currentlyOn.length <= 1) return;
 
   toggled[id] = !toggled[id];
-  const name = id.charAt(0).toUpperCase() + id.slice(1);
+  const name = aiName(id);
 
   if (toggled[id]) {
     btn.classList.add('on');
@@ -661,7 +655,7 @@ async function send() {
 
   // Show user message in all active panels
   activeAIs.forEach(id => {
-    const name = id.charAt(0).toUpperCase() + id.slice(1);
+    const name = aiName(id);
     addMsg('msgs' + name, 'user', text, 'empty' + name);
   });
 
@@ -676,7 +670,7 @@ async function send() {
     for (let i = 0; i < activeAIs.length; i++) {
       if (shouldStop) break;
       const id = activeAIs[i];
-      const name = id.charAt(0).toUpperCase() + id.slice(1);
+      const name = aiName(id);
 
       // Build context for this AI
       let prompt;
@@ -685,15 +679,15 @@ async function send() {
       } else if (isFirst && i > 0) {
         // Include previous AIs' responses this round
         const prevContext = activeAIs.slice(0, i)
-          .filter(k => lastResponses[k])
-          .map(k => `${k.charAt(0).toUpperCase()+k.slice(1)}: "${lastResponses[k]}"`)
+          .filter(k => lastResponses[k] && k !== id)
+          .map(k => `${aiName(k)}: "${lastResponses[k]}"`)
           .join('\n\n');
         prompt = `User: "${text}"\n\n${prevContext}\n\nNow respond.`;
       } else {
         // Subsequent volleys
         const prevContext = activeAIs
-          .filter(k => lastResponses[k])
-          .map(k => `${k.charAt(0).toUpperCase()+k.slice(1)}: "${lastResponses[k]}"`)
+          .filter(k => lastResponses[k] && k !== id)
+          .map(k => `${aiName(k)}: "${lastResponses[k]}"`)
           .join('\n\n');
         prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
       }
@@ -733,23 +727,31 @@ async function send() {
 
 // ── AI ROUTER ──
 async function callAI(id, userPrompt) {
-  histories[id].push(id === 'claude' || id === 'grok' || id === 'chatgpt'
+  const userMsg = (id === 'claude' || id === 'grok' || id === 'chatgpt')
     ? { role:'user', content: userPrompt }
-    : { role:'user', parts:[{text: userPrompt}] }
-  );
+    : { role:'user', parts:[{text: userPrompt}] };
 
-  let resp;
-  if (id === 'gemini') resp = await callGemini();
-  else if (id === 'claude') resp = await callClaude();
-  else if (id === 'grok') resp = await callGrok();
-  else if (id === 'chatgpt') resp = await callChatGPT();
+  histories[id].push(userMsg);
 
-  histories[id].push(id === 'gemini'
-    ? { role:'model', parts:[{text: resp}] }
-    : { role:'assistant', content: resp }
-  );
+  try {
+    let resp;
+    if (id === 'gemini') resp = await callGemini();
+    else if (id === 'claude') resp = await callClaude();
+    else if (id === 'grok') resp = await callGrok();
+    else if (id === 'chatgpt') resp = await callChatGPT();
 
-  return resp;
+    // Only push assistant response if call succeeded
+    histories[id].push(id === 'gemini'
+      ? { role:'model', parts:[{text: resp}] }
+      : { role:'assistant', content: resp }
+    );
+
+    return resp;
+  } catch(e) {
+    // Pop the orphaned user message to keep history clean
+    histories[id].pop();
+    throw e;
+  }
 }
 
 // ── API CALLS ──
@@ -769,50 +771,76 @@ async function callGemini() {
 }
 
 async function callClaude() {
-  const sanitized = histories.claude.filter((m,i) => {
-    if(i===0) return m.role==='user';
-    return m.role !== histories.claude[i-1].role;
-  });
-  const res = await fetch('https://api.anthropic.com/v1/messages',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'x-api-key':KEY.claude,
-      'anthropic-version':'2023-06-01',
-      'anthropic-dangerous-direct-browser-access':'true'
-    },
-    body:JSON.stringify({
-      model:'claude-haiku-4-5-20251001',
-      max_tokens:1200,
-      system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
-      messages:sanitized
-    })
-  });
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
-  const d=await res.json();
-  return d.content?.[0]?.text||'[No response]';
+  // Merge consecutive same-role messages to satisfy Anthropic's alternation requirement
+  // Clones objects to avoid mutating the master histories array
+  const sanitized = histories.claude.reduce((acc, current) => {
+    if (acc.length === 0) {
+      if (current.role === 'user') {
+        acc.push({ role: current.role, content: current.content });
+      }
+      return acc;
+    }
+    const last = acc[acc.length - 1];
+    if (last.role === current.role) {
+      last.content += '\n\n' + current.content;
+    } else {
+      acc.push({ role: current.role, content: current.content });
+    }
+    return acc;
+  }, []);
+
+  activeController = new AbortController();
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      signal: activeController.signal,
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':KEY.claude,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
+        max_tokens:1200,
+        system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
+        messages:sanitized
+      })
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+    const d=await res.json();
+    return d.content?.[0]?.text||'[No response]';
+  } finally {
+    activeController = null;
+  }
 }
 
 async function callGrok() {
-  const res = await fetch('https://api.x.ai/v1/chat/completions',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':`Bearer ${KEY.grok}`
-    },
-    body:JSON.stringify({
-      model:'grok-4-1-fast-reasoning',
-      messages:[
-        {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
-        ...histories.grok
-      ],
-      max_tokens:1200,
-      temperature:0.85
-    })
-  });
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
-  const d=await res.json();
-  return d.choices?.[0]?.message?.content||'[No response]';
+  activeController = new AbortController();
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions',{
+      method:'POST',
+      signal: activeController.signal,
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${KEY.grok}`
+      },
+      body:JSON.stringify({
+        model:'grok-4-1-fast-reasoning',
+        messages:[
+          {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
+          ...histories.grok
+        ],
+        max_tokens:1200,
+        temperature:0.85
+      })
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
+    const d=await res.json();
+    return d.choices?.[0]?.message?.content||'[No response]';
+  } finally {
+    activeController = null;
+  }
 }
 
 async function callChatGPT() {
@@ -854,7 +882,7 @@ async function callChatGPT() {
 
 // ── PASTE ──
 function addPaste(id) {
-  const name = id.charAt(0).toUpperCase() + id.slice(1);
+  const name = aiName(id);
   const box = document.getElementById('pasteBox' + name);
   const text = box.value.trim();
   if(!text) return;
@@ -873,7 +901,7 @@ function interrupt() {
   if (activeController) { activeController.abort(); activeController = null; }
   // Clean up all panels
   RELAY_ORDER.forEach(id => {
-    const name = id.charAt(0).toUpperCase() + id.slice(1);
+    const name = aiName(id);
     const msgs = document.getElementById('msgs' + name);
     if (msgs) {
       msgs.querySelectorAll('.thinking').forEach(el => el.remove());
@@ -937,10 +965,18 @@ function clearSession() {
 
   Object.entries(empties).forEach(([name,[icon,txt]])=>{
     const c=document.getElementById('msgs'+name);
-    c.innerHTML='';
-    const e=document.createElement('div');e.className='empty';e.id='empty'+name;
-    e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
-    c.appendChild(e);
+    // Remove only message/thinking elements — preserve empty state and key forms
+    c.querySelectorAll('.msg, .thinking').forEach(el => el.remove());
+    // Restore empty state only if panel has no key form (i.e. AI is live)
+    const id = name.toLowerCase() === 'chatgpt' ? 'chatgpt' : name.toLowerCase();
+    if (live[id]) {
+      // Already live — just ensure empty state exists
+      if (!document.getElementById('empty'+name)) {
+        const e=document.createElement('div');e.className='empty';e.id='empty'+name;
+        e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
+        c.insertBefore(e, c.firstChild);
+      }
+    }
     document.getElementById('count'+name).textContent='0';
   });
 
