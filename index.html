@@ -62,7 +62,7 @@
   .s-label span { color:var(--text-muted); font-size:10px; }
   .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
   .s-input:focus { border-color:var(--border2); }
-  .s-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .s-note { font-size:11px; color:var(--text-muted); margin-top:4px; transition:color 0.2s; }
   .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
   .s-btn:hover { background:var(--border2); }
 
@@ -202,15 +202,6 @@
   .interrupt-btn.visible { display:block; }
   .interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
 
-  /* paste panel */
-  .paste-panel { border-top:1px solid var(--border); padding:10px 18px; background:var(--surface2); }
-  .p-lbl { font-size:10px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-bottom:6px; }
-  .p-row { display:flex; gap:7px; }
-  .p-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:7px 11px; resize:none; outline:none; min-height:34px; max-height:80px; line-height:1.5; transition:border-color 0.15s; }
-  .p-box:focus { border-color:var(--border2); }
-  .p-box::placeholder { color:var(--text-muted); }
-  .p-add { background:transparent; border:1px solid var(--border); font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; padding:7px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:34px; align-self:flex-start; }
-
   /* status */
   .status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
   .si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
@@ -237,7 +228,6 @@
   .sp-label { font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between; }
   .sp-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
   .sp-input:focus { border-color:var(--border2); }
-  .sp-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
   .sp-row { display:flex; gap:8px; margin-top:4px; }
   .sp-btn { flex:1; background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; padding:10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
   .sp-btn:hover:not(:disabled) { border-color:var(--text-dim); color:var(--text); }
@@ -427,7 +417,7 @@
     <div class="sp-field">
       <div class="sp-label">GitHub Personal Access Token <span style="color:var(--text-muted)">Fine-grained · Contents R/W</span></div>
       <input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
-      <div class="sp-note">github.com → Settings → Developer Settings → Fine-grained tokens → sovereign-council repo → Contents: Read &amp; Write</div>
+      <div class="s-note">github.com → Settings → Developer Settings → Fine-grained tokens</div>
     </div>
 
     <div class="sp-field">
@@ -446,8 +436,18 @@
       <button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
       <button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ End Session &amp; Commit Minutes</button>
     </div>
-
     <div class="sp-status" id="spStatus"></div>
+
+    <hr class="sp-divider">
+
+    <div class="sp-field" style="margin-bottom:0;">
+      <div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional · Single Session</span></div>
+      <div class="sp-row" style="margin-top:0;">
+        <input class="sp-input" type="text" id="refPath" placeholder="reference/meal_plan.md">
+        <button class="sp-btn" onclick="loadReference()" style="flex:0 0 auto; width:100px;">Load</button>
+      </div>
+      <div class="s-note" id="refStatus">Loads a markdown/text file from your repo into the current session context.</div>
+    </div>
 
     <hr class="sp-divider">
 
@@ -484,6 +484,7 @@ let GH_REPO = 'cyntratus/sovereign-council';
 const GH_BRANCH = 'test'; // Change to 'main' when ready to deploy
 let loadMemoryOnStart = true;
 let councilMemory = { core: '', minutes: [] }; // fetched at load or on demand
+let activeReference = null; // TIER 3 REFERENCE
 
 // ── STATE ──
 let maxVolleys = 1;
@@ -714,7 +715,15 @@ function updateToggleHint() {
 function updateActiveStatus() {
   const active = RELAY_ORDER.filter(k => toggled[k]);
   const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
-  document.getElementById('sbActive').textContent = active.map(k=>names[k]).join(', ') || '—';
+  let statusText = active.map(k=>names[k]).join(', ') || '—';
+  
+  // Append reference visual cue if loaded
+  if (activeReference) {
+    const filename = activeReference.name.split('/').pop();
+    statusText += ` [+ ${filename}]`;
+  }
+  
+  document.getElementById('sbActive').textContent = statusText;
 }
 
 // ── SEND ──
@@ -1154,18 +1163,65 @@ async function loadMemory() {
   }
 }
 
+// ── LOAD TIER 3 REFERENCE ──
+async function loadReference() {
+  const path = document.getElementById('refPath').value.trim();
+  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+  const statusEl = document.getElementById('refStatus');
+  
+  if (!path) { 
+    statusEl.textContent = 'Enter a file path (e.g., reference/meal_plan.md).';
+    statusEl.style.color = 'var(--interrupt)';
+    return; 
+  }
+  if (!token) { 
+    statusEl.textContent = 'Enter a GitHub token above first.'; 
+    statusEl.style.color = 'var(--interrupt)';
+    return; 
+  }
+
+  statusEl.textContent = 'Fetching document...';
+  statusEl.style.color = 'var(--text-muted)';
+
+  try {
+    const file = await ghGet(path);
+    if (!file || !file.content) throw new Error('File not found.');
+    
+    const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+    activeReference = { name: file.name, content: text };
+    
+    statusEl.textContent = `✓ Loaded: ${file.name}`;
+    statusEl.style.color = '#7ec8a0'; // green ok color
+    updateActiveStatus(); // Add document tag to the Active status bar below
+  } catch(e) {
+    statusEl.textContent = `Error: ${e.message}`;
+    statusEl.style.color = 'var(--interrupt)';
+    activeReference = null;
+    updateActiveStatus();
+  }
+}
+
 function buildMemoryContext() {
-  if (!loadMemoryOnStart) return '';
+  if (!loadMemoryOnStart && !activeReference) return '';
   let parts = [];
-  if (councilMemory.core) {
-    parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
+  
+  if (loadMemoryOnStart) {
+    if (councilMemory.core) {
+      parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
+    }
+    if (councilMemory.minutes.length > 0) {
+      const minutesText = councilMemory.minutes
+        .map(m => JSON.stringify(m, null, 2))
+        .join('\n\n---\n\n');
+      parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
+    }
   }
-  if (councilMemory.minutes.length > 0) {
-    const minutesText = councilMemory.minutes
-      .map(m => JSON.stringify(m, null, 2))
-      .join('\n\n---\n\n');
-    parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
+  
+  // Tier 3 Injection
+  if (activeReference) {
+    parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
   }
+  
   return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
 }
 
@@ -1321,6 +1377,13 @@ function clearSession() {
   Object.keys(histories).forEach(k=>histories[k]=[]);
   Object.keys(counts).forEach(k=>counts[k]=0);
   totalMsgs=0;
+  
+  // Wipe Tier 3 Reference so it doesn't bleed into next session
+  activeReference = null;
+  document.getElementById('refPath').value = '';
+  const refStatus = document.getElementById('refStatus');
+  refStatus.textContent = 'Loads a markdown/text file from your repo into the current session context.';
+  refStatus.style.color = 'var(--text-muted)';
 
   const empties = {
     ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
@@ -1349,6 +1412,7 @@ function clearSession() {
   document.getElementById('sbMsgs').textContent='0';
   document.getElementById('sbStatus').textContent='Session cleared';
   document.getElementById('endSessionBtn').disabled = true;
+  updateActiveStatus(); // Remove reference bracket from status bar
 }
 
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
