@@ -301,34 +301,26 @@
 <!-- MAIN PANELS -->
 <div class="main" id="mainPanels">
 
-  <!-- Claude -->
-  <div class="panel" id="panelClaude">
+  <!-- ChatGPT -->
+  <div class="panel inactive" id="panelChatGPT">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
-        <div class="p-name claude">Claude</div>
-        <div class="badge pm" id="badgeClaude">paste mode</div>
+        <div class="p-name chatgpt">ChatGPT</div>
+        <div class="badge pm" id="badgeChatGPT">no key</div>
       </div>
-      <div class="p-count" id="countClaude">0</div>
+      <div class="p-count" id="countChatGPT">0</div>
     </div>
-    <div class="messages" id="msgsClaude">
-      <div class="empty" id="emptyClaude">
-        <div class="e-icon">◈</div>
-        <div class="e-txt">Claude awaits.</div>
+    <div class="messages" id="msgsChatGPT">
+      <div class="empty" id="emptyChatGPT">
+        <div class="e-icon">○</div>
+        <div class="e-txt">ChatGPT awaits.</div>
         <div class="panel-key-form">
-          <input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
-          <button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
+          <input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
+          <button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
         </div>
       </div>
     </div>
-    <div class="paste-panel" id="pastePanelClaude">
-      <div class="p-lbl">Paste Claude Response</div>
-      <div class="p-row">
-        <textarea class="p-box" id="pasteBoxClaude" placeholder="Paste here..." rows="2"></textarea>
-        <button class="p-add" style="color:var(--claude);border-color:var(--border)" onclick="addPaste('claude')">+ Add</button>
-      </div>
-    </div>
   </div>
-
   <!-- Gemini -->
   <div class="panel" id="panelGemini">
     <div class="p-hdr">
@@ -371,26 +363,34 @@
     </div>
   </div>
 
-  <!-- ChatGPT -->
-  <div class="panel inactive" id="panelChatGPT">
+  <!-- Claude -->
+  <div class="panel" id="panelClaude">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
-        <div class="p-name chatgpt">ChatGPT</div>
-        <div class="badge pm" id="badgeChatGPT">no key</div>
+        <div class="p-name claude">Claude</div>
+        <div class="badge pm" id="badgeClaude">paste mode</div>
       </div>
-      <div class="p-count" id="countChatGPT">0</div>
+      <div class="p-count" id="countClaude">0</div>
     </div>
-    <div class="messages" id="msgsChatGPT">
-      <div class="empty" id="emptyChatGPT">
-        <div class="e-icon">○</div>
-        <div class="e-txt">ChatGPT awaits.</div>
+    <div class="messages" id="msgsClaude">
+      <div class="empty" id="emptyClaude">
+        <div class="e-icon">◈</div>
+        <div class="e-txt">Claude awaits.</div>
         <div class="panel-key-form">
-          <input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
-          <button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
+          <input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
+          <button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
         </div>
       </div>
     </div>
+    <div class="paste-panel" id="pastePanelClaude">
+      <div class="p-lbl">Paste Claude Response</div>
+      <div class="p-row">
+        <textarea class="p-box" id="pasteBoxClaude" placeholder="Paste here..." rows="2"></textarea>
+        <button class="p-add" style="color:var(--claude);border-color:var(--border)" onclick="addPaste('claude')">+ Add</button>
+      </div>
+    </div>
   </div>
+
 
 </div>
 
@@ -497,46 +497,55 @@ function initCouncil() {
   KEY.grok = document.getElementById('keyGrok').value.trim();
   KEY.claude = document.getElementById('keyClaude').value.trim();
 
-  live.chatgpt = true;
-  live.gemini = !!KEY.gemini;
-  live.grok = !!KEY.grok;
-  live.claude = !!KEY.claude;
+  // Only mark live if key actually provided
+  live.chatgpt = !!KEY.chatgpt;
+  live.gemini  = !!KEY.gemini;
+  live.grok    = !!KEY.grok;
+  live.claude  = !!KEY.claude;
 
   document.getElementById('setupOverlay').style.display = 'none';
-  document.getElementById('sendBtn').disabled = false;
 
-  // Update pips and badges
+  // Update each AI's UI state based on whether key was provided
   const configs = [
-    ['claude', 'Claude', 'badgeClaude', 'pastePanelClaude', 'togClaude'],
-    ['gemini', 'Gemini', 'badgeGemini', null, 'togGemini'],
-    ['grok', 'Grok', 'badgeGrok', null, 'togGrok'],
-    ['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT'],
+    ['chatgpt', 'ChatGPT', 'badgeChatGPT', null,              'togChatGPT'],
+    ['gemini',  'Gemini',  'badgeGemini',  null,              'togGemini'],
+    ['grok',    'Grok',    'badgeGrok',    null,              'togGrok'],
+    ['claude',  'Claude',  'badgeClaude',  'pastePanelClaude','togClaude'],
   ];
 
+  let anyLive = false;
+
   configs.forEach(([id, name, badgeId, pasteId, togId]) => {
-    const pip = document.getElementById('pip' + name);
+    const pip  = document.getElementById('pip'   + name);
     const badge = document.getElementById(badgeId);
+    const tog  = document.getElementById(togId);
+    const panel = document.getElementById('panel' + name);
+
     if (live[id]) {
+      anyLive = true;
       pip.className = `pip on-${id}`;
       badge.textContent = 'live';
       badge.className = `badge live-${id}`;
-      if (pasteId) document.getElementById(pasteId).style.display = 'none';
-      // Enable toggle
-      const tog = document.getElementById(togId);
       tog.classList.remove('disabled-ai');
-      if (id !== 'claude' && id !== 'gemini') {
-        tog.classList.add('on');
-        toggled[id] = true;
-        document.getElementById('panel' + name).classList.remove('inactive');
-      }
+      tog.classList.add('on');
+      toggled[id] = true;
+      panel.classList.remove('inactive');
+      if (pasteId) document.getElementById(pasteId).style.display = 'none';
+      // Remove inline key form since we have the key
+      const form = document.getElementById('inlineKey' + name);
+      if (form) form.closest('.panel-key-form').remove();
     } else {
-      if (id !== 'claude') { // claude can be paste mode
-        document.getElementById('panel' + name).classList.add('inactive');
-        toggled[id] = false;
-        document.getElementById(togId).classList.remove('on');
-      }
+      pip.className = 'pip';
+      badge.textContent = 'no key';
+      badge.className = 'badge pm';
+      tog.classList.remove('on');
+      tog.classList.add('disabled-ai');
+      toggled[id] = false;
+      panel.classList.add('inactive');
     }
   });
+
+  if (anyLive) document.getElementById('sendBtn').disabled = false;
 
   document.getElementById('sbStatus').textContent = 'Council initialized';
   updateToggleHint();
@@ -843,10 +852,20 @@ function addPaste(id) {
 // ── INTERRUPT ──
 function interrupt() {
   shouldStop = true;
-  ['Claude','Gemini','Grok','ChatGPT'].forEach(n => {
-    addMsg('msgs'+n, 'system', '— Interrupted —', null);
+  isRelaying = false;
+  const active = RELAY_ORDER.filter(k => toggled[k]);
+  active.forEach(id => {
+    const name = id.charAt(0).toUpperCase() + id.slice(1);
+    // Remove any thinking indicators
+    const msgs = document.getElementById('msgs' + name);
+    msgs.querySelectorAll('.thinking').forEach(el => el.remove());
+    // Remove glow
+    document.getElementById('panel' + name).className = document.getElementById('panel' + name).className.replace(/glow-\S+/g,'').trim();
+    addMsg('msgs' + name, 'system', '— Interrupted —', null);
   });
-  document.getElementById('sbStatus').textContent = 'Interrupted';
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('interruptBtn').className = 'interrupt-btn';
+  document.getElementById('sbStatus').textContent = 'Interrupted — ready';
 }
 
 // ── DOM HELPERS ──
