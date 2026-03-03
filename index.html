@@ -224,11 +224,11 @@
   <div class="setup-panel">
     <div class="s-eye">Initialization Protocol</div>
     <div class="s-title">The Sovereign Council</div>
-    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>The full Council runs: ChatGPT → Gemini → Grok → Claude.</div>
+    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>At least one key required. The Council convenes with whoever is present.</div>
 
-    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister · Required</div>
+    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister · Optional</div>
     <div class="s-field">
-      <div class="s-label lch">OpenAI API Key <span>Required</span></div>
+      <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
       <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
       <div class="s-note">platform.openai.com → API Keys</div>
     </div>
@@ -489,13 +489,15 @@ function getDateTimeContext() {
 window.onload = () => { updateToggleHint(); };
 
 function initCouncil() {
-  const ck = document.getElementById('keyChatGPT').value.trim();
-  if (!ck) { alert('ChatGPT API key is required — ChatGPT is the Prime Minister.'); return; }
+  KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+  KEY.gemini  = document.getElementById('keyGemini').value.trim();
+  KEY.grok    = document.getElementById('keyGrok').value.trim();
+  KEY.claude  = document.getElementById('keyClaude').value.trim();
 
-  KEY.chatgpt = ck;
-  KEY.gemini = document.getElementById('keyGemini').value.trim();
-  KEY.grok = document.getElementById('keyGrok').value.trim();
-  KEY.claude = document.getElementById('keyClaude').value.trim();
+  if (!KEY.chatgpt && !KEY.gemini && !KEY.grok && !KEY.claude) {
+    alert('Enter at least one API key to initialize the Council.');
+    return;
+  }
 
   // Only mark live if key actually provided
   live.chatgpt = !!KEY.chatgpt;
