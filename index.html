@@ -783,12 +783,13 @@ async function callChatGPT() {
     method:'POST',
     headers:{
       'Content-Type':'application/json',
-      'Authorization':`Bearer ${KEY.chatgpt}`
+      'Authorization':`Bearer ${KEY.chatgpt}`,
+      'OpenAI-Organization': ''
     },
     body:JSON.stringify({
       model:'gpt-5-mini',
       messages:[
-        {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+        {role:'developer', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
         ...histories.chatgpt
       ],
       max_completion_tokens:1200,
@@ -827,7 +828,7 @@ function addMsg(cid, role, content, emptyId, tag) {
   const c = document.getElementById(cid);
   if(!c) return;
   if(emptyId){ const e=document.getElementById(emptyId); if(e) e.remove(); }
-  const roleLabel = role==='user'?'Architect':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
+  const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
   const m = document.createElement('div');
   m.className='msg';
   m.innerHTML=`
