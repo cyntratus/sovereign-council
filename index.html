@@ -264,10 +264,10 @@
   <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
   <div class="h-right">
     <div class="pip-group">
-      <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
+      <div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
       <div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
       <div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
-      <div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
+      <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
     </div>
     <button class="h-btn" onclick="clearSession()">Clear</button>
     <button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
@@ -295,7 +295,7 @@
   <button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
   <button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
   <div class="toggle-divider"></div>
-  <div class="toggle-hint" id="toggleHint">Gemini → Claude</div>
+  <div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
 </div>
 
 <!-- MAIN PANELS -->
@@ -631,13 +631,13 @@ function updateToggleHint() {
     document.getElementById('toggleHint').textContent = 'None selected';
     return;
   }
-  const names = { claude:'Claude', gemini:'Gemini', grok:'Grok', chatgpt:'ChatGPT' };
+  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
   document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
 }
 
 function updateActiveStatus() {
   const active = RELAY_ORDER.filter(k => toggled[k]);
-  const names = { claude:'Claude', gemini:'Gemini', grok:'Grok', chatgpt:'ChatGPT' };
+  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
   document.getElementById('sbActive').textContent = active.map(k=>names[k]).join(', ') || '—';
 }
 
@@ -916,10 +916,10 @@ function clearSession() {
   totalMsgs=0;
 
   const empties = {
-    Claude:['◈','Claude awaits.<br>Add Anthropic key or paste responses.'],
+    ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
     Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
     Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
-    ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.']
+    Claude:['◈','Claude awaits.<br>Add Anthropic key.']
   };
 
   Object.entries(empties).forEach(([name,[icon,txt]])=>{
