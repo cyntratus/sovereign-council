@@ -607,8 +607,8 @@ function toggle(id) {
   const btn = document.getElementById('tog' + id.charAt(0).toUpperCase() + id.slice(1));
   if (btn.classList.contains('disabled-ai')) return;
 
-  // Keep at least one active
-  const currentlyOn = RELAY_ORDER.filter(k => toggled[k]);
+  // Keep at least one live AI active
+  const currentlyOn = RELAY_ORDER.filter(k => toggled[k] && live[k]);
   if (toggled[id] && currentlyOn.length <= 1) return;
 
   toggled[id] = !toggled[id];
@@ -713,9 +713,11 @@ async function send() {
       } catch(e) {
         removeEl(think);
         document.getElementById('panel' + name).classList.remove('glow-' + id);
-        addMsg('msgs' + name, id, `[Error: ${e.message}]`);
+        // Only show error if not a deliberate stop
+        if (!shouldStop) addMsg('msgs' + name, id, `[Error: ${e.message}]`);
         lastResponses[id] = null;
-        if (shouldStop) break;
+        // Continue to next AI — don't let one failure block the rest
+        continue;
       }
     }
   }
