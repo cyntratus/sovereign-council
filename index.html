@@ -290,10 +290,10 @@
 <!-- TOGGLE BAR -->
 <div class="toggle-bar">
   <div class="toggle-label">Council</div>
-  <button class="toggle-btn t-claude on" id="togClaude" onclick="toggle('claude')">Claude</button>
-  <button class="toggle-btn t-gemini on" id="togGemini" onclick="toggle('gemini')">Gemini</button>
-  <button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
   <button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
+  <button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+  <button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+  <button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
   <div class="toggle-divider"></div>
   <div class="toggle-hint" id="toggleHint">Gemini → Claude</div>
 </div>
@@ -382,13 +382,7 @@
         </div>
       </div>
     </div>
-    <div class="paste-panel" id="pastePanelClaude">
-      <div class="p-lbl">Paste Claude Response</div>
-      <div class="p-row">
-        <textarea class="p-box" id="pasteBoxClaude" placeholder="Paste here..." rows="2"></textarea>
-        <button class="p-add" style="color:var(--claude);border-color:var(--border)" onclick="addPaste('claude')">+ Add</button>
-      </div>
-    </div>
+
   </div>
 
 
@@ -512,7 +506,7 @@ function initCouncil() {
     ['chatgpt', 'ChatGPT', 'badgeChatGPT', null,              'togChatGPT'],
     ['gemini',  'Gemini',  'badgeGemini',  null,              'togGemini'],
     ['grok',    'Grok',    'badgeGrok',    null,              'togGrok'],
-    ['claude',  'Claude',  'badgeClaude',  'pastePanelClaude','togClaude'],
+    ['claude',  'Claude',  'badgeClaude',  null,'togClaude'],
   ];
 
   let anyLive = false;
@@ -532,7 +526,7 @@ function initCouncil() {
       tog.classList.add('on');
       toggled[id] = true;
       panel.classList.remove('inactive');
-      if (pasteId) document.getElementById(pasteId).style.display = 'none';
+      if (pasteId) { const p = document.getElementById(pasteId); if(p) p.style.display = 'none'; }
       // Remove inline key form since we have the key
       const form = document.getElementById('inlineKey' + name);
       if (form) form.closest('.panel-key-form').remove();
@@ -584,7 +578,7 @@ function activatePanel(id) {
 
   // Hide paste panel for claude if it exists (now live)
   if (id === 'claude') {
-    const pp = document.getElementById('pastePanelClaude');
+    const pp = document.getElementById(null);
     if (pp) pp.style.display = 'none';
   }
 
@@ -720,6 +714,7 @@ async function send() {
         document.getElementById('panel' + name).classList.remove('glow-' + id);
         addMsg('msgs' + name, id, `[Error: ${e.message}]`);
         lastResponses[id] = null;
+        if (shouldStop) break;
       }
     }
   }
@@ -816,26 +811,38 @@ async function callGrok() {
 }
 
 async function callChatGPT() {
-  const res = await fetch('https://api.openai.com/v1/chat/completions',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':`Bearer ${KEY.chatgpt}`,
-      'OpenAI-Organization': ''
-    },
-    body:JSON.stringify({
-      model:'gpt-5-mini',
-      messages:[
-        {role:'developer', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
-        ...histories.chatgpt
-      ],
-      max_completion_tokens:1200,
-      temperature:0.85
-    })
-  });
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);}
-  const d=await res.json();
-  return d.choices?.[0]?.message?.content||'[No response]';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 30000);
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions',{
+      method:'POST',
+      signal: controller.signal,
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':`Bearer ${KEY.chatgpt}`
+      },
+      body:JSON.stringify({
+        model:'gpt-5-mini',
+        messages:[
+          {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+          ...histories.chatgpt
+        ],
+        max_completion_tokens:1200,
+        temperature:0.85
+      })
+    });
+    clearTimeout(timeout);
+    if(!res.ok){
+      const e=await res.json();
+      throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
+    }
+    const d=await res.json();
+    return d.choices?.[0]?.message?.content||'[No response]';
+  } catch(e) {
+    clearTimeout(timeout);
+    if(e.name === 'AbortError') throw new Error('ChatGPT timed out — likely a CORS or network issue');
+    throw e;
+  }
 }
 
 // ── PASTE ──
