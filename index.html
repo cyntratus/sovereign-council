@@ -415,6 +415,7 @@ let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
 let maxVolleys = 1;
 let isRelaying = false;
 let shouldStop = false;
+let activeController = null; // global AbortController for in-flight requests
 let totalMsgs = 0;
 let counts = { claude:0, gemini:0, grok:0, chatgpt:0 };
 let histories = { claude:[], gemini:[], grok:[], chatgpt:[] };
@@ -757,7 +758,9 @@ async function callGemini() {
     contents: histories.gemini,
     generationConfig: { temperature:0.85, maxOutputTokens:1200 }
   };
-  const res = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  activeController = new AbortController();
+  const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  activeController = null;
   if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
   const d=await res.json();
   return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
@@ -811,23 +814,27 @@ async function callGrok() {
 }
 
 async function callChatGPT() {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 30000);
+  activeController = new AbortController();
+  const timeout = setTimeout(() => activeController.abort(), 30000);
+
+  // Build input array from history + current system context
+  const input = [
+    { role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext() },
+    ...histories.chatgpt
+  ];
+
   try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions',{
+    const res = await fetch('https://api.openai.com/v1/responses',{
       method:'POST',
-      signal: controller.signal,
+      signal: activeController.signal,
       headers:{
         'Content-Type':'application/json',
         'Authorization':`Bearer ${KEY.chatgpt}`
       },
       body:JSON.stringify({
         model:'gpt-5-mini',
-        messages:[
-          {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
-          ...histories.chatgpt
-        ],
-        max_completion_tokens:1200,
+        input: input,
+        max_output_tokens:1200,
         temperature:0.85
       })
     });
@@ -837,11 +844,14 @@ async function callChatGPT() {
       throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
     }
     const d=await res.json();
-    return d.choices?.[0]?.message?.content||'[No response]';
+    // Responses API returns output_text directly
+    return d.output_text || d.output?.[0]?.content?.[0]?.text || '[No response]';
   } catch(e) {
     clearTimeout(timeout);
-    if(e.name === 'AbortError') throw new Error('ChatGPT timed out — likely a CORS or network issue');
+    if(e.name === 'AbortError') throw new Error('ChatGPT: no response — check CORS or API key');
     throw e;
+  } finally {
+    activeController = null;
   }
 }
 
@@ -862,16 +872,22 @@ function addPaste(id) {
 function interrupt() {
   shouldStop = true;
   isRelaying = false;
-  const active = RELAY_ORDER.filter(k => toggled[k]);
-  active.forEach(id => {
+  // Abort any in-flight fetch
+  if (activeController) { activeController.abort(); activeController = null; }
+  // Clean up all panels
+  RELAY_ORDER.forEach(id => {
     const name = id.charAt(0).toUpperCase() + id.slice(1);
-    // Remove any thinking indicators
     const msgs = document.getElementById('msgs' + name);
-    msgs.querySelectorAll('.thinking').forEach(el => el.remove());
-    // Remove glow
-    document.getElementById('panel' + name).className = document.getElementById('panel' + name).className.replace(/glow-\S+/g,'').trim();
-    addMsg('msgs' + name, 'system', '— Interrupted —', null);
+    if (msgs) {
+      msgs.querySelectorAll('.thinking').forEach(el => el.remove());
+      const panel = document.getElementById('panel' + name);
+      panel.className = panel.className.replace(/glow-\S+/g,'').trim();
+    }
   });
+  addMsg('msgsChatGPT','system','— Interrupted —',null);
+  addMsg('msgsGemini','system','— Interrupted —',null);
+  addMsg('msgsGrok','system','— Interrupted —',null);
+  addMsg('msgsClaude','system','— Interrupted —',null);
   document.getElementById('sendBtn').disabled = false;
   document.getElementById('interruptBtn').className = 'interrupt-btn';
   document.getElementById('sbStatus').textContent = 'Interrupted — ready';
