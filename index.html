@@ -258,7 +258,6 @@
 </head>
 <body>
 
-<!-- SETUP -->
 <div class="setup-overlay" id="setupOverlay">
   <div class="setup-panel">
     <div class="s-eye">Initialization Protocol</div>
@@ -297,7 +296,6 @@
   </div>
 </div>
 
-<!-- HEADER -->
 <div class="header">
   <div class="logo">The Sovereign <em>Council</em></div>
   <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
@@ -314,7 +312,6 @@
   </div>
 </div>
 
-<!-- RELAY BAR -->
 <div class="relay-bar">
   <div class="r-label">Volleys</div>
   <div class="r-btns">
@@ -327,7 +324,6 @@
   <div class="r-desc" id="volleyDesc">Direct response</div>
 </div>
 
-<!-- TOGGLE BAR -->
 <div class="toggle-bar">
   <div class="toggle-label">Council</div>
   <button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
@@ -338,10 +334,8 @@
   <div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
 </div>
 
-<!-- MAIN PANELS -->
 <div class="main" id="mainPanels">
 
-  <!-- ChatGPT -->
   <div class="panel inactive" id="panelChatGPT">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
@@ -361,7 +355,6 @@
       </div>
     </div>
   </div>
-  <!-- Gemini -->
   <div class="panel" id="panelGemini">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
@@ -382,7 +375,6 @@
     </div>
   </div>
 
-  <!-- Grok -->
   <div class="panel inactive" id="panelGrok">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
@@ -403,7 +395,6 @@
     </div>
   </div>
 
-  <!-- Claude -->
   <div class="panel" id="panelClaude">
     <div class="p-hdr">
       <div style="display:flex;align-items:center">
@@ -428,7 +419,6 @@
 
 </div>
 
-<!-- SESSION OVERLAY -->
 <div class="session-overlay" id="sessionOverlay">
   <div class="session-panel">
     <div class="sp-title">Session</div>
@@ -467,7 +457,6 @@
   </div>
 </div>
 
-<!-- INPUT (attached to last active panel visually but global) -->
 <div class="input-area">
   <div class="input-row">
     <textarea class="input-box" id="msgInput" placeholder="Address the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
@@ -476,7 +465,6 @@
   </div>
 </div>
 
-<!-- STATUS -->
 <div class="status-bar">
   <div class="si">Volleys: <span id="sbVolleys">1</span></div>
   <div class="si">Msgs: <span id="sbMsgs">0</span></div>
@@ -493,6 +481,7 @@ let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
 // ── PERSISTENCE ──
 let GH_TOKEN = '';
 let GH_REPO = 'cyntratus/sovereign-council';
+const GH_BRANCH = 'test'; // Change to 'main' when ready to deploy
 let loadMemoryOnStart = true;
 let councilMemory = { core: '', minutes: [] }; // fetched at load or on demand
 
@@ -1069,7 +1058,7 @@ function toggleMemory() {
 async function ghGet(path) {
   const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
   const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
-  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${GH_BRANCH}`, {
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/vnd.github+json'
@@ -1086,6 +1075,7 @@ async function ghPut(path, content, message, sha) {
   const body = {
     message,
     content: btoa(unescape(encodeURIComponent(content))),
+    branch: GH_BRANCH
   };
   if (sha) body.sha = sha;
   const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
@@ -1304,7 +1294,8 @@ function buildTranscriptSummary() {
       const msg = histories[id][i];
       if (!msg) continue;
       if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
-        lines.push(`SOVEREIGN: ${msg.content}`);
+        const userText = msg.content || msg.parts?.[0]?.text || '';
+        lines.push(`SOVEREIGN: ${userText}`);
       } else if (msg.role === 'assistant') {
         lines.push(`${names[id]}: ${msg.content}`);
       } else if (msg.role === 'model') {
