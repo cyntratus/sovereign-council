@@ -215,6 +215,45 @@
   .status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
   .si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
   .si span { color:var(--text-dim); }
+
+  /* ── SESSION OVERLAY ── */
+  .session-overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.92);
+    display:none; align-items:center; justify-content:center;
+    z-index:400;
+    padding:20px;
+  }
+  .session-overlay.open { display:flex; }
+  .session-panel {
+    background:var(--surface);
+    border:1px solid var(--border2);
+    padding:36px; width:520px; max-width:95vw;
+    animation:up 0.25s ease;
+  }
+  .sp-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:0.1em; margin-bottom:4px; }
+  .sp-sub { font-size:12px; color:var(--text-dim); margin-bottom:28px; line-height:1.6; }
+  .sp-field { margin-bottom:16px; }
+  .sp-label { font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between; }
+  .sp-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
+  .sp-input:focus { border-color:var(--border2); }
+  .sp-note { font-size:11px; color:var(--text-muted); margin-top:4px; }
+  .sp-row { display:flex; gap:8px; margin-top:4px; }
+  .sp-btn { flex:1; background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; padding:10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+  .sp-btn:hover:not(:disabled) { border-color:var(--text-dim); color:var(--text); }
+  .sp-btn:disabled { opacity:0.25; cursor:not-allowed; }
+  .sp-btn.primary { border-color:var(--user); color:var(--user); }
+  .sp-btn.primary:hover:not(:disabled) { background:rgba(168,152,128,0.1); }
+  .sp-status { font-size:11px; color:var(--text-dim); margin-top:12px; min-height:16px; letter-spacing:0.04em; }
+  .sp-status.ok { color:#7ec8a0; }
+  .sp-status.err { color:var(--interrupt); }
+  .sp-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+  .sp-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .sp-toggle { width:32px; height:18px; border:1px solid var(--border2); background:var(--bg); cursor:pointer; position:relative; transition:all 0.2s; flex-shrink:0; }
+  .sp-toggle.on { background:rgba(168,152,128,0.2); border-color:var(--user); }
+  .sp-toggle::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--border2); transition:all 0.2s; }
+  .sp-toggle.on::after { left:16px; background:var(--user); }
+  .sp-toggle-lbl { font-size:12px; color:var(--text-dim); letter-spacing:0.06em; }
 </style>
 </head>
 <body>
@@ -270,6 +309,7 @@
       <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
     </div>
     <button class="h-btn" onclick="clearSession()">Clear</button>
+    <button class="h-btn" onclick="openSession()">Session</button>
     <button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
   </div>
 </div>
@@ -388,6 +428,45 @@
 
 </div>
 
+<!-- SESSION OVERLAY -->
+<div class="session-overlay" id="sessionOverlay">
+  <div class="session-panel">
+    <div class="sp-title">Session</div>
+    <div class="sp-sub">Manage Council memory and commit session minutes to GitHub.</div>
+
+    <div class="sp-field">
+      <div class="sp-label">GitHub Personal Access Token <span style="color:var(--text-muted)">Fine-grained · Contents R/W</span></div>
+      <input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
+      <div class="sp-note">github.com → Settings → Developer Settings → Fine-grained tokens → sovereign-council repo → Contents: Read &amp; Write</div>
+    </div>
+
+    <div class="sp-field">
+      <div class="sp-label">Repository <span style="color:var(--text-muted)">owner/repo</span></div>
+      <input class="sp-input" type="text" id="ghRepo" placeholder="cyntratus/sovereign-council" value="cyntratus/sovereign-council">
+    </div>
+
+    <hr class="sp-divider">
+
+    <div class="sp-toggle-row">
+      <div class="sp-toggle on" id="memoryToggle" onclick="toggleMemory()"></div>
+      <div class="sp-toggle-lbl">Load Council Memory at startup (memory.md + last 7 sessions)</div>
+    </div>
+
+    <div class="sp-row">
+      <button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
+      <button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ End Session &amp; Commit Minutes</button>
+    </div>
+
+    <div class="sp-status" id="spStatus"></div>
+
+    <hr class="sp-divider">
+
+    <div class="sp-row">
+      <button class="sp-btn" onclick="closeSession()">— Close —</button>
+    </div>
+  </div>
+</div>
+
 <!-- INPUT (attached to last active panel visually but global) -->
 <div class="input-area">
   <div class="input-row">
@@ -410,6 +489,12 @@
 let KEY = { claude:'', gemini:'', grok:'', chatgpt:'' };
 let live = { claude:false, gemini:false, grok:false, chatgpt:false };
 let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
+
+// ── PERSISTENCE ──
+let GH_TOKEN = '';
+let GH_REPO = 'cyntratus/sovereign-council';
+let loadMemoryOnStart = true;
+let councilMemory = { core: '', minutes: [] }; // fetched at load or on demand
 
 // ── STATE ──
 let maxVolleys = 1;
@@ -481,11 +566,18 @@ function getDateTimeContext() {
   return `Current date/time: ${new Date().toLocaleString('en-US', {
     weekday:'long', year:'numeric', month:'long', day:'numeric',
     hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'
-  })}`;
+  })}${buildMemoryContext()}`;
 }
 
 // ── INIT ──
-window.onload = () => { updateToggleHint(); };
+window.onload = () => {
+  updateToggleHint();
+  // Restore GH settings from sessionStorage if available
+  const savedToken = sessionStorage.getItem('gh_token');
+  const savedRepo = sessionStorage.getItem('gh_repo');
+  if (savedToken) { GH_TOKEN = savedToken; document.getElementById('ghToken').value = savedToken; }
+  if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
+};
 
 function initCouncil() {
   KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
@@ -704,6 +796,9 @@ async function send() {
         lastResponses[id] = resp;
         counts[id]++;
         document.getElementById('count' + name).textContent = counts[id];
+        // Enable end session button once Council has spoken
+        const esbtn = document.getElementById('endSessionBtn');
+        if (esbtn && GH_TOKEN) esbtn.disabled = false;
       } catch(e) {
         removeEl(think);
         document.getElementById('panel' + name).classList.remove('glow-' + id);
@@ -950,6 +1045,286 @@ function addThinking(cid, label) {
 
 function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
 
+// ── SESSION PANEL ──
+function openSession() {
+  document.getElementById('ghToken').value = GH_TOKEN;
+  document.getElementById('ghRepo').value = GH_REPO;
+  // Enable end session only if there are messages
+  const hasMsgs = Object.values(counts).some(c => c > 0);
+  document.getElementById('endSessionBtn').disabled = !hasMsgs || !GH_TOKEN;
+  document.getElementById('sessionOverlay').classList.add('open');
+}
+
+function closeSession() {
+  document.getElementById('sessionOverlay').classList.remove('open');
+}
+
+function toggleMemory() {
+  loadMemoryOnStart = !loadMemoryOnStart;
+  const el = document.getElementById('memoryToggle');
+  el.classList.toggle('on', loadMemoryOnStart);
+}
+
+// ── GITHUB API ──
+async function ghGet(path) {
+  const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json'
+    }
+  });
+  if (res.status === 404) return null;
+  if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+  return await res.json();
+}
+
+async function ghPut(path, content, message, sha) {
+  const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+  const body = {
+    message,
+    content: btoa(unescape(encodeURIComponent(content))),
+  };
+  if (sha) body.sha = sha;
+  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const e = await res.json();
+    throw new Error(e.message || `GitHub PUT failed: ${res.status}`);
+  }
+  return await res.json();
+}
+
+// ── LOAD MEMORY ──
+async function loadMemory() {
+  const token = document.getElementById('ghToken').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+  GH_TOKEN = token;
+  GH_REPO = repo;
+  sessionStorage.setItem('gh_token', token);
+  sessionStorage.setItem('gh_repo', repo);
+
+  setSpStatus('Fetching memory.md...');
+
+  try {
+    // Fetch core memory
+    const memFile = await ghGet('memory.md');
+    councilMemory.core = memFile
+      ? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,''))))
+      : '';
+
+    // Fetch last 7 minutes files
+    setSpStatus('Fetching session minutes...');
+    const minutesDir = await ghGet('minutes');
+    councilMemory.minutes = [];
+
+    if (minutesDir && Array.isArray(minutesDir)) {
+      // Sort by name descending (YYYY-MM-DD), take last 7
+      const files = minutesDir
+        .filter(f => f.name.endsWith('.json'))
+        .sort((a,b) => b.name.localeCompare(a.name))
+        .slice(0, 7);
+
+      for (const f of files) {
+        const file = await ghGet(`minutes/${f.name}`);
+        if (file) {
+          const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+          try {
+            councilMemory.minutes.push(JSON.parse(text));
+          } catch(e) {
+            councilMemory.minutes.push({ raw: text });
+          }
+        }
+      }
+    }
+
+    const totalMinutes = councilMemory.minutes.length;
+    const hasMem = !!councilMemory.core;
+    setSpStatus(
+      `Loaded: ${hasMem ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute${totalMinutes !== 1 ? 's' : ''}.`,
+      'ok'
+    );
+
+    // Update end session button state
+    const hasMsgs = Object.values(counts).some(c => c > 0);
+    document.getElementById('endSessionBtn').disabled = !hasMsgs;
+
+  } catch(e) {
+    setSpStatus(`Error: ${e.message}`, 'err');
+  }
+}
+
+function buildMemoryContext() {
+  if (!loadMemoryOnStart) return '';
+  let parts = [];
+  if (councilMemory.core) {
+    parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
+  }
+  if (councilMemory.minutes.length > 0) {
+    const minutesText = councilMemory.minutes
+      .map(m => JSON.stringify(m, null, 2))
+      .join('\n\n---\n\n');
+    parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
+  }
+  return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
+}
+
+// ── END SESSION / MINUTES GENERATION ──
+async function endSession() {
+  const token = document.getElementById('ghToken').value.trim();
+  const repo = document.getElementById('ghRepo').value.trim();
+  if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+  if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
+
+  GH_TOKEN = token;
+  GH_REPO = repo;
+  sessionStorage.setItem('gh_token', token);
+  sessionStorage.setItem('gh_repo', repo);
+
+  document.getElementById('endSessionBtn').disabled = true;
+  setSpStatus('Generating session minutes via ChatGPT...');
+
+  // Build session transcript summary
+  const transcript = buildTranscriptSummary();
+
+  const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
+
+TRANSCRIPT:
+${transcript}
+
+Respond ONLY with valid JSON matching this exact schema — no markdown, no explanation:
+{
+  "date": "YYYY-MM-DD",
+  "session_number": null,
+  "sovereign_intent": "One sentence: what was the Sovereign working on or trying to understand?",
+  "key_exchanges": [
+    { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" }
+  ],
+  "breakthroughs": ["Any significant insights or shifts in understanding"],
+  "decisions": ["Any concrete decisions or directions established"],
+  "open_questions": ["Unresolved threads the Sovereign may want to return to"],
+  "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
+  "council_performance": {
+    "chatgpt": "Brief note on how ChatGPT performed its Prime Minister role",
+    "gemini": "Brief note on how Gemini performed its Vision role",
+    "grok": "Brief note on how Grok performed its Adversarial role",
+    "claude": "Brief note on how Claude performed its Precision role"
+  }
+}`;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${KEY.chatgpt}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: minutesPrompt }],
+        max_tokens: 1500,
+        temperature: 0.3
+      })
+    });
+
+    if (!res.ok) {
+      const e = await res.json();
+      throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`);
+    }
+
+    const d = await res.json();
+    let minutesText = d.choices?.[0]?.message?.content || '';
+
+    // Strip any markdown fences
+    minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+
+    // Validate JSON
+    let minutesObj;
+    try {
+      minutesObj = JSON.parse(minutesText);
+    } catch(e) {
+      throw new Error('ChatGPT returned invalid JSON. Try again.');
+    }
+
+    // Set date if not set
+    if (!minutesObj.date) {
+      minutesObj.date = new Date().toISOString().split('T')[0];
+    }
+    minutesText = JSON.stringify(minutesObj, null, 2);
+
+    // Commit to GitHub
+    const filename = `minutes/${minutesObj.date}.json`;
+    setSpStatus(`Committing to ${filename}...`);
+
+    // GET sha in case file exists
+    const existing = await ghGet(filename);
+    const sha = existing ? existing.sha : undefined;
+
+    await ghPut(
+      filename,
+      minutesText,
+      `Council minutes: ${minutesObj.date}`,
+      sha
+    );
+
+    setSpStatus(`✓ Minutes committed: ${filename}`, 'ok');
+
+    // Add to local memory
+    councilMemory.minutes.unshift(minutesObj);
+    if (councilMemory.minutes.length > 7) councilMemory.minutes.pop();
+
+  } catch(e) {
+    setSpStatus(`Error: ${e.message}`, 'err');
+    document.getElementById('endSessionBtn').disabled = false;
+  }
+}
+
+function buildTranscriptSummary() {
+  // Build a readable transcript from all panel histories
+  const lines = [];
+  const order = ['chatgpt', 'gemini', 'grok', 'claude'];
+  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+
+  // Get user messages from claude history (most reliable — Claude is usually active)
+  // Interleave all AI responses by reconstructing from histories
+  const maxLen = Math.max(...order.map(id => histories[id].length));
+
+  for (let i = 0; i < maxLen; i++) {
+    for (const id of order) {
+      const msg = histories[id][i];
+      if (!msg) continue;
+      if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
+        lines.push(`SOVEREIGN: ${msg.content}`);
+      } else if (msg.role === 'assistant') {
+        lines.push(`${names[id]}: ${msg.content}`);
+      } else if (msg.role === 'model') {
+        const text = msg.parts?.[0]?.text || '';
+        lines.push(`${names[id]}: ${text}`);
+      }
+    }
+  }
+
+  // Deduplicate consecutive identical lines
+  const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
+  return deduped.join('\n\n').slice(0, 12000); // cap at ~12k chars
+}
+
+function setSpStatus(msg, type) {
+  const el = document.getElementById('spStatus');
+  el.textContent = msg;
+  el.className = 'sp-status' + (type ? ' ' + type : '');
+}
+
 function clearSession() {
   if(!confirm('Clear this Council session?')) return;
   Object.keys(histories).forEach(k=>histories[k]=[]);
@@ -982,6 +1357,7 @@ function clearSession() {
 
   document.getElementById('sbMsgs').textContent='0';
   document.getElementById('sbStatus').textContent='Session cleared';
+  document.getElementById('endSessionBtn').disabled = true;
 }
 
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
