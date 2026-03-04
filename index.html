@@ -1240,11 +1240,14 @@ async function endSession() {
   document.getElementById('endSessionBtn').disabled = true;
   setSpStatus('Generating session minutes via ChatGPT...');
 
-  // 1. Calculate the strict YYYY-MM-DD local date for the file system
+  // 1. Calculate the strict YYYY-MM-DD local date and HH-MM time for the file system
   const now = new Date();
   const localDate = now.getFullYear() + '-' + 
     String(now.getMonth() + 1).padStart(2, '0') + '-' + 
     String(now.getDate()).padStart(2, '0');
+    
+  const localTime = String(now.getHours()).padStart(2, '0') + '-' + 
+    String(now.getMinutes()).padStart(2, '0');
 
   // Build session transcript summary
   const transcript = buildTranscriptSummary();
@@ -1314,18 +1317,18 @@ Respond ONLY with valid JSON matching this exact schema — no markdown, no expl
     minutesObj.date = localDate;
     minutesText = JSON.stringify(minutesObj, null, 2);
 
-    // 4. Use the forced date for the filename
-    const filename = `minutes/${localDate}.json`;
+    // 4. Use the forced date AND time for the filename to prevent overwrites
+    const filename = `minutes/${localDate}_${localTime}.json`;
     setSpStatus(`Committing to ${filename}...`);
 
-    // GET sha in case file exists
+    // GET sha in case file exists (less likely now with timestamps, but safe to keep)
     const existing = await ghGet(filename);
     const sha = existing ? existing.sha : undefined;
 
     await ghPut(
       filename,
       minutesText,
-      `Council minutes: ${localDate}`,
+      `Council minutes: ${localDate} at ${localTime}`,
       sha
     );
 
