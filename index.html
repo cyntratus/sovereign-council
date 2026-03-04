@@ -911,7 +911,7 @@ async function callClaude() {
 async function callGrok() {
   activeController = new AbortController();
   try {
-    const res = await fetch('https://api.x.ai/v1/chat/completions',{
+    const res = await fetch('/api/grok',{
       method:'POST',
       signal: activeController.signal,
       headers:{
