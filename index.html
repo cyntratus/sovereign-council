@@ -1240,10 +1240,18 @@ async function endSession() {
   document.getElementById('endSessionBtn').disabled = true;
   setSpStatus('Generating session minutes via ChatGPT...');
 
+  // 1. Calculate the strict YYYY-MM-DD local date for the file system
+  const now = new Date();
+  const localDate = now.getFullYear() + '-' + 
+    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+    String(now.getDate()).padStart(2, '0');
+
   // Build session transcript summary
   const transcript = buildTranscriptSummary();
 
+  // 2. Explicitly tell the isolated scribe what today is
   const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
+Today's date is: ${localDate}
 
 TRANSCRIPT:
 ${transcript}
@@ -1302,14 +1310,12 @@ Respond ONLY with valid JSON matching this exact schema — no markdown, no expl
       throw new Error('ChatGPT returned invalid JSON. Try again.');
     }
 
-    // Set date if not set
-    if (!minutesObj.date) {
-      minutesObj.date = new Date().toISOString().split('T')[0];
-    }
+    // 3. FORCE the date. Overwrite whatever ChatGPT hallucinated.
+    minutesObj.date = localDate;
     minutesText = JSON.stringify(minutesObj, null, 2);
 
-    // Commit to GitHub
-    const filename = `minutes/${minutesObj.date}.json`;
+    // 4. Use the forced date for the filename
+    const filename = `minutes/${localDate}.json`;
     setSpStatus(`Committing to ${filename}...`);
 
     // GET sha in case file exists
@@ -1319,7 +1325,7 @@ Respond ONLY with valid JSON matching this exact schema — no markdown, no expl
     await ghPut(
       filename,
       minutesText,
-      `Council minutes: ${minutesObj.date}`,
+      `Council minutes: ${localDate}`,
       sha
     );
 
