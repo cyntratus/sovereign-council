@@ -849,18 +849,21 @@ throw e;
 
 // ── API CALLS ──
 async function callGemini() {
-const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${KEY.gemini}`;
-const body = {
-system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
-contents: histories.gemini,
-generationConfig: { temperature:0.85, maxOutputTokens:1200 }
-};
-activeController = new AbortController();
-const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-activeController = null;
-if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
-const d=await res.json();
-return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${KEY.gemini}`;
+  const body = {
+    system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
+    contents: histories.gemini,
+    generationConfig: { temperature:0.85, maxOutputTokens:1200 }
+  };
+  activeController = new AbortController();
+  const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  activeController = null;
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+  const d=await res.json();
+  
+  // The fix: map through all parts of the array instead of just grabbing index [0]
+  const parts = d.candidates?.[0]?.content?.parts;
+  return parts ? parts.map(p => p.text || '').join('') : '[No response]';
 }
 
 async function callClaude() {
@@ -903,8 +906,11 @@ messages:sanitized
 });
 if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
 const d=await res.json();
-return d.content?.[0]?.text||'[No response]';
-} finally {
+    
+    // The fix: map through all content blocks to prevent mid-sentence cutoffs
+    const contentBlocks = d.content;
+    return contentBlocks ? contentBlocks.map(block => block.text || '').join('') : '[No response]';
+  } finally {
 activeController = null;
 }
 }
