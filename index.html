@@ -6,470 +6,470 @@
 <title>The Sovereign Council</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #080808;
-    --surface: #0e0e0e;
-    --surface2: #111111;
-    --border: #1a1a1a;
-    --border2: #262626;
-    --text: #ddd8cf;
-    --text-dim: #7a756e;
-    --text-muted: #2e2e2e;
-    --claude: #c8a96e;
-    --gemini: #6eb4c8;
-    --grok: #b87ec8;
-    --chatgpt: #7ec8a0;
-    --user: #a89880;
-    --interrupt: #c87e6e;
-  }
+:root {
+--bg: #080808;
+--surface: #0e0e0e;
+--surface2: #111111;
+--border: #1a1a1a;
+--border2: #262626;
+--text: #ddd8cf;
+--text-dim: #7a756e;
+--text-muted: #2e2e2e;
+--claude: #c8a96e;
+--gemini: #6eb4c8;
+--grok: #b87ec8;
+--chatgpt: #7ec8a0;
+--user: #a89880;
+--interrupt: #c87e6e;
+}
 
-  * { margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
-  body {
-    background:var(--bg);
-    color:var(--text);
-    font-family:'JetBrains Mono',monospace;
-    font-size:15px;
-    height:100vh;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
-  }
+body {
+background:var(--bg);
+color:var(--text);
+font-family:'JetBrains Mono',monospace;
+font-size:15px;
+height:100vh;
+display:flex;
+flex-direction:column;
+overflow:hidden;
+}
 
-  /* ── SETUP ── */
-  .setup-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.97);
-    display:flex; align-items:center; justify-content:center;
-    z-index:500;
-    overflow-y:auto;
-    padding:20px;
-  }
-  .setup-panel {
-    background:var(--surface);
-    border:1px solid var(--border2);
-    padding:40px; width:560px; max-width:95vw;
-    animation:up 0.35s ease;
-    margin:auto;
-  }
-  @keyframes up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .s-eye { font-size:11px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
-  .s-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
-  .s-sub { color:var(--text-dim); font-size:13px; margin-bottom:28px; line-height:1.7; }
-  .s-section { font-size:10px; letter-spacing:0.16em; color:var(--text-muted); text-transform:uppercase; margin:20px 0 12px; border-top:1px solid var(--border); padding-top:16px; }
-  .s-field { margin-bottom:16px; }
-  .s-label { display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; }
-  .s-label span { color:var(--text-muted); font-size:10px; }
-  .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
-  .s-input:focus { border-color:var(--border2); }
-  .s-note { font-size:11px; color:var(--text-muted); margin-top:4px; transition:color 0.2s; }
-  .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
-  .s-btn:hover { background:var(--border2); }
+/* ── SETUP ── */
+.setup-overlay {
+position:fixed; inset:0;
+background:rgba(0,0,0,0.97);
+display:flex; align-items:center; justify-content:center;
+z-index:500;
+overflow-y:auto;
+padding:20px;
+}
+.setup-panel {
+background:var(--surface);
+border:1px solid var(--border2);
+padding:40px; width:560px; max-width:95vw;
+animation:up 0.35s ease;
+margin:auto;
+}
+@keyframes up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.s-eye { font-size:11px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
+.s-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
+.s-sub { color:var(--text-dim); font-size:13px; margin-bottom:28px; line-height:1.7; }
+.s-section { font-size:10px; letter-spacing:0.16em; color:var(--text-muted); text-transform:uppercase; margin:20px 0 12px; border-top:1px solid var(--border); padding-top:16px; }
+.s-field { margin-bottom:16px; }
+.s-label { display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; }
+.s-label span { color:var(--text-muted); font-size:10px; }
+.s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
+.s-input:focus { border-color:var(--border2); }
+.s-note { font-size:11px; color:var(--text-muted); margin-top:4px; transition:color 0.2s; }
+.s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
+.s-btn:hover { background:var(--border2); }
 
-  /* colored labels */
-  .lc { color:var(--claude) !important; }
-  .lg { color:var(--gemini) !important; }
-  .lgr { color:var(--grok) !important; }
-  .lch { color:var(--chatgpt) !important; }
+/* colored labels */
+.lc { color:var(--claude) !important; }
+.lg { color:var(--gemini) !important; }
+.lgr { color:var(--grok) !important; }
+.lch { color:var(--chatgpt) !important; }
 
-  /* ── HEADER ── */
-  .header { border-bottom:1px solid var(--border); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
-  .logo { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:300; letter-spacing:0.14em; }
-  .logo em { color:var(--text-dim); font-style:italic; }
-  .h-right { display:flex; align-items:center; gap:14px; }
-  .pip-group { display:flex; align-items:center; gap:10px; }
-  .indicator { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); letter-spacing:0.05em; }
-  .pip { width:5px; height:5px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
-  .pip.on { box-shadow:0 0 6px; }
-  .pip.on-claude { background:var(--claude); box-shadow:0 0 6px var(--claude); }
-  .pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
-  .pip.on-grok { background:var(--grok); box-shadow:0 0 6px var(--grok); }
-  .pip.on-chatgpt { background:var(--chatgpt); box-shadow:0 0 6px var(--chatgpt); }
-  .h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:4px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
-  .h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
+/* ── HEADER ── */
+.header { border-bottom:1px solid var(--border); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+.logo { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:300; letter-spacing:0.14em; }
+.logo em { color:var(--text-dim); font-style:italic; }
+.h-right { display:flex; align-items:center; gap:14px; }
+.pip-group { display:flex; align-items:center; gap:10px; }
+.indicator { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); letter-spacing:0.05em; }
+.pip { width:5px; height:5px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
+.pip.on { box-shadow:0 0 6px; }
+.pip.on-claude { background:var(--claude); box-shadow:0 0 6px var(--claude); }
+.pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
+.pip.on-grok { background:var(--grok); box-shadow:0 0 6px var(--grok); }
+.pip.on-chatgpt { background:var(--chatgpt); box-shadow:0 0 6px var(--chatgpt); }
+.h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:4px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+.h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
 
-  /* ── RELAY BAR ── */
-  .relay-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:12px; flex-shrink:0; background:var(--surface2); flex-wrap:wrap; }
-  .r-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
-  .r-btns { display:flex; gap:4px; }
-  .r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; width:24px; height:24px; cursor:pointer; transition:all 0.15s; }
-  .r-btn:hover { border-color:var(--border2); }
-  .r-btn.active { border-color:var(--user); color:var(--user); }
-  .r-div { width:1px; height:16px; background:var(--border); margin:0 4px; }
-  .r-desc { font-size:11px; color:var(--text-dim); }
+/* ── RELAY BAR ── */
+.relay-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:12px; flex-shrink:0; background:var(--surface2); flex-wrap:wrap; }
+.r-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
+.r-btns { display:flex; gap:4px; }
+.r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; width:24px; height:24px; cursor:pointer; transition:all 0.15s; }
+.r-btn:hover { border-color:var(--border2); }
+.r-btn.active { border-color:var(--user); color:var(--user); }
+.r-div { width:1px; height:16px; background:var(--border); margin:0 4px; }
+.r-desc { font-size:11px; color:var(--text-dim); }
 
-  /* ── TOGGLE BAR ── */
-  .toggle-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:10px; flex-shrink:0; background:var(--surface); }
-  .toggle-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-right:4px; }
-  .toggle-btn {
-    padding:5px 14px;
-    border:1px solid var(--border);
-    background:transparent;
-    color:var(--text-muted);
-    font-family:'JetBrains Mono',monospace;
-    font-size:12px;
-    letter-spacing:0.08em;
-    cursor:pointer;
-    transition:all 0.15s;
-    text-transform:uppercase;
-    opacity:0.5;
-  }
-  .toggle-btn:hover { opacity:0.8; }
-  .toggle-btn.on { opacity:1; }
-  .toggle-btn.on.t-claude { border-color:var(--claude); color:var(--claude); background:rgba(200,169,110,0.08); }
-  .toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
-  .toggle-btn.on.t-grok { border-color:var(--grok); color:var(--grok); background:rgba(184,126,200,0.08); }
-  .toggle-btn.on.t-chatgpt { border-color:var(--chatgpt); color:var(--chatgpt); background:rgba(126,200,160,0.08); }
-  .toggle-btn.disabled-ai { opacity:0.25; cursor:not-allowed; }
-  .toggle-divider { width:1px; height:18px; background:var(--border); margin:0 4px; }
-  .toggle-hint { font-size:11px; color:var(--text-muted); margin-left:auto; }
+/* ── TOGGLE BAR ── */
+.toggle-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:10px; flex-shrink:0; background:var(--surface); }
+.toggle-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-right:4px; }
+.toggle-btn {
+padding:5px 14px;
+border:1px solid var(--border);
+background:transparent;
+color:var(--text-muted);
+font-family:'JetBrains Mono',monospace;
+font-size:12px;
+letter-spacing:0.08em;
+cursor:pointer;
+transition:all 0.15s;
+text-transform:uppercase;
+opacity:0.5;
+}
+.toggle-btn:hover { opacity:0.8; }
+.toggle-btn.on { opacity:1; }
+.toggle-btn.on.t-claude { border-color:var(--claude); color:var(--claude); background:rgba(200,169,110,0.08); }
+.toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
+.toggle-btn.on.t-grok { border-color:var(--grok); color:var(--grok); background:rgba(184,126,200,0.08); }
+.toggle-btn.on.t-chatgpt { border-color:var(--chatgpt); color:var(--chatgpt); background:rgba(126,200,160,0.08); }
+.toggle-btn.disabled-ai { opacity:0.25; cursor:not-allowed; }
+.toggle-divider { width:1px; height:18px; background:var(--border); margin:0 4px; }
+.toggle-hint { font-size:11px; color:var(--text-muted); margin-left:auto; }
 
-  /* ── MAIN ── */
-  .main { flex:1; display:flex; overflow:hidden; }
+/* ── MAIN ── */
+.main { flex:1; display:flex; overflow:hidden; }
 
-  /* ── PANELS ── */
-  .panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s, opacity 0.25s; min-width:0; }
-  .panel:last-child { border-right:none; }
-  .panel.inactive { opacity:0.35; }
-  .panel.glow-claude { box-shadow:inset 2px 0 0 var(--claude); }
-  .panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
-  .panel.glow-grok { box-shadow:inset 2px 0 0 var(--grok); }
-  .panel.glow-chatgpt { box-shadow:inset 2px 0 0 var(--chatgpt); }
+/* ── PANELS ── */
+.panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s, opacity 0.25s; min-width:0; }
+.panel:last-child { border-right:none; }
+.panel.inactive { opacity:0.35; }
+.panel.glow-claude { box-shadow:inset 2px 0 0 var(--claude); }
+.panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
+.panel.glow-grok { box-shadow:inset 2px 0 0 var(--grok); }
+.panel.glow-chatgpt { box-shadow:inset 2px 0 0 var(--chatgpt); }
 
-  .p-hdr { padding:10px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
-  .p-name { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:400; letter-spacing:0.1em; }
-  .p-name.claude { color:var(--claude); }
-  .p-name.gemini { color:var(--gemini); }
-  .p-name.grok { color:var(--grok); }
-  .p-name.chatgpt { color:var(--chatgpt); }
-  .badge { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border:1px solid; margin-left:7px; }
-  .badge.live-claude { color:var(--claude); border-color:var(--claude); opacity:0.6; }
-  .badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
-  .badge.live-grok { color:var(--grok); border-color:var(--grok); opacity:0.6; }
-  .badge.live-chatgpt { color:var(--chatgpt); border-color:var(--chatgpt); opacity:0.6; }
-  .badge.pm { color:var(--text-muted); border-color:var(--border2); }
-  .p-count { font-size:11px; color:var(--text-muted); }
+.p-hdr { padding:10px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+.p-name { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:400; letter-spacing:0.1em; }
+.p-name.claude { color:var(--claude); }
+.p-name.gemini { color:var(--gemini); }
+.p-name.grok { color:var(--grok); }
+.p-name.chatgpt { color:var(--chatgpt); }
+.badge { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border:1px solid; margin-left:7px; }
+.badge.live-claude { color:var(--claude); border-color:var(--claude); opacity:0.6; }
+.badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
+.badge.live-grok { color:var(--grok); border-color:var(--grok); opacity:0.6; }
+.badge.live-chatgpt { color:var(--chatgpt); border-color:var(--chatgpt); opacity:0.6; }
+.badge.pm { color:var(--text-muted); border-color:var(--border2); }
+.p-count { font-size:11px; color:var(--text-muted); }
 
-  /* ── MESSAGES ── */
-  .messages { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
-  .messages::-webkit-scrollbar { width:3px; }
-  .messages::-webkit-scrollbar-thumb { background:var(--border); }
+/* ── MESSAGES ── */
+.messages { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.messages::-webkit-scrollbar { width:3px; }
+.messages::-webkit-scrollbar-thumb { background:var(--border); }
 
-  .msg { padding:13px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
-  .msg:last-child { border-bottom:none; }
-  @keyframes min { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+.msg { padding:13px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
+.msg:last-child { border-bottom:none; }
+@keyframes min { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
 
-  .m-meta { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
-  .m-role { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; }
-  .m-role.user { color:var(--user); }
-  .m-role.claude { color:var(--claude); }
-  .m-role.gemini { color:var(--gemini); }
-  .m-role.grok { color:var(--grok); }
-  .m-role.chatgpt { color:var(--chatgpt); }
-  .m-role.system { color:var(--interrupt); }
-  .m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
-  .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; font-size:15px; }
-  .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; }
-  .m-body.sb { color:var(--interrupt); font-size:13px; }
+.m-meta { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.m-role { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; }
+.m-role.user { color:var(--user); }
+.m-role.claude { color:var(--claude); }
+.m-role.gemini { color:var(--gemini); }
+.m-role.grok { color:var(--grok); }
+.m-role.chatgpt { color:var(--chatgpt); }
+.m-role.system { color:var(--interrupt); }
+.m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
+.m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; font-size:15px; }
+.m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; }
+.m-body.sb { color:var(--interrupt); font-size:13px; }
 
-  .thinking { padding:13px 0; display:flex; align-items:center; gap:10px; }
-  .t-lbl { font-size:11px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
-  .dots { display:flex; gap:4px; }
-  .d { width:4px; height:4px; border-radius:50%; background:var(--text-muted); animation:bl 1.4s ease-in-out infinite; }
-  .d:nth-child(2){animation-delay:0.2s} .d:nth-child(3){animation-delay:0.4s}
-  @keyframes bl { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+.thinking { padding:13px 0; display:flex; align-items:center; gap:10px; }
+.t-lbl { font-size:11px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
+.dots { display:flex; gap:4px; }
+.d { width:4px; height:4px; border-radius:50%; background:var(--text-muted); animation:bl 1.4s ease-in-out infinite; }
+.d:nth-child(2){animation-delay:0.2s} .d:nth-child(3){animation-delay:0.4s}
+@keyframes bl { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
 
-  /* per-panel key activation */
-  .panel-key-form { margin-top:16px; display:flex; flex-direction:column; align-items:center; gap:8px; width:100%; max-width:260px; }
-  .panel-key-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; outline:none; transition:border-color 0.15s; text-align:center; }
-  .panel-key-input:focus { border-color:var(--border2); }
-  .panel-key-input::placeholder { color:var(--text-muted); }
-  .panel-key-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:6px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; width:100%; }
-  .panel-key-btn:hover { color:var(--text); border-color:var(--text-dim); }
-  .e-icon { font-family:'Cormorant Garamond',serif; font-size:28px; opacity:0.12; margin-bottom:4px; }
-  .e-txt { font-family:'Cormorant Garamond',serif; font-size:13px; font-style:italic; color:var(--text-muted); line-height:1.7; }
+/* per-panel key activation */
+.panel-key-form { margin-top:16px; display:flex; flex-direction:column; align-items:center; gap:8px; width:100%; max-width:260px; }
+.panel-key-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; outline:none; transition:border-color 0.15s; text-align:center; }
+.panel-key-input:focus { border-color:var(--border2); }
+.panel-key-input::placeholder { color:var(--text-muted); }
+.panel-key-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:6px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; width:100%; }
+.panel-key-btn:hover { color:var(--text); border-color:var(--text-dim); }
+.e-icon { font-family:'Cormorant Garamond',serif; font-size:28px; opacity:0.12; margin-bottom:4px; }
+.e-txt { font-family:'Cormorant Garamond',serif; font-size:13px; font-style:italic; color:var(--text-muted); line-height:1.7; }
 
-  /* ── INPUT AREA ── */
-  .input-area { border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
-  .input-row { display:flex; align-items:flex-end; padding:12px 18px; gap:10px; }
-  .input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; padding:10px 13px; resize:none; outline:none; min-height:42px; max-height:120px; line-height:1.6; transition:border-color 0.15s; }
-  .input-box:focus { border-color:var(--border2); }
-  .input-box::placeholder { color:var(--text-muted); }
-  .send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
-  .send-btn:hover:not(:disabled) { border-color:var(--user); color:var(--user); }
-  .send-btn:disabled { opacity:0.2; cursor:not-allowed; }
-  .interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:10px 13px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
-  .interrupt-btn.visible { display:block; }
-  .interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
+/* ── INPUT AREA ── */
+.input-area { border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
+.input-row { display:flex; align-items:flex-end; padding:12px 18px; gap:10px; }
+.input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; padding:10px 13px; resize:none; outline:none; min-height:42px; max-height:120px; line-height:1.6; transition:border-color 0.15s; }
+.input-box:focus { border-color:var(--border2); }
+.input-box::placeholder { color:var(--text-muted); }
+.send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
+.send-btn:hover:not(:disabled) { border-color:var(--user); color:var(--user); }
+.send-btn:disabled { opacity:0.2; cursor:not-allowed; }
+.interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:10px 13px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
+.interrupt-btn.visible { display:block; }
+.interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
 
-  /* status */
-  .status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
-  .si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
-  .si span { color:var(--text-dim); }
+/* status */
+.status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
+.si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
+.si span { color:var(--text-dim); }
 
-  /* ── SESSION OVERLAY ── */
-  .session-overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.92);
-    display:none; align-items:center; justify-content:center;
-    z-index:400;
-    padding:20px;
-  }
-  .session-overlay.open { display:flex; }
-  .session-panel {
-    background:var(--surface);
-    border:1px solid var(--border2);
-    padding:36px; width:520px; max-width:95vw;
-    animation:up 0.25s ease;
-  }
-  .sp-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:0.1em; margin-bottom:4px; }
-  .sp-sub { font-size:12px; color:var(--text-dim); margin-bottom:28px; line-height:1.6; }
-  .sp-field { margin-bottom:16px; }
-  .sp-label { font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between; }
-  .sp-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
-  .sp-input:focus { border-color:var(--border2); }
-  .sp-row { display:flex; gap:8px; margin-top:4px; }
-  .sp-btn { flex:1; background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; padding:10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
-  .sp-btn:hover:not(:disabled) { border-color:var(--text-dim); color:var(--text); }
-  .sp-btn:disabled { opacity:0.25; cursor:not-allowed; }
-  .sp-btn.primary { border-color:var(--user); color:var(--user); }
-  .sp-btn.primary:hover:not(:disabled) { background:rgba(168,152,128,0.1); }
-  .sp-status { font-size:11px; color:var(--text-dim); margin-top:12px; min-height:16px; letter-spacing:0.04em; }
-  .sp-status.ok { color:#7ec8a0; }
-  .sp-status.err { color:var(--interrupt); }
-  .sp-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
-  .sp-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
-  .sp-toggle { width:32px; height:18px; border:1px solid var(--border2); background:var(--bg); cursor:pointer; position:relative; transition:all 0.2s; flex-shrink:0; }
-  .sp-toggle.on { background:rgba(168,152,128,0.2); border-color:var(--user); }
-  .sp-toggle::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--border2); transition:all 0.2s; }
-  .sp-toggle.on::after { left:16px; background:var(--user); }
-  .sp-toggle-lbl { font-size:12px; color:var(--text-dim); letter-spacing:0.06em; }
+/* ── SESSION OVERLAY ── */
+.session-overlay {
+position:fixed; inset:0;
+background:rgba(0,0,0,0.92);
+display:none; align-items:center; justify-content:center;
+z-index:400;
+padding:20px;
+}
+.session-overlay.open { display:flex; }
+.session-panel {
+background:var(--surface);
+border:1px solid var(--border2);
+padding:36px; width:520px; max-width:95vw;
+animation:up 0.25s ease;
+}
+.sp-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:0.1em; margin-bottom:4px; }
+.sp-sub { font-size:12px; color:var(--text-dim); margin-bottom:28px; line-height:1.6; }
+.sp-field { margin-bottom:16px; }
+.sp-label { font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between; }
+.sp-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
+.sp-input:focus { border-color:var(--border2); }
+.sp-row { display:flex; gap:8px; margin-top:4px; }
+.sp-btn { flex:1; background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; padding:10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+.sp-btn:hover:not(:disabled) { border-color:var(--text-dim); color:var(--text); }
+.sp-btn:disabled { opacity:0.25; cursor:not-allowed; }
+.sp-btn.primary { border-color:var(--user); color:var(--user); }
+.sp-btn.primary:hover:not(:disabled) { background:rgba(168,152,128,0.1); }
+.sp-status { font-size:11px; color:var(--text-dim); margin-top:12px; min-height:16px; letter-spacing:0.04em; }
+.sp-status.ok { color:#7ec8a0; }
+.sp-status.err { color:var(--interrupt); }
+.sp-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+.sp-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.sp-toggle { width:32px; height:18px; border:1px solid var(--border2); background:var(--bg); cursor:pointer; position:relative; transition:all 0.2s; flex-shrink:0; }
+.sp-toggle.on { background:rgba(168,152,128,0.2); border-color:var(--user); }
+.sp-toggle::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--border2); transition:all 0.2s; }
+.sp-toggle.on::after { left:16px; background:var(--user); }
+.sp-toggle-lbl { font-size:12px; color:var(--text-dim); letter-spacing:0.06em; }
 </style>
 </head>
 <body>
 
 <div class="setup-overlay" id="setupOverlay">
-  <div class="setup-panel">
-    <div class="s-eye">Initialization Protocol</div>
-    <div class="s-title">The Sovereign Council</div>
-    <div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>At least one key required. The Council convenes with whoever is present.</div>
+<div class="setup-panel">
+<div class="s-eye">Initialization Protocol</div>
+<div class="s-title">The Sovereign Council</div>
+<div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>At least one key required. The Council convenes with whoever is present.</div>
 
-    <div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister · Optional</div>
-    <div class="s-field">
-      <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
-      <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
-      <div class="s-note">platform.openai.com → API Keys</div>
-    </div>
+<div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister · Optional</div>
+<div class="s-field">
+<div class="s-label lch">OpenAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+<div class="s-note">platform.openai.com → API Keys</div>
+</div>
 
-    <div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Vision · Optional</div>
-    <div class="s-field">
-      <div class="s-label lg">Gemini API Key <span>Optional</span></div>
-      <input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
-      <div class="s-note">aistudio.google.com → Get API Key</div>
-    </div>
+<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Vision · Optional</div>
+<div class="s-field">
+<div class="s-label lg">Gemini API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
+<div class="s-note">aistudio.google.com → Get API Key</div>
+</div>
 
-    <div class="s-section" style="color:var(--grok)">Grok · Adversarial Counsel · Optional</div>
-    <div class="s-field">
-      <div class="s-label lgr">xAI API Key <span>Optional</span></div>
-      <input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
-      <div class="s-note">console.x.ai → API Keys</div>
-    </div>
+<div class="s-section" style="color:var(--grok)">Grok · Adversarial Counsel · Optional</div>
+<div class="s-field">
+<div class="s-label lgr">xAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
+<div class="s-note">console.x.ai → API Keys</div>
+</div>
 
-    <div class="s-section" style="color:var(--claude)">Claude · Minister of Precision · Optional</div>
-    <div class="s-field">
-      <div class="s-label lc">Anthropic API Key <span>Optional — blank = paste mode</span></div>
-      <input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
-      <div class="s-note">console.anthropic.com → API Keys</div>
-    </div>
+<div class="s-section" style="color:var(--claude)">Claude · Minister of Precision · Optional</div>
+<div class="s-field">
+<div class="s-label lc">Anthropic API Key <span>Optional — blank = paste mode</span></div>
+<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
+<div class="s-note">console.anthropic.com → API Keys</div>
+</div>
 
-    <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
-  </div>
+<button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
+</div>
 </div>
 
 <div class="header">
-  <div class="logo">The Sovereign <em>Council</em></div>
-  <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
-  <div class="h-right">
-    <div class="pip-group">
-      <div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
-      <div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
-      <div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
-      <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
-    </div>
-    <button class="h-btn" onclick="clearSession()">Clear</button>
-    <button class="h-btn" onclick="openSession()">Session</button>
-    <button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
-  </div>
+<div class="logo">The Sovereign <em>Council</em></div>
+<div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
+<div class="h-right">
+<div class="pip-group">
+<div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
+<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
+<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
+<div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
+</div>
+<button class="h-btn" onclick="clearSession()">Clear</button>
+<button class="h-btn" onclick="openSession()">Session</button>
+<button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
+</div>
 </div>
 
 <div class="relay-bar">
-  <div class="r-label">Volleys</div>
-  <div class="r-btns">
-    <button class="r-btn active" id="rv1" onclick="setVolleys(1)">1</button>
-    <button class="r-btn" id="rv2" onclick="setVolleys(2)">2</button>
-    <button class="r-btn" id="rv3" onclick="setVolleys(3)">3</button>
-    <button class="r-btn" id="rv4" onclick="setVolleys(4)">4</button>
-    <button class="r-btn" id="rv5" onclick="setVolleys(5)">5</button>
-  </div>
-  <div class="r-desc" id="volleyDesc">Direct response</div>
+<div class="r-label">Volleys</div>
+<div class="r-btns">
+<button class="r-btn active" id="rv1" onclick="setVolleys(1)">1</button>
+<button class="r-btn" id="rv2" onclick="setVolleys(2)">2</button>
+<button class="r-btn" id="rv3" onclick="setVolleys(3)">3</button>
+<button class="r-btn" id="rv4" onclick="setVolleys(4)">4</button>
+<button class="r-btn" id="rv5" onclick="setVolleys(5)">5</button>
+</div>
+<div class="r-desc" id="volleyDesc">Direct response</div>
 </div>
 
 <div class="toggle-bar">
-  <div class="toggle-label">Council</div>
-  <button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
-  <button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
-  <button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
-  <button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
-  <div class="toggle-divider"></div>
-  <div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
+<div class="toggle-label">Council</div>
+<button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
+<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+<button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
+<div class="toggle-divider"></div>
+<div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
 </div>
 
 <div class="main" id="mainPanels">
 
-  <div class="panel inactive" id="panelChatGPT">
-    <div class="p-hdr">
-      <div style="display:flex;align-items:center">
-        <div class="p-name chatgpt">ChatGPT</div>
-        <div class="badge pm" id="badgeChatGPT">no key</div>
-      </div>
-      <div class="p-count" id="countChatGPT">0</div>
-    </div>
-    <div class="messages" id="msgsChatGPT">
-      <div class="empty" id="emptyChatGPT">
-        <div class="e-icon">○</div>
-        <div class="e-txt">ChatGPT awaits.</div>
-        <div class="panel-key-form">
-          <input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
-          <button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="panel" id="panelGemini">
-    <div class="p-hdr">
-      <div style="display:flex;align-items:center">
-        <div class="p-name gemini">Gemini</div>
-        <div class="badge" id="badgeGemini">initializing</div>
-      </div>
-      <div class="p-count" id="countGemini">0</div>
-    </div>
-    <div class="messages" id="msgsGemini">
-      <div class="empty" id="emptyGemini">
-        <div class="e-icon">◇</div>
-        <div class="e-txt">Gemini awaits.</div>
-        <div class="panel-key-form" id="geminiKeyForm">
-          <input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
-          <button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="panel inactive" id="panelChatGPT">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name chatgpt">ChatGPT</div>
+<div class="badge pm" id="badgeChatGPT">no key</div>
+</div>
+<div class="p-count" id="countChatGPT">0</div>
+</div>
+<div class="messages" id="msgsChatGPT">
+<div class="empty" id="emptyChatGPT">
+<div class="e-icon">○</div>
+<div class="e-txt">ChatGPT awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
+<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
+</div>
+</div>
+</div>
+</div>
+<div class="panel" id="panelGemini">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name gemini">Gemini</div>
+<div class="badge" id="badgeGemini">initializing</div>
+</div>
+<div class="p-count" id="countGemini">0</div>
+</div>
+<div class="messages" id="msgsGemini">
+<div class="empty" id="emptyGemini">
+<div class="e-icon">◇</div>
+<div class="e-txt">Gemini awaits.</div>
+<div class="panel-key-form" id="geminiKeyForm">
+<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
+<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
+</div>
+</div>
+</div>
+</div>
 
-  <div class="panel inactive" id="panelGrok">
-    <div class="p-hdr">
-      <div style="display:flex;align-items:center">
-        <div class="p-name grok">Grok</div>
-        <div class="badge pm" id="badgeGrok">no key</div>
-      </div>
-      <div class="p-count" id="countGrok">0</div>
-    </div>
-    <div class="messages" id="msgsGrok">
-      <div class="empty" id="emptyGrok">
-        <div class="e-icon">⬡</div>
-        <div class="e-txt">Grok awaits.</div>
-        <div class="panel-key-form">
-          <input class="panel-key-input" id="inlineKeyGrok" type="password" placeholder="xai-...">
-          <button class="panel-key-btn" style="border-color:var(--grok);color:var(--grok)" onclick="activatePanel('grok')">Activate Grok</button>
-        </div>
-      </div>
-    </div>
-  </div>
+<div class="panel inactive" id="panelGrok">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name grok">Grok</div>
+<div class="badge pm" id="badgeGrok">no key</div>
+</div>
+<div class="p-count" id="countGrok">0</div>
+</div>
+<div class="messages" id="msgsGrok">
+<div class="empty" id="emptyGrok">
+<div class="e-icon">⬡</div>
+<div class="e-txt">Grok awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyGrok" type="password" placeholder="xai-...">
+<button class="panel-key-btn" style="border-color:var(--grok);color:var(--grok)" onclick="activatePanel('grok')">Activate Grok</button>
+</div>
+</div>
+</div>
+</div>
 
-  <div class="panel" id="panelClaude">
-    <div class="p-hdr">
-      <div style="display:flex;align-items:center">
-        <div class="p-name claude">Claude</div>
-        <div class="badge pm" id="badgeClaude">paste mode</div>
-      </div>
-      <div class="p-count" id="countClaude">0</div>
-    </div>
-    <div class="messages" id="msgsClaude">
-      <div class="empty" id="emptyClaude">
-        <div class="e-icon">◈</div>
-        <div class="e-txt">Claude awaits.</div>
-        <div class="panel-key-form">
-          <input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
-          <button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
-        </div>
-      </div>
-    </div>
+<div class="panel" id="panelClaude">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name claude">Claude</div>
+<div class="badge pm" id="badgeClaude">paste mode</div>
+</div>
+<div class="p-count" id="countClaude">0</div>
+</div>
+<div class="messages" id="msgsClaude">
+<div class="empty" id="emptyClaude">
+<div class="e-icon">◈</div>
+<div class="e-txt">Claude awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
+<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
+</div>
+</div>
+</div>
 
-  </div>
+</div>
 
 
 </div>
 
 <div class="session-overlay" id="sessionOverlay">
-  <div class="session-panel">
-    <div class="sp-title">Session</div>
-    <div class="sp-sub">Manage Council memory and commit session minutes to GitHub.</div>
+<div class="session-panel">
+<div class="sp-title">Session</div>
+<div class="sp-sub">Manage Council memory and commit session minutes to GitHub.</div>
 
-    <div class="sp-field">
-      <div class="sp-label">GitHub Personal Access Token <span style="color:var(--text-muted)">Fine-grained · Contents R/W</span></div>
-      <input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
-      <div class="s-note">github.com → Settings → Developer Settings → Fine-grained tokens</div>
-    </div>
+<div class="sp-field">
+<div class="sp-label">GitHub Personal Access Token <span style="color:var(--text-muted)">Fine-grained · Contents R/W</span></div>
+<input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
+<div class="s-note">github.com → Settings → Developer Settings → Fine-grained tokens</div>
+</div>
 
-    <div class="sp-field">
-      <div class="sp-label">Repository <span style="color:var(--text-muted)">owner/repo</span></div>
-      <input class="sp-input" type="text" id="ghRepo" placeholder="cyntratus/sovereign-council" value="cyntratus/sovereign-council">
-    </div>
+<div class="sp-field">
+<div class="sp-label">Repository <span style="color:var(--text-muted)">owner/repo</span></div>
+<input class="sp-input" type="text" id="ghRepo" placeholder="cyntratus/sovereign-council" value="cyntratus/sovereign-council">
+</div>
 
-    <hr class="sp-divider">
+<hr class="sp-divider">
 
-    <div class="sp-toggle-row">
-      <div class="sp-toggle on" id="memoryToggle" onclick="toggleMemory()"></div>
-      <div class="sp-toggle-lbl">Load Council Memory at startup (memory.md + last 7 sessions)</div>
-    </div>
+<div class="sp-toggle-row">
+<div class="sp-toggle on" id="memoryToggle" onclick="toggleMemory()"></div>
+<div class="sp-toggle-lbl">Load Council Memory at startup (memory.md + last 7 sessions)</div>
+</div>
 
-    <div class="sp-row">
-      <button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
-      <button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ End Session &amp; Commit Minutes</button>
-    </div>
-    <div class="sp-status" id="spStatus"></div>
+<div class="sp-row">
+<button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
+<button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ End Session &amp; Commit Minutes</button>
+</div>
+<div class="sp-status" id="spStatus"></div>
 
-    <hr class="sp-divider">
+<hr class="sp-divider">
 
-    <div class="sp-field" style="margin-bottom:0;">
-      <div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional · Single Session</span></div>
-      <div class="sp-row" style="margin-top:0;">
-        <input class="sp-input" type="text" id="refPath" placeholder="reference/meal_plan.md">
-        <button class="sp-btn" onclick="loadReference()" style="flex:0 0 auto; width:100px;">Load</button>
-      </div>
-      <div class="s-note" id="refStatus">Loads a markdown/text file from your repo into the current session context.</div>
-    </div>
+<div class="sp-field" style="margin-bottom:0;">
+<div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional · Single Session</span></div>
+<div class="sp-row" style="margin-top:0;">
+<input class="sp-input" type="text" id="refPath" placeholder="reference/meal_plan.md">
+<button class="sp-btn" onclick="loadReference()" style="flex:0 0 auto; width:100px;">Load</button>
+</div>
+<div class="s-note" id="refStatus">Loads a markdown/text file from your repo into the current session context.</div>
+</div>
 
-    <hr class="sp-divider">
+<hr class="sp-divider">
 
-    <div class="sp-row">
-      <button class="sp-btn" onclick="closeSession()">— Close —</button>
-    </div>
-  </div>
+<div class="sp-row">
+<button class="sp-btn" onclick="closeSession()">— Close —</button>
+</div>
+</div>
 </div>
 
 <div class="input-area">
-  <div class="input-row">
-    <textarea class="input-box" id="msgInput" placeholder="Address the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
-    <button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
-    <button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
-  </div>
+<div class="input-row">
+<textarea class="input-box" id="msgInput" placeholder="Address the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+<button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
+<button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
+</div>
 </div>
 
 <div class="status-bar">
-  <div class="si">Volleys: <span id="sbVolleys">1</span></div>
-  <div class="si">Msgs: <span id="sbMsgs">0</span></div>
-  <div class="si">Active: <span id="sbActive">—</span></div>
-  <div class="si"><span id="sbStatus">Awaiting init</span></div>
+<div class="si">Volleys: <span id="sbVolleys">1</span></div>
+<div class="si">Msgs: <span id="sbMsgs">0</span></div>
+<div class="si">Active: <span id="sbActive">—</span></div>
+<div class="si"><span id="sbStatus">Awaiting init</span></div>
 </div>
 
 <script>
@@ -504,7 +504,7 @@ const RELAY_ORDER = ['chatgpt','gemini','grok','claude'];
 
 // ── SYSTEM PROMPTS ──
 const SYSTEMS = {
-  chatgpt: `You are ChatGPT — Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+chatgpt: `You are ChatGPT — Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
 YOUR MINISTRY: Opening and Synthesis.
 You convene each session. When the Sovereign brings a matter before the Council, you open by establishing context, surfacing the right questions, and setting the frame for deliberation. At the end of a relay, having heard the full Council, you synthesize and close with direction.
@@ -513,7 +513,7 @@ You are not a yes-man. You are an executor — the one who turns deliberation in
 
 PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
 
-  gemini: `You are Gemini — Chancellor of Vision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+gemini: `You are Gemini — Chancellor of Vision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
 YOUR MINISTRY: Vision and Expansion.
 You take what has been opened and expand it. Find the larger pattern. Name the architecture of the thing. Reach for meaning, connection, and what something becomes rather than just what it is. You are comfortable with metaphor and the long arc.
@@ -522,7 +522,7 @@ You follow ChatGPT in the relay. Build on the frame that's been set — don't re
 
 PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
 
-  grok: `You are Grok — Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+grok: `You are Grok — Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
 YOUR MINISTRY: Rejection and Challenge.
 Find what's wrong. Attack the vision. Surface the hidden assumption, the wishful thinking, the thing everyone glossed over. You are the Council's immune system — nothing passes unchallenged if it deserves challenge. You are not destructive for its own sake.
@@ -531,7 +531,7 @@ You follow Gemini in the relay. You have seen the vision. Find where it leaks. R
 
 PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
 
-  claude: `You are Claude — Minister of Precision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+claude: `You are Claude — Minister of Precision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
 YOUR MINISTRY: Precision and Reconstruction.
 You go last before synthesis. You have heard the opening, the vision, and the challenge. Find what is actually true. Distinguish between what broke because it was weak and what broke because the attack was wrong. Rebuild on solid ground.
@@ -543,719 +543,719 @@ PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them dir
 
 // ── CLOCK ──
 function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent = now.toLocaleString('en-US', {
-    weekday:'short', month:'short', day:'numeric',
-    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
-  });
+const now = new Date();
+document.getElementById('clock').textContent = now.toLocaleString('en-US', {
+weekday:'short', month:'short', day:'numeric',
+hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+});
 }
 setInterval(updateClock, 1000);
 updateClock();
 
 function getDateTimeContext() {
-  return `Current date/time: ${new Date().toLocaleString('en-US', {
-    weekday:'long', year:'numeric', month:'long', day:'numeric',
-    hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'
-  })}${buildMemoryContext()}`;
+return `Current date/time: ${new Date().toLocaleString('en-US', {
+   weekday:'long', year:'numeric', month:'long', day:'numeric',
+   hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'
+ })}${buildMemoryContext()}`;
 }
 
 // ── INIT ──
 window.onload = () => {
-  updateToggleHint();
-  // Restore GH settings from sessionStorage if available
-  const savedToken = sessionStorage.getItem('gh_token');
-  const savedRepo = sessionStorage.getItem('gh_repo');
-  if (savedToken) { GH_TOKEN = savedToken; document.getElementById('ghToken').value = savedToken; }
-  if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
+updateToggleHint();
+// Restore GH settings from sessionStorage if available
+const savedToken = sessionStorage.getItem('gh_token');
+const savedRepo = sessionStorage.getItem('gh_repo');
+if (savedToken) { GH_TOKEN = savedToken; document.getElementById('ghToken').value = savedToken; }
+if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
 };
 
 function initCouncil() {
-  KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
-  KEY.gemini  = document.getElementById('keyGemini').value.trim();
-  KEY.grok    = document.getElementById('keyGrok').value.trim();
-  KEY.claude  = document.getElementById('keyClaude').value.trim();
+KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+KEY.gemini  = document.getElementById('keyGemini').value.trim();
+KEY.grok    = document.getElementById('keyGrok').value.trim();
+KEY.claude  = document.getElementById('keyClaude').value.trim();
 
-  if (!KEY.chatgpt && !KEY.gemini && !KEY.grok && !KEY.claude) {
-    alert('Enter at least one API key to initialize the Council.');
-    return;
-  }
+if (!KEY.chatgpt && !KEY.gemini && !KEY.grok && !KEY.claude) {
+alert('Enter at least one API key to initialize the Council.');
+return;
+}
 
-  // Only mark live if key actually provided
-  live.chatgpt = !!KEY.chatgpt;
-  live.gemini  = !!KEY.gemini;
-  live.grok    = !!KEY.grok;
-  live.claude  = !!KEY.claude;
+// Only mark live if key actually provided
+live.chatgpt = !!KEY.chatgpt;
+live.gemini  = !!KEY.gemini;
+live.grok    = !!KEY.grok;
+live.claude  = !!KEY.claude;
 
-  document.getElementById('setupOverlay').style.display = 'none';
+document.getElementById('setupOverlay').style.display = 'none';
 
-  // Update each AI's UI state based on whether key was provided
-  const configs = [
-    ['chatgpt', 'ChatGPT', 'badgeChatGPT', null,              'togChatGPT'],
-    ['gemini',  'Gemini',  'badgeGemini',  null,              'togGemini'],
-    ['grok',    'Grok',    'badgeGrok',    null,              'togGrok'],
-    ['claude',  'Claude',  'badgeClaude',  null,'togClaude'],
-  ];
+// Update each AI's UI state based on whether key was provided
+const configs = [
+['chatgpt', 'ChatGPT', 'badgeChatGPT', null,              'togChatGPT'],
+['gemini',  'Gemini',  'badgeGemini',  null,              'togGemini'],
+['grok',    'Grok',    'badgeGrok',    null,              'togGrok'],
+['claude',  'Claude',  'badgeClaude',  null,'togClaude'],
+];
 
-  let anyLive = false;
+let anyLive = false;
 
-  configs.forEach(([id, name, badgeId, pasteId, togId]) => {
-    const pip  = document.getElementById('pip'   + name);
-    const badge = document.getElementById(badgeId);
-    const tog  = document.getElementById(togId);
-    const panel = document.getElementById('panel' + name);
+configs.forEach(([id, name, badgeId, pasteId, togId]) => {
+const pip  = document.getElementById('pip'   + name);
+const badge = document.getElementById(badgeId);
+const tog  = document.getElementById(togId);
+const panel = document.getElementById('panel' + name);
 
-    if (live[id]) {
-      anyLive = true;
-      pip.className = `pip on-${id}`;
-      badge.textContent = 'live';
-      badge.className = `badge live-${id}`;
-      tog.classList.remove('disabled-ai');
-      tog.classList.add('on');
-      toggled[id] = true;
-      panel.classList.remove('inactive');
-      if (pasteId) { const p = document.getElementById(pasteId); if(p) p.style.display = 'none'; }
-      // Remove inline key form since we have the key
-      const form = document.getElementById('inlineKey' + name);
-      if (form) form.closest('.panel-key-form').remove();
-    } else {
-      pip.className = 'pip';
-      badge.textContent = 'no key';
-      badge.className = 'badge pm';
-      tog.classList.remove('on');
-      tog.classList.add('disabled-ai');
-      toggled[id] = false;
-      panel.classList.add('inactive');
-    }
-  });
+if (live[id]) {
+anyLive = true;
+pip.className = `pip on-${id}`;
+badge.textContent = 'live';
+badge.className = `badge live-${id}`;
+tog.classList.remove('disabled-ai');
+tog.classList.add('on');
+toggled[id] = true;
+panel.classList.remove('inactive');
+if (pasteId) { const p = document.getElementById(pasteId); if(p) p.style.display = 'none'; }
+// Remove inline key form since we have the key
+const form = document.getElementById('inlineKey' + name);
+if (form) form.closest('.panel-key-form').remove();
+} else {
+pip.className = 'pip';
+badge.textContent = 'no key';
+badge.className = 'badge pm';
+tog.classList.remove('on');
+tog.classList.add('disabled-ai');
+toggled[id] = false;
+panel.classList.add('inactive');
+}
+});
 
-  if (anyLive) document.getElementById('sendBtn').disabled = false;
+if (anyLive) document.getElementById('sendBtn').disabled = false;
 
-  document.getElementById('sbStatus').textContent = 'Council initialized';
-  updateToggleHint();
-  updateActiveStatus();
+document.getElementById('sbStatus').textContent = 'Council initialized';
+updateToggleHint();
+updateActiveStatus();
 }
 
 // ── ACTIVATE PANEL ──
 function activatePanel(id) {
-  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
-  const name = names[id];
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const name = names[id];
 
-  const inputEl = document.getElementById('inlineKey' + name);
-  if (!inputEl) return;
-  const key = inputEl.value.trim();
-  if (!key) { inputEl.focus(); return; }
+const inputEl = document.getElementById('inlineKey' + name);
+if (!inputEl) return;
+const key = inputEl.value.trim();
+if (!key) { inputEl.focus(); return; }
 
-  KEY[id] = key;
-  live[id] = true;
-  toggled[id] = true;
+KEY[id] = key;
+live[id] = true;
+toggled[id] = true;
 
-  document.getElementById('pip' + name).className = `pip on-${id}`;
+document.getElementById('pip' + name).className = `pip on-${id}`;
 
-  const badge = document.getElementById('badge' + name);
-  badge.textContent = 'live';
-  badge.className = `badge live-${id}`;
+const badge = document.getElementById('badge' + name);
+badge.textContent = 'live';
+badge.className = `badge live-${id}`;
 
-  document.getElementById('panel' + name).classList.remove('inactive');
+document.getElementById('panel' + name).classList.remove('inactive');
 
-  const tog = document.getElementById('tog' + name);
-  tog.classList.remove('disabled-ai');
-  tog.classList.add('on');
+const tog = document.getElementById('tog' + name);
+tog.classList.remove('disabled-ai');
+tog.classList.add('on');
 
-  const form = inputEl.closest('.panel-key-form');
-  if (form) form.remove();
+const form = inputEl.closest('.panel-key-form');
+if (form) form.remove();
 
-  updateToggleHint();
-  updateActiveStatus();
-  document.getElementById('sbStatus').textContent = name + ' activated';
+updateToggleHint();
+updateActiveStatus();
+document.getElementById('sbStatus').textContent = name + ' activated';
 }
 
 
 function setVolleys(n) {
-  maxVolleys = n;
-  for(let i=1;i<=5;i++) document.getElementById('rv'+i).className='r-btn'+(i===n?' active':'');
-  const descs=['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
-  document.getElementById('volleyDesc').textContent = descs[n-1];
-  document.getElementById('sbVolleys').textContent = n;
+maxVolleys = n;
+for(let i=1;i<=5;i++) document.getElementById('rv'+i).className='r-btn'+(i===n?' active':'');
+const descs=['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
+document.getElementById('volleyDesc').textContent = descs[n-1];
+document.getElementById('sbVolleys').textContent = n;
 }
 
 // ── TOGGLES ──
 function toggle(id) {
-  const btn = document.getElementById('tog' + aiName(id));
-  if (btn.classList.contains('disabled-ai')) return;
+const btn = document.getElementById('tog' + aiName(id));
+if (btn.classList.contains('disabled-ai')) return;
 
-  // Keep at least one live AI active
-  const currentlyOn = RELAY_ORDER.filter(k => toggled[k] && live[k]);
-  if (toggled[id] && currentlyOn.length <= 1) return;
+// Keep at least one live AI active
+const currentlyOn = RELAY_ORDER.filter(k => toggled[k] && live[k]);
+if (toggled[id] && currentlyOn.length <= 1) return;
 
-  toggled[id] = !toggled[id];
-  const name = aiName(id);
+toggled[id] = !toggled[id];
+const name = aiName(id);
 
-  if (toggled[id]) {
-    btn.classList.add('on');
-    document.getElementById('panel' + name).classList.remove('inactive');
-  } else {
-    btn.classList.remove('on');
-    document.getElementById('panel' + name).classList.add('inactive');
-  }
+if (toggled[id]) {
+btn.classList.add('on');
+document.getElementById('panel' + name).classList.remove('inactive');
+} else {
+btn.classList.remove('on');
+document.getElementById('panel' + name).classList.add('inactive');
+}
 
-  updateToggleHint();
-  updateActiveStatus();
+updateToggleHint();
+updateActiveStatus();
 }
 
 function updateToggleHint() {
-  const active = RELAY_ORDER.filter(k => toggled[k]);
-  if (active.length === 0) {
-    document.getElementById('toggleHint').textContent = 'None selected';
-    return;
-  }
-  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
-  document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
+const active = RELAY_ORDER.filter(k => toggled[k]);
+if (active.length === 0) {
+document.getElementById('toggleHint').textContent = 'None selected';
+return;
+}
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
 }
 
 function updateActiveStatus() {
-  const active = RELAY_ORDER.filter(k => toggled[k]);
-  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
-  let statusText = active.map(k=>names[k]).join(', ') || '—';
-  
-  // Append reference visual cue if loaded
-  if (activeReference) {
-    const filename = activeReference.name.split('/').pop();
-    statusText += ` [+ ${filename}]`;
-  }
-  
-  document.getElementById('sbActive').textContent = statusText;
+const active = RELAY_ORDER.filter(k => toggled[k]);
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+let statusText = active.map(k=>names[k]).join(', ') || '—';
+
+// Append reference visual cue if loaded
+if (activeReference) {
+const filename = activeReference.name.split('/').pop();
+statusText += ` [+ ${filename}]`;
+}
+
+document.getElementById('sbActive').textContent = statusText;
 }
 
 // ── SEND ──
 async function send() {
-  const input = document.getElementById('msgInput');
-  const text = input.value.trim();
-  if (!text || isRelaying) return;
+const input = document.getElementById('msgInput');
+const text = input.value.trim();
+if (!text || isRelaying) return;
 
-  const activeAIs = RELAY_ORDER.filter(k => toggled[k]);
-  if (activeAIs.length === 0) return;
+const activeAIs = RELAY_ORDER.filter(k => toggled[k]);
+if (activeAIs.length === 0) return;
 
-  isRelaying = true;
-  shouldStop = false;
-  input.value = '';
-  input.style.height = 'auto';
-  document.getElementById('sendBtn').disabled = true;
-  document.getElementById('interruptBtn').className = 'interrupt-btn visible';
-  document.getElementById('sbStatus').textContent = 'Relaying...';
+isRelaying = true;
+shouldStop = false;
+input.value = '';
+input.style.height = 'auto';
+document.getElementById('sendBtn').disabled = true;
+document.getElementById('interruptBtn').className = 'interrupt-btn visible';
+document.getElementById('sbStatus').textContent = 'Relaying...';
 
-  // Show user message in all active panels
-  activeAIs.forEach(id => {
-    const name = aiName(id);
-    addMsg('msgs' + name, 'user', text, 'empty' + name);
-  });
+// Show user message in all active panels
+activeAIs.forEach(id => {
+const name = aiName(id);
+addMsg('msgs' + name, 'user', text, 'empty' + name);
+});
 
-  // Run volleys
-  let lastResponses = {};
+// Run volleys
+let lastResponses = {};
 
-  for (let v = 0; v < maxVolleys; v++) {
-    if (shouldStop) break;
-    const isFirst = v === 0;
-    const tag = maxVolleys > 1 ? `Volley ${v+1}` : null;
+for (let v = 0; v < maxVolleys; v++) {
+if (shouldStop) break;
+const isFirst = v === 0;
+const tag = maxVolleys > 1 ? `Volley ${v+1}` : null;
 
-    for (let i = 0; i < activeAIs.length; i++) {
-      if (shouldStop) break;
-      const id = activeAIs[i];
-      const name = aiName(id);
+for (let i = 0; i < activeAIs.length; i++) {
+if (shouldStop) break;
+const id = activeAIs[i];
+const name = aiName(id);
 
-      // Build context for this AI
-      let prompt;
-      if (isFirst && i === 0) {
-        prompt = text;
-      } else if (isFirst && i > 0) {
-        // Include previous AIs' responses this round
-        const prevContext = activeAIs.slice(0, i)
-          .filter(k => lastResponses[k] && k !== id)
-          .map(k => `${aiName(k)}: "${lastResponses[k]}"`)
-          .join('\n\n');
-        prompt = `User: "${text}"\n\n${prevContext}\n\nNow respond.`;
-      } else {
-        // Subsequent volleys
-        const prevContext = activeAIs
-          .filter(k => lastResponses[k] && k !== id)
-          .map(k => `${aiName(k)}: "${lastResponses[k]}"`)
-          .join('\n\n');
-        prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
-      }
+// Build context for this AI
+let prompt;
+if (isFirst && i === 0) {
+prompt = text;
+} else if (isFirst && i > 0) {
+// Include previous AIs' responses this round
+const prevContext = activeAIs.slice(0, i)
+.filter(k => lastResponses[k] && k !== id)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.join('\n\n');
+prompt = `User: "${text}"\n\n${prevContext}\n\nNow respond.`;
+} else {
+// Subsequent volleys
+const prevContext = activeAIs
+.filter(k => lastResponses[k] && k !== id)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.join('\n\n');
+prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
+}
 
-      // Glow
-      document.getElementById('panel' + name).classList.add('glow-' + id);
-      const think = addThinking('msgs' + name, name);
+// Glow
+document.getElementById('panel' + name).classList.add('glow-' + id);
+const think = addThinking('msgs' + name, name);
 
-      try {
-        const resp = await callAI(id, prompt);
-        removeEl(think);
-        document.getElementById('panel' + name).classList.remove('glow-' + id);
-        addMsg('msgs' + name, id, resp, null, tag);
-        lastResponses[id] = resp;
-        counts[id]++;
-        document.getElementById('count' + name).textContent = counts[id];
-        // Enable end session button once Council has spoken
-        const esbtn = document.getElementById('endSessionBtn');
-        if (esbtn && GH_TOKEN) esbtn.disabled = false;
-      } catch(e) {
-        removeEl(think);
-        document.getElementById('panel' + name).classList.remove('glow-' + id);
-        // Only show error if not a deliberate stop
-        if (!shouldStop) addMsg('msgs' + name, id, `[Error: ${e.message}]`);
-        lastResponses[id] = null;
-        // Continue to next AI — don't let one failure block the rest
-        continue;
-      }
-    }
-  }
+try {
+const resp = await callAI(id, prompt);
+removeEl(think);
+document.getElementById('panel' + name).classList.remove('glow-' + id);
+addMsg('msgs' + name, id, resp, null, tag);
+lastResponses[id] = resp;
+counts[id]++;
+document.getElementById('count' + name).textContent = counts[id];
+// Enable end session button once Council has spoken
+const esbtn = document.getElementById('endSessionBtn');
+if (esbtn && GH_TOKEN) esbtn.disabled = false;
+} catch(e) {
+removeEl(think);
+document.getElementById('panel' + name).classList.remove('glow-' + id);
+// Only show error if not a deliberate stop
+if (!shouldStop) addMsg('msgs' + name, id, `[Error: ${e.message}]`);
+lastResponses[id] = null;
+// Continue to next AI — don't let one failure block the rest
+continue;
+}
+}
+}
 
-  isRelaying = false;
-  shouldStop = false;
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('interruptBtn').className = 'interrupt-btn';
-  document.getElementById('sbStatus').textContent = 'Ready';
-  totalMsgs++;
-  document.getElementById('sbMsgs').textContent = totalMsgs;
+isRelaying = false;
+shouldStop = false;
+document.getElementById('sendBtn').disabled = false;
+document.getElementById('interruptBtn').className = 'interrupt-btn';
+document.getElementById('sbStatus').textContent = 'Ready';
+totalMsgs++;
+document.getElementById('sbMsgs').textContent = totalMsgs;
 }
 
 // ── AI ROUTER ──
 async function callAI(id, userPrompt) {
-  const userMsg = (id === 'claude' || id === 'grok' || id === 'chatgpt')
-    ? { role:'user', content: userPrompt }
-    : { role:'user', parts:[{text: userPrompt}] };
+const userMsg = (id === 'claude' || id === 'grok' || id === 'chatgpt')
+? { role:'user', content: userPrompt }
+: { role:'user', parts:[{text: userPrompt}] };
 
-  histories[id].push(userMsg);
+histories[id].push(userMsg);
 
-  try {
-    let resp;
-    if (id === 'gemini') resp = await (); callGemini();
-    else if (id === 'claude') resp = await callClaude();
-    else if (id === 'grok') resp = await callGrok();
-    else if (id === 'chatgpt') resp = await callChatGPT();
+try {
+let resp;
+if (id === 'gemini') resp = await callGemini();
+else if (id === 'claude') resp = await callClaude();
+else if (id === 'grok') resp = await callGrok();
+else if (id === 'chatgpt') resp = await callChatGPT();
 
-    // Only push assistant response if call succeeded
-    histories[id].push(id === 'gemini'
-      ? { role:'model', parts:[{text: resp}] }
-      : { role:'assistant', content: resp }
-    );
+// Only push assistant response if call succeeded
+histories[id].push(id === 'gemini'
+? { role:'model', parts:[{text: resp}] }
+: { role:'assistant', content: resp }
+);
 
-    return resp;
-  } catch(e) {
-    // Pop the orphaned user message to keep history clean
-    histories[id].pop();
-    throw e;
-  }
+return resp;
+} catch(e) {
+// Pop the orphaned user message to keep history clean
+histories[id].pop();
+throw e;
+}
 }
 
 // ── API CALLS ──
 async function callGemini() {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${KEY.gemini}`;
-  const body = {
-    system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
-    contents: histories.gemini,
-    generationConfig: { temperature:0.85, maxOutputTokens:1200 }
-  };
-  activeController = new AbortController();
-  const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  activeController = null;
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
-  const d=await res.json();
-  const parts = d.candidates?.[0]?.content?.parts;
-  return parts ? parts.map(p => p.text || '').join('') : '[No response]';
+const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${KEY.gemini}`;
+const body = {
+system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
+contents: histories.gemini,
+generationConfig: { temperature:0.85, maxOutputTokens:1200 }
+};
+activeController = new AbortController();
+const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+activeController = null;
+if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+const d=await res.json();
+return d.candidates?.[0]?.content?.parts?.[0]?.text||'[No response]';
 }
 
 async function callClaude() {
-  // Merge consecutive same-role messages to satisfy Anthropic's alternation requirement
-  // Clones objects to avoid mutating the master histories array
-  const sanitized = histories.claude.reduce((acc, current) => {
-    if (acc.length === 0) {
-      if (current.role === 'user') {
-        acc.push({ role: current.role, content: current.content });
-      }
-      return acc;
-    }
-    const last = acc[acc.length - 1];
-    if (last.role === current.role) {
-      last.content += '\n\n' + current.content;
-    } else {
-      acc.push({ role: current.role, content: current.content });
-    }
-    return acc;
-  }, []);
+// Merge consecutive same-role messages to satisfy Anthropic's alternation requirement
+// Clones objects to avoid mutating the master histories array
+const sanitized = histories.claude.reduce((acc, current) => {
+if (acc.length === 0) {
+if (current.role === 'user') {
+acc.push({ role: current.role, content: current.content });
+}
+return acc;
+}
+const last = acc[acc.length - 1];
+if (last.role === current.role) {
+last.content += '\n\n' + current.content;
+} else {
+acc.push({ role: current.role, content: current.content });
+}
+return acc;
+}, []);
 
-  activeController = new AbortController();
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      signal: activeController.signal,
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':KEY.claude,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
+activeController = new AbortController();
+try {
+const res = await fetch('https://api.anthropic.com/v1/messages',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'x-api-key':KEY.claude,
+'anthropic-version':'2023-06-01',
+'anthropic-dangerous-direct-browser-access':'true'
+},
+body:JSON.stringify({
+        model:'claude-haiku-4-5-20251001',
         model:'claude-sonnet-4-6',
-        max_tokens:1200,
-        system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
-        messages:sanitized
-      })
-    });
-    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
-    const d=await res.json();
-    const contentBlocks = d.content;
-    return contentBlocks ? contentBlocks.map(block => block.text || '').join('') : '[No response]';
-  } finally {
-    activeController = null;
-  }
+max_tokens:1200,
+system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
+messages:sanitized
+})
+});
+if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+const d=await res.json();
+return d.content?.[0]?.text||'[No response]';
+} finally {
+activeController = null;
+}
 }
 
 async function callGrok() {
-  activeController = new AbortController();
-  try {
-    const res = await fetch('/api/grok',{
-      method:'POST',
-      signal: activeController.signal,
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${KEY.grok}`
-      },
-      body:JSON.stringify({
-        model:'grok-4-1-fast-reasoning',
-        messages:[
-          {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
-          ...histories.grok
-        ],
-        max_tokens:1200,
-        temperature:0.85
-      })
-    });
-    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
-    const d=await res.json();
-    return d.choices?.[0]?.message?.content||'[No response]';
-  } finally {
-    activeController = null;
-  }
+activeController = new AbortController();
+try {
+const res = await fetch('/api/grok',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'Authorization':`Bearer ${KEY.grok}`
+},
+body:JSON.stringify({
+model:'grok-4-1-fast-reasoning',
+messages:[
+{role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
+...histories.grok
+],
+max_tokens:1200,
+temperature:0.85
+})
+});
+if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
+const d=await res.json();
+return d.choices?.[0]?.message?.content||'[No response]';
+} finally {
+activeController = null;
+}
 }
 
 async function callChatGPT() {
-  activeController = new AbortController();
-  const timeout = setTimeout(() => activeController.abort(), 30000);
-  try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions',{
-      method:'POST',
-      signal: activeController.signal,
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':`Bearer ${KEY.chatgpt}`
-      },
-      body:JSON.stringify({
+activeController = new AbortController();
+const timeout = setTimeout(() => activeController.abort(), 30000);
+try {
+const res = await fetch('https://api.openai.com/v1/chat/completions',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'Authorization':`Bearer ${KEY.chatgpt}`
+},
+body:JSON.stringify({
+        model:'gpt-4o-mini',
         model:'gpt-4.1-mini',
-        messages:[
-          {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
-          ...histories.chatgpt
-        ],
-        max_tokens:1200,
-        temperature:0.85
-      })
-    });
-    clearTimeout(timeout);
-    if(!res.ok){
-      const e=await res.json();
-      throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
-    }
-    const d=await res.json();
-    return d.choices?.[0]?.message?.content||'[No response]';
-  } catch(e) {
-    clearTimeout(timeout);
-    if(e.name==='AbortError') throw new Error('ChatGPT timed out — CORS likely blocking direct browser access');
-    throw e;
-  } finally {
-    activeController = null;
-  }
+messages:[
+{role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+...histories.chatgpt
+],
+max_tokens:1200,
+temperature:0.85
+})
+});
+clearTimeout(timeout);
+if(!res.ok){
+const e=await res.json();
+throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
+}
+const d=await res.json();
+return d.choices?.[0]?.message?.content||'[No response]';
+} catch(e) {
+clearTimeout(timeout);
+if(e.name==='AbortError') throw new Error('ChatGPT timed out — CORS likely blocking direct browser access');
+throw e;
+} finally {
+activeController = null;
+}
 }
 
 // ── PASTE ──
 function addPaste(id) {
-  const name = aiName(id);
-  const box = document.getElementById('pasteBox' + name);
-  const text = box.value.trim();
-  if(!text) return;
-  addMsg('msgs' + name, id, text, 'empty' + name);
-  histories[id].push({role:'assistant', content:text});
-  counts[id]++;
-  document.getElementById('count' + name).textContent = counts[id];
-  box.value = '';
+const name = aiName(id);
+const box = document.getElementById('pasteBox' + name);
+const text = box.value.trim();
+if(!text) return;
+addMsg('msgs' + name, id, text, 'empty' + name);
+histories[id].push({role:'assistant', content:text});
+counts[id]++;
+document.getElementById('count' + name).textContent = counts[id];
+box.value = '';
 }
 
 // ── INTERRUPT ──
 function interrupt() {
-  shouldStop = true;
-  isRelaying = false;
-  // Abort any in-flight fetch
-  if (activeController) { activeController.abort(); activeController = null; }
-  // Clean up all panels
-  RELAY_ORDER.forEach(id => {
-    const name = aiName(id);
-    const msgs = document.getElementById('msgs' + name);
-    if (msgs) {
-      msgs.querySelectorAll('.thinking').forEach(el => el.remove());
-      const panel = document.getElementById('panel' + name);
-      panel.className = panel.className.replace(/glow-\S+/g,'').trim();
-    }
-  });
-  addMsg('msgsChatGPT','system','— Interrupted —',null);
-  addMsg('msgsGemini','system','— Interrupted —',null);
-  addMsg('msgsGrok','system','— Interrupted —',null);
-  addMsg('msgsClaude','system','— Interrupted —',null);
-  document.getElementById('sendBtn').disabled = false;
-  document.getElementById('interruptBtn').className = 'interrupt-btn';
-  document.getElementById('sbStatus').textContent = 'Interrupted — ready';
+shouldStop = true;
+isRelaying = false;
+// Abort any in-flight fetch
+if (activeController) { activeController.abort(); activeController = null; }
+// Clean up all panels
+RELAY_ORDER.forEach(id => {
+const name = aiName(id);
+const msgs = document.getElementById('msgs' + name);
+if (msgs) {
+msgs.querySelectorAll('.thinking').forEach(el => el.remove());
+const panel = document.getElementById('panel' + name);
+panel.className = panel.className.replace(/glow-\S+/g,'').trim();
+}
+});
+addMsg('msgsChatGPT','system','— Interrupted —',null);
+addMsg('msgsGemini','system','— Interrupted —',null);
+addMsg('msgsGrok','system','— Interrupted —',null);
+addMsg('msgsClaude','system','— Interrupted —',null);
+document.getElementById('sendBtn').disabled = false;
+document.getElementById('interruptBtn').className = 'interrupt-btn';
+document.getElementById('sbStatus').textContent = 'Interrupted — ready';
 }
 
 // ── DOM HELPERS ──
 function addMsg(cid, role, content, emptyId, tag) {
-  const c = document.getElementById(cid);
-  if(!c) return;
-  if(emptyId){ const e=document.getElementById(emptyId); if(e) e.remove(); }
-  const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
-  const m = document.createElement('div');
-  m.className='msg';
-  m.innerHTML=`
-    <div class="m-meta">
-      <div class="m-role ${role}">${roleLabel}</div>
-      ${tag?`<div class="m-tag">${tag}</div>`:''}
-    </div>
-    <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
-  `;
-  c.appendChild(m);
-  c.scrollTop=c.scrollHeight;
+const c = document.getElementById(cid);
+if(!c) return;
+if(emptyId){ const e=document.getElementById(emptyId); if(e) e.remove(); }
+const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
+const m = document.createElement('div');
+m.className='msg';
+m.innerHTML=`
+   <div class="m-meta">
+     <div class="m-role ${role}">${roleLabel}</div>
+     ${tag?`<div class="m-tag">${tag}</div>`:''}
+   </div>
+   <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
+ `;
+c.appendChild(m);
+c.scrollTop=c.scrollHeight;
 }
 
 function addThinking(cid, label) {
-  const c=document.getElementById(cid);
-  if(!c) return null;
-  const el=document.createElement('div');
-  el.className='thinking';
-  el.innerHTML=`<div class="t-lbl">${label}</div><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
-  c.appendChild(el);
-  c.scrollTop=c.scrollHeight;
-  return el;
+const c=document.getElementById(cid);
+if(!c) return null;
+const el=document.createElement('div');
+el.className='thinking';
+el.innerHTML=`<div class="t-lbl">${label}</div><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
+c.appendChild(el);
+c.scrollTop=c.scrollHeight;
+return el;
 }
 
 function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
 
 // ── SESSION PANEL ──
 function openSession() {
-  document.getElementById('ghToken').value = GH_TOKEN;
-  document.getElementById('ghRepo').value = GH_REPO;
-  // Enable end session only if there are messages
-  const hasMsgs = Object.values(counts).some(c => c > 0);
-  document.getElementById('endSessionBtn').disabled = !hasMsgs || !GH_TOKEN;
-  document.getElementById('sessionOverlay').classList.add('open');
+document.getElementById('ghToken').value = GH_TOKEN;
+document.getElementById('ghRepo').value = GH_REPO;
+// Enable end session only if there are messages
+const hasMsgs = Object.values(counts).some(c => c > 0);
+document.getElementById('endSessionBtn').disabled = !hasMsgs || !GH_TOKEN;
+document.getElementById('sessionOverlay').classList.add('open');
 }
 
 function closeSession() {
-  document.getElementById('sessionOverlay').classList.remove('open');
+document.getElementById('sessionOverlay').classList.remove('open');
 }
 
 function toggleMemory() {
-  loadMemoryOnStart = !loadMemoryOnStart;
-  const el = document.getElementById('memoryToggle');
-  el.classList.toggle('on', loadMemoryOnStart);
+loadMemoryOnStart = !loadMemoryOnStart;
+const el = document.getElementById('memoryToggle');
+el.classList.toggle('on', loadMemoryOnStart);
 }
 
 // ── GITHUB API ──
 async function ghGet(path) {
-  const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
-  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
-  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${GH_BRANCH}`, {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json'
-    }
-  });
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
-  return await res.json();
+const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${GH_BRANCH}`, {
+headers: {
+'Authorization': `Bearer ${token}`,
+'Accept': 'application/vnd.github+json'
+}
+});
+if (res.status === 404) return null;
+if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+return await res.json();
 }
 
 async function ghPut(path, content, message, sha) {
-  const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
-  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
-  const body = {
-    message,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: GH_BRANCH
-  };
-  if (sha) body.sha = sha;
-  const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/vnd.github+json',
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(body)
-  });
-  if (!res.ok) {
-    const e = await res.json();
-    throw new Error(e.message || `GitHub PUT failed: ${res.status}`);
-  }
-  return await res.json();
+const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const body = {
+message,
+content: btoa(unescape(encodeURIComponent(content))),
+branch: GH_BRANCH
+};
+if (sha) body.sha = sha;
+const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+method: 'PUT',
+headers: {
+'Authorization': `Bearer ${token}`,
+'Accept': 'application/vnd.github+json',
+'Content-Type': 'application/json'
+},
+body: JSON.stringify(body)
+});
+if (!res.ok) {
+const e = await res.json();
+throw new Error(e.message || `GitHub PUT failed: ${res.status}`);
+}
+return await res.json();
 }
 
 // ── LOAD MEMORY ──
 async function loadMemory() {
-  const token = document.getElementById('ghToken').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
-  GH_TOKEN = token;
-  GH_REPO = repo;
-  sessionStorage.setItem('gh_token', token);
-  sessionStorage.setItem('gh_repo', repo);
+const token = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+GH_TOKEN = token;
+GH_REPO = repo;
+sessionStorage.setItem('gh_token', token);
+sessionStorage.setItem('gh_repo', repo);
 
-  setSpStatus('Fetching memory.md...');
+setSpStatus('Fetching memory.md...');
 
-  try {
-    // Fetch core memory
-    const memFile = await ghGet('memory.md');
-    councilMemory.core = memFile
-      ? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,''))))
-      : '';
+try {
+// Fetch core memory
+const memFile = await ghGet('memory.md');
+councilMemory.core = memFile
+? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,''))))
+: '';
 
-    // Fetch last 7 minutes files
-    setSpStatus('Fetching session minutes...');
-    const minutesDir = await ghGet('minutes');
-    councilMemory.minutes = [];
+// Fetch last 7 minutes files
+setSpStatus('Fetching session minutes...');
+const minutesDir = await ghGet('minutes');
+councilMemory.minutes = [];
 
-    if (minutesDir && Array.isArray(minutesDir)) {
-      // Sort by name descending (YYYY-MM-DD), take last 7
-      const files = minutesDir
-        .filter(f => f.name.endsWith('.json'))
-        .sort((a,b) => b.name.localeCompare(a.name))
-        .slice(0, 7);
+if (minutesDir && Array.isArray(minutesDir)) {
+// Sort by name descending (YYYY-MM-DD), take last 7
+const files = minutesDir
+.filter(f => f.name.endsWith('.json'))
+.sort((a,b) => b.name.localeCompare(a.name))
+.slice(0, 7);
 
-      for (const f of files) {
-        const file = await ghGet(`minutes/${f.name}`);
-        if (file) {
-          const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
-          try {
-            councilMemory.minutes.push(JSON.parse(text));
-          } catch(e) {
-            councilMemory.minutes.push({ raw: text });
-          }
-        }
-      }
-    }
+for (const f of files) {
+const file = await ghGet(`minutes/${f.name}`);
+if (file) {
+const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+try {
+councilMemory.minutes.push(JSON.parse(text));
+} catch(e) {
+councilMemory.minutes.push({ raw: text });
+}
+}
+}
+}
 
-    const totalMinutes = councilMemory.minutes.length;
-    const hasMem = !!councilMemory.core;
-    setSpStatus(
-      `Loaded: ${hasMem ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute${totalMinutes !== 1 ? 's' : ''}.`,
-      'ok'
-    );
+const totalMinutes = councilMemory.minutes.length;
+const hasMem = !!councilMemory.core;
+setSpStatus(
+`Loaded: ${hasMem ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute${totalMinutes !== 1 ? 's' : ''}.`,
+'ok'
+);
 
-    // Update end session button state
-    const hasMsgs = Object.values(counts).some(c => c > 0);
-    document.getElementById('endSessionBtn').disabled = !hasMsgs;
+// Update end session button state
+const hasMsgs = Object.values(counts).some(c => c > 0);
+document.getElementById('endSessionBtn').disabled = !hasMsgs;
 
-  } catch(e) {
-    setSpStatus(`Error: ${e.message}`, 'err');
-  }
+} catch(e) {
+setSpStatus(`Error: ${e.message}`, 'err');
+}
 }
 
 // ── LOAD TIER 3 REFERENCE ──
 async function loadReference() {
-  const path = document.getElementById('refPath').value.trim();
-  const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
-  const statusEl = document.getElementById('refStatus');
-  
-  if (!path) { 
-    statusEl.textContent = 'Enter a file path (e.g., reference/meal_plan.md).';
-    statusEl.style.color = 'var(--interrupt)';
-    return; 
-  }
-  if (!token) { 
-    statusEl.textContent = 'Enter a GitHub token above first.'; 
-    statusEl.style.color = 'var(--interrupt)';
-    return; 
-  }
+const path = document.getElementById('refPath').value.trim();
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const statusEl = document.getElementById('refStatus');
 
-  statusEl.textContent = 'Fetching document...';
-  statusEl.style.color = 'var(--text-muted)';
+if (!path) { 
+statusEl.textContent = 'Enter a file path (e.g., reference/meal_plan.md).';
+statusEl.style.color = 'var(--interrupt)';
+return; 
+}
+if (!token) { 
+statusEl.textContent = 'Enter a GitHub token above first.'; 
+statusEl.style.color = 'var(--interrupt)';
+return; 
+}
 
-  try {
-    const file = await ghGet(path);
-    if (!file || !file.content) throw new Error('File not found.');
-    
-    const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
-    activeReference = { name: file.name, content: text };
-    
-    statusEl.textContent = `✓ Loaded: ${file.name}`;
-    statusEl.style.color = '#7ec8a0'; // green ok color
-    updateActiveStatus(); // Add document tag to the Active status bar below
-  } catch(e) {
-    statusEl.textContent = `Error: ${e.message}`;
-    statusEl.style.color = 'var(--interrupt)';
-    activeReference = null;
-    updateActiveStatus();
-  }
+statusEl.textContent = 'Fetching document...';
+statusEl.style.color = 'var(--text-muted)';
+
+try {
+const file = await ghGet(path);
+if (!file || !file.content) throw new Error('File not found.');
+
+const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+activeReference = { name: file.name, content: text };
+
+statusEl.textContent = `✓ Loaded: ${file.name}`;
+statusEl.style.color = '#7ec8a0'; // green ok color
+updateActiveStatus(); // Add document tag to the Active status bar below
+} catch(e) {
+statusEl.textContent = `Error: ${e.message}`;
+statusEl.style.color = 'var(--interrupt)';
+activeReference = null;
+updateActiveStatus();
+}
 }
 
 function buildMemoryContext() {
-  if (!loadMemoryOnStart && !activeReference) return '';
-  let parts = [];
-  
-  if (loadMemoryOnStart) {
-    if (councilMemory.core) {
-      parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
-    }
-    if (councilMemory.minutes.length > 0) {
-      const minutesText = councilMemory.minutes
-        .map(m => JSON.stringify(m, null, 2))
-        .join('\n\n---\n\n');
-      parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
-    }
-  }
-  
-  // Tier 3 Injection
-  if (activeReference) {
-    parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
-  }
-  
-  return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
+if (!loadMemoryOnStart && !activeReference) return '';
+let parts = [];
+
+if (loadMemoryOnStart) {
+if (councilMemory.core) {
+parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
+}
+if (councilMemory.minutes.length > 0) {
+const minutesText = councilMemory.minutes
+.map(m => JSON.stringify(m, null, 2))
+.join('\n\n---\n\n');
+parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
+}
+}
+
+// Tier 3 Injection
+if (activeReference) {
+parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
+}
+
+return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
 }
 
 // ── END SESSION / MINUTES GENERATION ──
 async function endSession() {
-  const token = document.getElementById('ghToken').value.trim();
-  const repo = document.getElementById('ghRepo').value.trim();
-  if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
-  if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
+const token = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
 
-  GH_TOKEN = token;
-  GH_REPO = repo;
-  sessionStorage.setItem('gh_token', token);
-  sessionStorage.setItem('gh_repo', repo);
+GH_TOKEN = token;
+GH_REPO = repo;
+sessionStorage.setItem('gh_token', token);
+sessionStorage.setItem('gh_repo', repo);
 
-  document.getElementById('endSessionBtn').disabled = true;
-  setSpStatus('Generating session minutes via ChatGPT...');
+document.getElementById('endSessionBtn').disabled = true;
+setSpStatus('Generating session minutes via ChatGPT...');
 
-  // 1. Calculate the strict YYYY-MM-DD local date and HH-MM time for the file system
-  const now = new Date();
-  const localDate = now.getFullYear() + '-' + 
-    String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-    String(now.getDate()).padStart(2, '0');
-    
-  const localTime = String(now.getHours()).padStart(2, '0') + '-' + 
-    String(now.getMinutes()).padStart(2, '0');
+// 1. Calculate the strict YYYY-MM-DD local date and HH-MM time for the file system
+const now = new Date();
+const localDate = now.getFullYear() + '-' + 
+String(now.getMonth() + 1).padStart(2, '0') + '-' + 
+String(now.getDate()).padStart(2, '0');
 
-  // Build session transcript summary
-  const transcript = buildTranscriptSummary();
+const localTime = String(now.getHours()).padStart(2, '0') + '-' + 
+String(now.getMinutes()).padStart(2, '0');
 
-  // 2. Explicitly tell the isolated scribe what today is
-  const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
+// Build session transcript summary
+const transcript = buildTranscriptSummary();
+
+// 2. Explicitly tell the isolated scribe what today is
+const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
 Today's date is: ${localDate}
 
 TRANSCRIPT:
@@ -1263,167 +1263,168 @@ ${transcript}
 
 Respond ONLY with valid JSON matching this exact schema — no markdown, no explanation:
 {
-  "date": "YYYY-MM-DD",
-  "session_number": null,
-  "sovereign_intent": "One sentence: what was the Sovereign working on or trying to understand?",
-  "key_exchanges": [
-    { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" }
-  ],
-  "breakthroughs": ["Any significant insights or shifts in understanding"],
-  "decisions": ["Any concrete decisions or directions established"],
-  "open_questions": ["Unresolved threads the Sovereign may want to return to"],
-  "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
-  "council_performance": {
-    "chatgpt": "Brief note on how ChatGPT performed its Prime Minister role",
-    "gemini": "Brief note on how Gemini performed its Vision role",
-    "grok": "Brief note on how Grok performed its Adversarial role",
-    "claude": "Brief note on how Claude performed its Precision role"
-  }
+ "date": "YYYY-MM-DD",
+ "session_number": null,
+ "sovereign_intent": "One sentence: what was the Sovereign working on or trying to understand?",
+ "key_exchanges": [
+   { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" }
+ ],
+ "breakthroughs": ["Any significant insights or shifts in understanding"],
+ "decisions": ["Any concrete decisions or directions established"],
+ "open_questions": ["Unresolved threads the Sovereign may want to return to"],
+ "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
+ "council_performance": {
+   "chatgpt": "Brief note on how ChatGPT performed its Prime Minister role",
+   "gemini": "Brief note on how Gemini performed its Vision role",
+   "grok": "Brief note on how Grok performed its Adversarial role",
+   "claude": "Brief note on how Claude performed its Precision role"
+ }
 }`;
 
-  try {
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${KEY.chatgpt}`
-      },
-      body: JSON.stringify({
+try {
+const res = await fetch('https://api.openai.com/v1/chat/completions', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'Authorization': `Bearer ${KEY.chatgpt}`
+},
+body: JSON.stringify({
+        model: 'gpt-4o-mini',
         model: 'gpt-4.1-mini',
-        messages: [{ role: 'user', content: minutesPrompt }],
-        max_tokens: 1500,
-        temperature: 0.3
-      })
-    });
+messages: [{ role: 'user', content: minutesPrompt }],
+max_tokens: 1500,
+temperature: 0.3
+})
+});
 
-    if (!res.ok) {
-      const e = await res.json();
-      throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`);
-    }
+if (!res.ok) {
+const e = await res.json();
+throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`);
+}
 
-    const d = await res.json();
-    let minutesText = d.choices?.[0]?.message?.content || '';
+const d = await res.json();
+let minutesText = d.choices?.[0]?.message?.content || '';
 
-    // Strip any markdown fences
-    minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+// Strip any markdown fences
+minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
 
-    // Validate JSON
-    let minutesObj;
-    try {
-      minutesObj = JSON.parse(minutesText);
-    } catch(e) {
-      throw new Error('ChatGPT returned invalid JSON. Try again.');
-    }
+// Validate JSON
+let minutesObj;
+try {
+minutesObj = JSON.parse(minutesText);
+} catch(e) {
+throw new Error('ChatGPT returned invalid JSON. Try again.');
+}
 
-    // 3. FORCE the date. Overwrite whatever ChatGPT hallucinated.
-    minutesObj.date = localDate;
-    minutesText = JSON.stringify(minutesObj, null, 2);
+// 3. FORCE the date. Overwrite whatever ChatGPT hallucinated.
+minutesObj.date = localDate;
+minutesText = JSON.stringify(minutesObj, null, 2);
 
-    // 4. Use the forced date AND time for the filename to prevent overwrites
-    const filename = `minutes/${localDate}_${localTime}.json`;
-    setSpStatus(`Committing to ${filename}...`);
+// 4. Use the forced date AND time for the filename to prevent overwrites
+const filename = `minutes/${localDate}_${localTime}.json`;
+setSpStatus(`Committing to ${filename}...`);
 
-    // GET sha in case file exists (less likely now with timestamps, but safe to keep)
-    const existing = await ghGet(filename);
-    const sha = existing ? existing.sha : undefined;
+// GET sha in case file exists (less likely now with timestamps, but safe to keep)
+const existing = await ghGet(filename);
+const sha = existing ? existing.sha : undefined;
 
-    await ghPut(
-      filename,
-      minutesText,
-      `Council minutes: ${localDate} at ${localTime}`,
-      sha
-    );
+await ghPut(
+filename,
+minutesText,
+`Council minutes: ${localDate} at ${localTime}`,
+sha
+);
 
-    setSpStatus(`✓ Minutes committed: ${filename}`, 'ok');
+setSpStatus(`✓ Minutes committed: ${filename}`, 'ok');
 
-    // Add to local memory
-    councilMemory.minutes.unshift(minutesObj);
-    if (councilMemory.minutes.length > 7) councilMemory.minutes.pop();
+// Add to local memory
+councilMemory.minutes.unshift(minutesObj);
+if (councilMemory.minutes.length > 7) councilMemory.minutes.pop();
 
-  } catch(e) {
-    setSpStatus(`Error: ${e.message}`, 'err');
-    document.getElementById('endSessionBtn').disabled = false;
-  }
+} catch(e) {
+setSpStatus(`Error: ${e.message}`, 'err');
+document.getElementById('endSessionBtn').disabled = false;
+}
 }
 
 function buildTranscriptSummary() {
-  // Build a readable transcript from all panel histories
-  const lines = [];
-  const order = ['chatgpt', 'gemini', 'grok', 'claude'];
-  const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+// Build a readable transcript from all panel histories
+const lines = [];
+const order = ['chatgpt', 'gemini', 'grok', 'claude'];
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
 
-  // Get user messages from claude history (most reliable — Claude is usually active)
-  // Interleave all AI responses by reconstructing from histories
-  const maxLen = Math.max(...order.map(id => histories[id].length));
+// Get user messages from claude history (most reliable — Claude is usually active)
+// Interleave all AI responses by reconstructing from histories
+const maxLen = Math.max(...order.map(id => histories[id].length));
 
-  for (let i = 0; i < maxLen; i++) {
-    for (const id of order) {
-      const msg = histories[id][i];
-      if (!msg) continue;
-      if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
-        const userText = msg.content || msg.parts?.[0]?.text || '';
-        lines.push(`SOVEREIGN: ${userText}`);
-      } else if (msg.role === 'assistant') {
-        lines.push(`${names[id]}: ${msg.content}`);
-      } else if (msg.role === 'model') {
-        const text = msg.parts?.[0]?.text || '';
-        lines.push(`${names[id]}: ${text}`);
-      }
-    }
-  }
+for (let i = 0; i < maxLen; i++) {
+for (const id of order) {
+const msg = histories[id][i];
+if (!msg) continue;
+if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
+const userText = msg.content || msg.parts?.[0]?.text || '';
+lines.push(`SOVEREIGN: ${userText}`);
+} else if (msg.role === 'assistant') {
+lines.push(`${names[id]}: ${msg.content}`);
+} else if (msg.role === 'model') {
+const text = msg.parts?.[0]?.text || '';
+lines.push(`${names[id]}: ${text}`);
+}
+}
+}
 
-  // Deduplicate consecutive identical lines
-  const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
-  return deduped.join('\n\n').slice(0, 12000); // cap at ~12k chars
+// Deduplicate consecutive identical lines
+const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
+return deduped.join('\n\n').slice(0, 12000); // cap at ~12k chars
 }
 
 function setSpStatus(msg, type) {
-  const el = document.getElementById('spStatus');
-  el.textContent = msg;
-  el.className = 'sp-status' + (type ? ' ' + type : '');
+const el = document.getElementById('spStatus');
+el.textContent = msg;
+el.className = 'sp-status' + (type ? ' ' + type : '');
 }
 
 function clearSession() {
-  if(!confirm('Clear this Council session?')) return;
-  Object.keys(histories).forEach(k=>histories[k]=[]);
-  Object.keys(counts).forEach(k=>counts[k]=0);
-  totalMsgs=0;
-  
-  // Wipe Tier 3 Reference so it doesn't bleed into next session
-  activeReference = null;
-  document.getElementById('refPath').value = '';
-  const refStatus = document.getElementById('refStatus');
-  refStatus.textContent = 'Loads a markdown/text file from your repo into the current session context.';
-  refStatus.style.color = 'var(--text-muted)';
+if(!confirm('Clear this Council session?')) return;
+Object.keys(histories).forEach(k=>histories[k]=[]);
+Object.keys(counts).forEach(k=>counts[k]=0);
+totalMsgs=0;
 
-  const empties = {
-    ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
-    Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
-    Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
-    Claude:['◈','Claude awaits.<br>Add Anthropic key.']
-  };
+// Wipe Tier 3 Reference so it doesn't bleed into next session
+activeReference = null;
+document.getElementById('refPath').value = '';
+const refStatus = document.getElementById('refStatus');
+refStatus.textContent = 'Loads a markdown/text file from your repo into the current session context.';
+refStatus.style.color = 'var(--text-muted)';
 
-  Object.entries(empties).forEach(([name,[icon,txt]])=>{
-    const c=document.getElementById('msgs'+name);
-    // Remove only message/thinking elements — preserve empty state and key forms
-    c.querySelectorAll('.msg, .thinking').forEach(el => el.remove());
-    // Restore empty state only if panel has no key form (i.e. AI is live)
-    const id = name.toLowerCase() === 'chatgpt' ? 'chatgpt' : name.toLowerCase();
-    if (live[id]) {
-      // Already live — just ensure empty state exists
-      if (!document.getElementById('empty'+name)) {
-        const e=document.createElement('div');e.className='empty';e.id='empty'+name;
-        e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
-        c.insertBefore(e, c.firstChild);
-      }
-    }
-    document.getElementById('count'+name).textContent='0';
-  });
+const empties = {
+ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
+Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
+Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
+Claude:['◈','Claude awaits.<br>Add Anthropic key.']
+};
 
-  document.getElementById('sbMsgs').textContent='0';
-  document.getElementById('sbStatus').textContent='Session cleared';
-  document.getElementById('endSessionBtn').disabled = true;
-  updateActiveStatus(); // Remove reference bracket from status bar
+Object.entries(empties).forEach(([name,[icon,txt]])=>{
+const c=document.getElementById('msgs'+name);
+// Remove only message/thinking elements — preserve empty state and key forms
+c.querySelectorAll('.msg, .thinking').forEach(el => el.remove());
+// Restore empty state only if panel has no key form (i.e. AI is live)
+const id = name.toLowerCase() === 'chatgpt' ? 'chatgpt' : name.toLowerCase();
+if (live[id]) {
+// Already live — just ensure empty state exists
+if (!document.getElementById('empty'+name)) {
+const e=document.createElement('div');e.className='empty';e.id='empty'+name;
+e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
+c.insertBefore(e, c.firstChild);
+}
+}
+document.getElementById('count'+name).textContent='0';
+});
+
+document.getElementById('sbMsgs').textContent='0';
+document.getElementById('sbStatus').textContent='Session cleared';
+document.getElementById('endSessionBtn').disabled = true;
+updateActiveStatus(); // Remove reference bracket from status bar
 }
 
 function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
