@@ -898,7 +898,6 @@ headers:{
 },
 body:JSON.stringify({
         model:'claude-haiku-4-5-20251001',
-        model:'claude-sonnet-4-6',
 max_tokens:1200,
 system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
 messages:sanitized
@@ -918,7 +917,7 @@ activeController = null;
 async function callGrok() {
 activeController = new AbortController();
 try {
-const res = await fetch('/api/grok',{
+const res = await fetch('https://api.x.ai/v1/chat/completions',{
 method:'POST',
 signal: activeController.signal,
 headers:{
@@ -955,8 +954,7 @@ headers:{
 'Authorization':`Bearer ${KEY.chatgpt}`
 },
 body:JSON.stringify({
-        model:'gpt-4o-mini',
-        model:'gpt-4.1-mini',
+        model:'gpt-5-mini',
 messages:[
 {role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
 ...histories.chatgpt
@@ -1295,8 +1293,7 @@ headers: {
 'Authorization': `Bearer ${KEY.chatgpt}`
 },
 body: JSON.stringify({
-        model: 'gpt-4o-mini',
-        model: 'gpt-4.1-mini',
+        model: 'gpt-5-mini',
 messages: [{ role: 'user', content: minutesPrompt }],
 max_tokens: 1500,
 temperature: 0.3
