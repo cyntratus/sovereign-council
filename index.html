@@ -830,7 +830,7 @@ try {
 let resp;
 if (id === 'gemini') resp = await callGemini();
 else if (id === 'claude') resp = await callClaude();
-else if (id === 'grok') resp = await callGrok();
+else if (id === 'grok') resp = await ();
 else if (id === 'chatgpt') resp = await callChatGPT();
 
 // Only push assistant response if call succeeded
@@ -917,7 +917,7 @@ activeController = null;
 async function callGrok() {
 activeController = new AbortController();
 try {
-const res = await fetch('https://api.x.ai/v1/chat/completions',{
+const res = await fetch('/api/grok',{
 method:'POST',
 signal: activeController.signal,
 headers:{
