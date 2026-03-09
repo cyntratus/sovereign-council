@@ -830,7 +830,7 @@ try {
 let resp;
 if (id === 'gemini') resp = await callGemini();
 else if (id === 'claude') resp = await callClaude();
-else if (id === 'grok') resp = await ();
+else if (id === 'grok') resp = await callGrok();
 else if (id === 'chatgpt') resp = await callChatGPT();
 
 // Only push assistant response if call succeeded
