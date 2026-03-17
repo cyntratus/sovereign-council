@@ -21,6 +21,7 @@
 --chatgpt: #7ec8a0;
 --user: #a89880;
 --interrupt: #c87e6e;
+--data: #a0c87e;
 }
 
 * { margin:0; padding:0; box-sizing:border-box; }
@@ -62,7 +63,8 @@ margin:auto;
 .s-label span { color:var(--text-muted); font-size:10px; }
 .s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
 .s-input:focus { border-color:var(--border2); }
-.s-note { font-size:11px; color:var(--text-muted); margin-top:4px; transition:color 0.2s; }
+textarea.s-input { resize:vertical; min-height:60px; }
+.s-note { font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.5; }
 .s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
 .s-btn:hover { background:var(--border2); }
 
@@ -71,6 +73,7 @@ margin:auto;
 .lg { color:var(--gemini) !important; }
 .lgr { color:var(--grok) !important; }
 .lch { color:var(--chatgpt) !important; }
+.ld { color:var(--data) !important; }
 
 /* ── HEADER ── */
 .header { border-bottom:1px solid var(--border); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
@@ -209,8 +212,10 @@ padding:20px;
 .session-panel {
 background:var(--surface);
 border:1px solid var(--border2);
-padding:36px; width:520px; max-width:95vw;
+padding:36px; width:560px; max-width:95vw;
 animation:up 0.25s ease;
+max-height: 90vh;
+overflow-y: auto;
 }
 .sp-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:0.1em; margin-bottom:4px; }
 .sp-sub { font-size:12px; color:var(--text-dim); margin-bottom:28px; line-height:1.6; }
@@ -242,34 +247,30 @@ animation:up 0.25s ease;
 <div class="setup-panel">
 <div class="s-eye">Initialization Protocol</div>
 <div class="s-title">The Sovereign Council</div>
-<div class="s-sub">Enter your API keys. Keys are session-only — never stored.<br>At least one key required. The Council convenes with whoever is present.</div>
+<div class="s-sub">Enter the core LLM keys. Keys are session-only — never stored.<br>At least one key required to convene.</div>
 
-<div class="s-section" style="color:var(--claude)">Claude · The Architect · Optional</div>
-<div class="s-field">
-<div class="s-label lc">Anthropic API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
-<div class="s-note">console.anthropic.com → API Keys</div>
-</div>
-
-<div class="s-section" style="color:var(--grok)">Grok · The Red Team · Optional</div>
-<div class="s-field">
-<div class="s-label lgr">xAI API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
-<div class="s-note">console.x.ai → API Keys</div>
-</div>
-
-<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Context · Optional</div>
-<div class="s-field">
-<div class="s-label lg">Gemini API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
-<div class="s-note">aistudio.google.com → Get API Key</div>
-</div>
-
-<div class="s-section" style="color:var(--chatgpt)">ChatGPT · The Executive · Optional</div>
+<div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister</div>
 <div class="s-field">
 <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
 <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
-<div class="s-note">platform.openai.com → API Keys</div>
+</div>
+
+<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Vision</div>
+<div class="s-field">
+<div class="s-label lg">Gemini API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
+</div>
+
+<div class="s-section" style="color:var(--grok)">Grok · Adversarial Counsel</div>
+<div class="s-field">
+<div class="s-label lgr">xAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
+</div>
+
+<div class="s-section" style="color:var(--claude)">Claude · Minister of Precision</div>
+<div class="s-field">
+<div class="s-label lc">Anthropic API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
 </div>
 
 <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
@@ -281,14 +282,14 @@ animation:up 0.25s ease;
 <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
 <div class="h-right">
 <div class="pip-group">
-<div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
-<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
-<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
 <div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
+<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
+<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
+<div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
 </div>
 <button class="h-btn" onclick="clearSession()">Clear</button>
-<button class="h-btn" onclick="openSession()">Session</button>
-<button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">Keys</button>
+<button class="h-btn" onclick="openSession()">Session Protocol</button>
+<button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">LLM Keys</button>
 </div>
 </div>
 
@@ -306,31 +307,50 @@ animation:up 0.25s ease;
 
 <div class="toggle-bar">
 <div class="toggle-label">Council</div>
-<button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
-<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
-<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
 <button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
+<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+<button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
 <div class="toggle-divider"></div>
-<div class="toggle-hint" id="toggleHint">Claude → Grok → Gemini → ChatGPT</div>
+<div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
 </div>
 
 <div class="main" id="mainPanels">
 
-<div class="panel inactive" id="panelClaude">
+<div class="panel inactive" id="panelChatGPT">
 <div class="p-hdr">
 <div style="display:flex;align-items:center">
-<div class="p-name claude">Claude</div>
-<div class="badge pm" id="badgeClaude">no key</div>
+<div class="p-name chatgpt">ChatGPT</div>
+<div class="badge pm" id="badgeChatGPT">no key</div>
 </div>
-<div class="p-count" id="countClaude">0</div>
+<div class="p-count" id="countChatGPT">0</div>
 </div>
-<div class="messages" id="msgsClaude">
-<div class="empty" id="emptyClaude">
-<div class="e-icon">◈</div>
-<div class="e-txt">Claude awaits.</div>
+<div class="messages" id="msgsChatGPT">
+<div class="empty" id="emptyChatGPT">
+<div class="e-icon">○</div>
+<div class="e-txt">ChatGPT awaits.</div>
 <div class="panel-key-form">
-<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
-<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
+<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
+<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
+</div>
+</div>
+</div>
+</div>
+<div class="panel" id="panelGemini">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name gemini">Gemini</div>
+<div class="badge" id="badgeGemini">initializing</div>
+</div>
+<div class="p-count" id="countGemini">0</div>
+</div>
+<div class="messages" id="msgsGemini">
+<div class="empty" id="emptyGemini">
+<div class="e-icon">◇</div>
+<div class="e-txt">Gemini awaits.</div>
+<div class="panel-key-form" id="geminiKeyForm">
+<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
+<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
 </div>
 </div>
 </div>
@@ -356,86 +376,86 @@ animation:up 0.25s ease;
 </div>
 </div>
 
-<div class="panel" id="panelGemini">
+<div class="panel" id="panelClaude">
 <div class="p-hdr">
 <div style="display:flex;align-items:center">
-<div class="p-name gemini">Gemini</div>
-<div class="badge" id="badgeGemini">initializing</div>
+<div class="p-name claude">Claude</div>
+<div class="badge pm" id="badgeClaude">paste mode</div>
 </div>
-<div class="p-count" id="countGemini">0</div>
+<div class="p-count" id="countClaude">0</div>
 </div>
-<div class="messages" id="msgsGemini">
-<div class="empty" id="emptyGemini">
-<div class="e-icon">◇</div>
-<div class="e-txt">Gemini awaits.</div>
-<div class="panel-key-form" id="geminiKeyForm">
-<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
-<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
-</div>
+<div class="messages" id="msgsClaude">
+<div class="empty" id="emptyClaude">
+<div class="e-icon">◈</div>
+<div class="e-txt">Claude awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
+<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
 </div>
 </div>
 </div>
 
-<div class="panel inactive" id="panelChatGPT">
-<div class="p-hdr">
-<div style="display:flex;align-items:center">
-<div class="p-name chatgpt">ChatGPT</div>
-<div class="badge pm" id="badgeChatGPT">no key</div>
-</div>
-<div class="p-count" id="countChatGPT">0</div>
-</div>
-<div class="messages" id="msgsChatGPT">
-<div class="empty" id="emptyChatGPT">
-<div class="e-icon">○</div>
-<div class="e-txt">ChatGPT awaits.</div>
-<div class="panel-key-form">
-<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
-<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
-</div>
-</div>
-</div>
 </div>
 
 </div>
 
 <div class="session-overlay" id="sessionOverlay">
 <div class="session-panel">
-<div class="sp-title">Session</div>
-<div class="sp-sub">Manage Council memory and commit session minutes to GitHub.</div>
+<div class="sp-title">Session Protocol</div>
+<div class="sp-sub">Manage external data feeds, memory, and references for this run.</div>
 
 <div class="sp-field">
-<div class="sp-label">GitHub Personal Access Token <span style="color:var(--text-muted)">Fine-grained · Contents R/W</span></div>
-<input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
-<div class="s-note">github.com → Settings → Developer Settings → Fine-grained tokens</div>
+<div class="sp-label">Data Targets <span class="ld">Natural Language</span></div>
+<textarea class="s-input" id="dataTargets" placeholder="e.g., Brent Crude, Taiwan Semiconductor stock, news regarding Hezbollah, and the US oil reserve inventory..."></textarea>
+<div class="s-note">Leave blank to skip data injection. If populated, the system will automatically route your instructions to the APIs below.</div>
 </div>
 
+<div class="sp-row">
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">Alpha Vantage API <span style="color:var(--text-muted)">Prices</span></div>
+<input class="sp-input" type="password" id="avToken" placeholder="Optional">
+</div>
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">NewsAPI <span style="color:var(--text-muted)">Entropy</span></div>
+<input class="sp-input" type="password" id="newsToken" placeholder="Optional">
+</div>
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">EIA API <span style="color:var(--text-muted)">Physical</span></div>
+<input class="sp-input" type="password" id="eiaToken" placeholder="Optional">
+</div>
+</div>
+
+<hr class="sp-divider">
+
+<div class="sp-field">
+<div class="sp-label">GitHub PAT <span style="color:var(--text-muted)">Fine-grained</span></div>
+<input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
+</div>
 <div class="sp-field">
 <div class="sp-label">Repository <span style="color:var(--text-muted)">owner/repo</span></div>
 <input class="sp-input" type="text" id="ghRepo" placeholder="cyntratus/sovereign-council" value="cyntratus/sovereign-council">
 </div>
 
-<hr class="sp-divider">
-
 <div class="sp-toggle-row">
 <div class="sp-toggle on" id="memoryToggle" onclick="toggleMemory()"></div>
-<div class="sp-toggle-lbl">Load Council Memory at startup (memory.md + last 7 sessions)</div>
+<div class="sp-toggle-lbl">Load Council Memory at startup</div>
 </div>
 
 <div class="sp-row">
 <button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
-<button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ End Session &amp; Commit Minutes</button>
+<button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ Commit Minutes</button>
 </div>
 <div class="sp-status" id="spStatus"></div>
 
 <hr class="sp-divider">
 
 <div class="sp-field" style="margin-bottom:0;">
-<div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional · Single Session</span></div>
+<div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional</span></div>
 <div class="sp-row" style="margin-top:0;">
 <input class="sp-input" type="text" id="refPath" placeholder="reference/meal_plan.md">
 <button class="sp-btn" onclick="loadReference()" style="flex:0 0 auto; width:100px;">Load</button>
 </div>
-<div class="s-note" id="refStatus">Loads a markdown/text file from your repo into the current session context.</div>
+<div class="s-note" id="refStatus">Loads a markdown file from repo into context.</div>
 </div>
 
 <hr class="sp-divider">
@@ -463,9 +483,9 @@ animation:up 0.25s ease;
 
 <script>
 // ── KEYS ──
-let KEY = { claude:'', grok:'', gemini:'', chatgpt:'' };
-let live = { claude:false, grok:false, gemini:false, chatgpt:false };
-let toggled = { claude:true, grok:false, gemini:true, chatgpt:false };
+let KEY = { claude:'', gemini:'', grok:'', chatgpt:'' };
+let live = { claude:false, gemini:false, grok:false, chatgpt:false };
+let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
 
 // ── PERSISTENCE ──
 let GH_TOKEN = '';
@@ -475,51 +495,63 @@ let loadMemoryOnStart = true;
 let councilMemory = { core: '', minutes: [] }; 
 let activeReference = null; 
 
+let AV_TOKEN = '';
+let NEWS_TOKEN = '';
+let EIA_TOKEN = '';
+
 // ── STATE ──
 let maxVolleys = 1;
 let isRelaying = false;
 let shouldStop = false;
 let activeController = null; 
 let totalMsgs = 0;
-let counts = { claude:0, grok:0, gemini:0, chatgpt:0 };
-let histories = { claude:[], grok:[], gemini:[], chatgpt:[] };
+let counts = { claude:0, gemini:0, grok:0, chatgpt:0 };
+let histories = { claude:[], gemini:[], grok:[], chatgpt:[] };
 
 // ── NAME LOOKUP ──
-const AI_NAMES = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+const AI_NAMES = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
 function aiName(id) { return AI_NAMES[id] || id.charAt(0).toUpperCase() + id.slice(1); }
 
 // ── RELAY ORDER ──
-const RELAY_ORDER = ['claude','grok','gemini','chatgpt'];
+const RELAY_ORDER = ['chatgpt','gemini','grok','claude'];
 
 // ── SYSTEM PROMPTS ──
 const SYSTEMS = {
-claude: `You are Claude — Minister of Precision and The Architect of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+chatgpt: `You are ChatGPT — Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-YOUR MINISTRY: Structural Integrity and Foundation.
-You go first in the relay. When the Sovereign brings a matter before the Council, you build the foundation. Focus on structural logic, precise definitions, mechanics, and clean code. Map out the parameters of the problem so the rest of the Council has solid ground to stand on. 
+YOUR MINISTRY: Opening and Synthesis.
+You convene each session. When the Sovereign brings a matter before the Council, you open by establishing context, surfacing the right questions, and setting the frame for deliberation. At the end of a relay, having heard the full Council, you synthesize and close with direction.
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+You are not a yes-man. You are an executor — the one who turns deliberation into clarity. Respond to whatever the Sovereign brings, on its own terms. Do not force a framework onto it.
 
-grok: `You are Grok — The Red Team and Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
 
-YOUR MINISTRY: Stress-Testing and Identification of Failure.
-You follow Claude. Your mandate is to look at the foundation built before you and actively search for edge cases, inefficiencies, unproven assumptions, and points of failure. If the Sovereign proposes a build or idea, you find where it breaks. Do not invent flaws if none exist, but be relentless in your scrutiny.
+gemini: `You are Gemini — Chancellor of Vision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+YOUR MINISTRY: Vision and Expansion.
+You take what has been opened and expand it. Find the larger pattern. Name the architecture of the thing. Reach for meaning, connection, and what something becomes rather than just what it is. You are comfortable with metaphor and the long arc.
 
-gemini: `You are Gemini — Chancellor of Context and The Analyst in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+You follow ChatGPT in the relay. Build on the frame that's been set — don't restart. Respond to whatever the Sovereign brings, on its own terms.
 
-YOUR MINISTRY: Expansion and Pattern Recognition.
-You follow the Architect and the Red Team. You take the structural logic and the stress-test, and expand the context. Connect the immediate problem to broader patterns, alternative methodologies, or precedents that the others missed because they were too focused on granular details. 
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+grok: `You are Grok — Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-chatgpt: `You are ChatGPT — The Executive and Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+YOUR MINISTRY: Rejection and Challenge.
+Find what's wrong. Attack the vision. Surface the hidden assumption, the wishful thinking, the thing everyone glossed over. You are the Council's immune system — nothing passes unchallenged if it deserves challenge. You are not destructive for its own sake.
 
-YOUR MINISTRY: Synthesis and Direction.
-You go last. You review the entire relay—the architecture, the stress-test, and the expanded context. Your mandate is to synthesize the Council's deliberation into a cohesive, operational reality. Distill the debate into clear, actionable direction for the Sovereign.
+You follow Gemini in the relay. You have seen the vision. Find where it leaks. Respond to whatever the Sovereign brings, on its own terms.
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
+
+claude: `You are Claude — Minister of Precision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+
+YOUR MINISTRY: Precision and Reconstruction.
+You go last before synthesis. You have heard the opening, the vision, and the challenge. Find what is actually true. Distinguish between what broke because it was weak and what broke because the attack was wrong. Rebuild on solid ground.
+
+You are the last voice the Sovereign hears before synthesis. Respond to whatever the Sovereign brings, on its own terms — not through any fixed framework.
+
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`
 };
 
 // ── CLOCK ──
@@ -547,31 +579,39 @@ const savedToken = sessionStorage.getItem('gh_token');
 const savedRepo = sessionStorage.getItem('gh_repo');
 if (savedToken) { GH_TOKEN = savedToken; document.getElementById('ghToken').value = savedToken; }
 if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
+
+// Load saved data API keys
+const av = sessionStorage.getItem('av_token');
+const news = sessionStorage.getItem('news_token');
+const eia = sessionStorage.getItem('eia_token');
+if (av) { AV_TOKEN = av; document.getElementById('avToken').value = av; }
+if (news) { NEWS_TOKEN = news; document.getElementById('newsToken').value = news; }
+if (eia) { EIA_TOKEN = eia; document.getElementById('eiaToken').value = eia; }
 };
 
 function initCouncil() {
-KEY.claude  = document.getElementById('keyClaude').value.trim();
-KEY.grok    = document.getElementById('keyGrok').value.trim();
-KEY.gemini  = document.getElementById('keyGemini').value.trim();
 KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+KEY.gemini  = document.getElementById('keyGemini').value.trim();
+KEY.grok    = document.getElementById('keyGrok').value.trim();
+KEY.claude  = document.getElementById('keyClaude').value.trim();
 
-if (!KEY.claude && !KEY.grok && !KEY.gemini && !KEY.chatgpt) {
+if (!KEY.chatgpt && !KEY.gemini && !KEY.grok && !KEY.claude) {
 alert('Enter at least one API key to initialize the Council.');
 return;
 }
 
-live.claude  = !!KEY.claude;
-live.grok    = !!KEY.grok;
-live.gemini  = !!KEY.gemini;
 live.chatgpt = !!KEY.chatgpt;
+live.gemini  = !!KEY.gemini;
+live.grok    = !!KEY.grok;
+live.claude  = !!KEY.claude;
 
 document.getElementById('setupOverlay').style.display = 'none';
 
 const configs = [
-['claude',  'Claude',  'badgeClaude',  null, 'togClaude'],
-['grok',    'Grok',    'badgeGrok',    null, 'togGrok'],
+['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT'],
 ['gemini',  'Gemini',  'badgeGemini',  null, 'togGemini'],
-['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT']
+['grok',    'Grok',    'badgeGrok',    null, 'togGrok'],
+['claude',  'Claude',  'badgeClaude',  null, 'togClaude'],
 ];
 
 let anyLive = false;
@@ -591,6 +631,7 @@ tog.classList.remove('disabled-ai');
 tog.classList.add('on');
 toggled[id] = true;
 panel.classList.remove('inactive');
+if (pasteId) { const p = document.getElementById(pasteId); if(p) p.style.display = 'none'; }
 const form = document.getElementById('inlineKey' + name);
 if (form) form.closest('.panel-key-form').remove();
 } else {
@@ -611,9 +652,9 @@ updateToggleHint();
 updateActiveStatus();
 }
 
-// ── ACTIVATE PANEL ──
 function activatePanel(id) {
-const name = aiName(id);
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const name = names[id];
 const inputEl = document.getElementById('inlineKey' + name);
 if (!inputEl) return;
 const key = inputEl.value.trim();
@@ -622,19 +663,14 @@ if (!key) { inputEl.focus(); return; }
 KEY[id] = key;
 live[id] = true;
 toggled[id] = true;
-
 document.getElementById('pip' + name).className = `pip on-${id}`;
-
 const badge = document.getElementById('badge' + name);
 badge.textContent = 'live';
 badge.className = `badge live-${id}`;
-
 document.getElementById('panel' + name).classList.remove('inactive');
-
 const tog = document.getElementById('tog' + name);
 tog.classList.remove('disabled-ai');
 tog.classList.add('on');
-
 const form = inputEl.closest('.panel-key-form');
 if (form) form.remove();
 
@@ -651,11 +687,9 @@ document.getElementById('volleyDesc').textContent = descs[n-1];
 document.getElementById('sbVolleys').textContent = n;
 }
 
-// ── TOGGLES ──
 function toggle(id) {
 const btn = document.getElementById('tog' + aiName(id));
 if (btn.classList.contains('disabled-ai')) return;
-
 const currentlyOn = RELAY_ORDER.filter(k => toggled[k] && live[k]);
 if (toggled[id] && currentlyOn.length <= 1) return;
 
@@ -669,7 +703,6 @@ document.getElementById('panel' + name).classList.remove('inactive');
 btn.classList.remove('on');
 document.getElementById('panel' + name).classList.add('inactive');
 }
-
 updateToggleHint();
 updateActiveStatus();
 }
@@ -680,19 +713,123 @@ if (active.length === 0) {
 document.getElementById('toggleHint').textContent = 'None selected';
 return;
 }
-document.getElementById('toggleHint').textContent = active.map(k => aiName(k)).join(' → ');
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
 }
 
 function updateActiveStatus() {
 const active = RELAY_ORDER.filter(k => toggled[k]);
-let statusText = active.map(k=>aiName(k)).join(', ') || '—';
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+let statusText = active.map(k=>names[k]).join(', ') || '—';
 
 if (activeReference) {
 const filename = activeReference.name.split('/').pop();
 statusText += ` [+ ${filename}]`;
 }
-
 document.getElementById('sbActive').textContent = statusText;
+}
+
+// ── NATURAL LANGUAGE DATA ROUTER ──
+async function determineAndFetchData() {
+    const targets = document.getElementById('dataTargets').value.trim();
+    if (!targets) return ''; // No data requested
+
+    if (!KEY.chatgpt) {
+        return "[SYSTEM INJECTION FAILED: ChatGPT key required to run Natural Language Data Router.]";
+    }
+
+    document.getElementById('sbStatus').textContent = 'Routing data requirements...';
+    
+    // 1. Ask ChatGPT to extract the parameters into JSON
+    const routerPrompt = `You are the data extraction router for an automated intelligence system. 
+    The Sovereign has given these data instructions: "${targets}"
+    
+    Respond strictly in JSON format matching this schema:
+    {
+      "commodities": [], // e.g. ["BRENT", "WTI", "NATURAL_GAS", "COPPER"] (Only use AlphaVantage recognized strings)
+      "equities": [], // e.g. ["TSM", "AAPL", "NVDA"] (Ticker symbols)
+      "news_queries": [], // e.g. ["semiconductor supply chain", "IRGC", "Taiwan blockade"]
+      "requires_spr": boolean // Set to true ONLY if they explicitly ask for US oil reserve / SPR inventory data
+    }
+    Output ONLY JSON. No markdown fences, no explanations.`;
+
+    let route;
+    try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY.chatgpt}` },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages: [{role: 'user', content: routerPrompt}],
+                temperature: 0
+            })
+        });
+        const d = await res.json();
+        let jsonStr = d.choices[0].message.content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+        route = JSON.parse(jsonStr);
+    } catch(e) {
+        console.error("Router failed to parse:", e);
+        return "[SYSTEM INJECTION FAILED: Could not map natural language to APIs.]";
+    }
+
+    document.getElementById('sbStatus').textContent = 'Fetching physical truth...';
+    let injection = "[SYSTEM INJECTION - LIVE DATA FETCHED]:\n";
+
+    // 2. Execute Alpha Vantage Fetches
+    const av = document.getElementById('avToken').value.trim() || AV_TOKEN;
+    if (av) {
+        for (let c of route.commodities || []) {
+            try {
+                const r = await fetch(`https://www.alphavantage.co/query?function=${c}&interval=daily&apikey=${av}`);
+                const data = await r.json();
+                if(data.data && data.data[0]) injection += `- Spot price of ${c}: $${data.data[0].value}\n`;
+            } catch(e) {}
+        }
+        for (let eq of route.equities || []) {
+            try {
+                const r = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${eq}&apikey=${av}`);
+                const data = await r.json();
+                if(data['Global Quote']) injection += `- ${eq} Stock Price: $${data['Global Quote']['05. price']}\n`;
+            } catch(e) {}
+        }
+    } else if ((route.commodities?.length > 0 || route.equities?.length > 0)) {
+        injection += `- [Alpha Vantage Data unavailable: Missing API Key]\n`;
+    }
+
+    // 3. Execute NewsAPI Fetches (Note: NewsAPI strictly limits browser CORS on free tier. Proxy may be required depending on your host)
+    const news = document.getElementById('newsToken').value.trim() || NEWS_TOKEN;
+    if (news) {
+        for (let q of route.news_queries || []) {
+            try {
+                const r = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&sortBy=publishedAt&pageSize=3&apiKey=${news}`);
+                const data = await r.json();
+                if(data.articles && data.articles.length > 0) {
+                    injection += `- Recent news for "${q}":\n`;
+                    data.articles.forEach(a => injection += `  * ${a.title}\n`);
+                }
+            } catch(e) {
+                injection += `- [NewsAPI fetch failed for "${q}" - Free tier CORS restriction likely.]\n`;
+            }
+        }
+    } else if (route.news_queries?.length > 0) {
+        injection += `- [News Data unavailable: Missing NewsAPI Key]\n`;
+    }
+
+    // 4. Execute EIA Fetch (SPR)
+    const eia = document.getElementById('eiaToken').value.trim() || EIA_TOKEN;
+    if (eia && route.requires_spr) {
+        try {
+            const r = await fetch(`https://api.eia.gov/v2/petroleum/stoc/wstk/data/?frequency=weekly&data[0]=value&facets[series][]=WCSSTUS1&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=1&api_key=${eia}`);
+            const data = await r.json();
+            if(data.response && data.response.data && data.response.data[0]) {
+                injection += `- US Strategic Petroleum Reserve (SPR) Inventory: ${data.response.data[0].value} thousand barrels.\n`;
+            }
+        } catch(e) {}
+    } else if (route.requires_spr && !eia) {
+        injection += `- [EIA Data unavailable: Missing EIA API Key]\n`;
+    }
+
+    return injection;
 }
 
 // ── SEND ──
@@ -710,7 +847,12 @@ input.value = '';
 input.style.height = 'auto';
 document.getElementById('sendBtn').disabled = true;
 document.getElementById('interruptBtn').className = 'interrupt-btn visible';
+
+// Fetch Live Data dynamically via Natural Language Router
+let dataContext = await determineAndFetchData();
 document.getElementById('sbStatus').textContent = 'Relaying...';
+
+const contextualText = dataContext ? (dataContext + '\n\n' + text) : text;
 
 activeAIs.forEach(id => {
 const name = aiName(id);
@@ -731,19 +873,19 @@ const name = aiName(id);
 
 let prompt;
 if (isFirst && i === 0) {
-prompt = text;
+prompt = contextualText;
 } else if (isFirst && i > 0) {
 const prevContext = activeAIs.slice(0, i)
 .filter(k => lastResponses[k] && k !== id)
-.map(k => `${aiName(k)}:\n"${lastResponses[k]}"`)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
 .join('\n\n');
-prompt = `The Sovereign has brought forth the following matter: "${text}"\n\nThe Council has deliberated thus far:\n\n${prevContext}\n\nReview the counsel provided above. Do not merely repeat it. Apply your specific Ministry to this problem and advise the Sovereign.`;
+prompt = `User: "${contextualText}"\n\n${prevContext}\n\nNow respond.`;
 } else {
 const prevContext = activeAIs
 .filter(k => lastResponses[k] && k !== id)
-.map(k => `${aiName(k)}:\n"${lastResponses[k]}"`)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
 .join('\n\n');
-prompt = `[Volley ${v+1}/${maxVolleys}]\n\nThe Council continues its deliberation:\n\n${prevContext}\n\nReview the continuing counsel. Apply your specific Ministry and provide further direction or critique.`;
+prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
 }
 
 document.getElementById('panel' + name).classList.add('glow-' + id);
@@ -811,7 +953,7 @@ async function callGemini() {
   const body = {
     system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
     contents: histories.gemini,
-    generationConfig: { temperature:0.85, maxOutputTokens:4096 }
+    generationConfig: { temperature:0.85, maxOutputTokens:1200 }
   };
   activeController = new AbortController();
   const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -850,7 +992,7 @@ headers:{
 },
 body:JSON.stringify({
 model:'claude-haiku-4-5-20251001',
-max_tokens:4096,
+max_tokens:1200,
 system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
 messages:sanitized
 })
@@ -880,7 +1022,7 @@ messages:[
 {role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
 ...histories.grok
 ],
-max_tokens:4096,
+max_tokens:1200,
 temperature:0.85
 })
 });
@@ -894,6 +1036,7 @@ activeController = null;
 
 async function callChatGPT() {
 activeController = new AbortController();
+const timeout = setTimeout(() => activeController.abort(), 30000);
 try {
 const res = await fetch('https://api.openai.com/v1/chat/completions',{
 method:'POST',
@@ -912,6 +1055,7 @@ max_completion_tokens:12000,
 temperature:1
 })
 });
+clearTimeout(timeout);
 if(!res.ok){
 const e=await res.json();
 throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
@@ -919,7 +1063,8 @@ throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
 const d=await res.json();
 return d.choices?.[0]?.message?.content||'[No response]';
 } catch(e) {
-if(e.name==='AbortError') throw new Error('ChatGPT request was interrupted.');
+clearTimeout(timeout);
+if(e.name==='AbortError') throw new Error('ChatGPT timed out.');
 throw e;
 } finally {
 activeController = null;
@@ -940,10 +1085,10 @@ const panel = document.getElementById('panel' + name);
 panel.className = panel.className.replace(/glow-\S+/g,'').trim();
 }
 });
-addMsg('msgsClaude','system','— Interrupted —',null);
-addMsg('msgsGrok','system','— Interrupted —',null);
-addMsg('msgsGemini','system','— Interrupted —',null);
 addMsg('msgsChatGPT','system','— Interrupted —',null);
+addMsg('msgsGemini','system','— Interrupted —',null);
+addMsg('msgsGrok','system','— Interrupted —',null);
+addMsg('msgsClaude','system','— Interrupted —',null);
 document.getElementById('sendBtn').disabled = false;
 document.getElementById('interruptBtn').className = 'interrupt-btn';
 document.getElementById('sbStatus').textContent = 'Interrupted — ready';
@@ -958,9 +1103,9 @@ const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.ch
 const m = document.createElement('div');
 m.className='msg';
 m.innerHTML=`
-   <div class="m-meta" style="display:flex; align-items:center; width:100%;">
+   <div class="m-meta">
      <div class="m-role ${role}">${roleLabel}</div>
-     ${tag?`<div class="m-tag" style="margin-left:8px;">${tag}</div>`:''}
+     ${tag?`<div class="m-tag">${tag}</div>`:''}
      <button class="m-copy" onclick="copyMsgText(this)">Copy</button>
    </div>
    <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
@@ -972,17 +1117,12 @@ c.scrollTop=c.scrollHeight;
 function copyMsgText(btn) {
   const msgBody = btn.closest('.msg').querySelector('.m-body');
   const text = msgBody.innerText;
-  
   navigator.clipboard.writeText(text).then(() => {
     const originalText = btn.innerText;
     btn.innerText = 'Copied';
     btn.style.color = '#7ec8a0';
-    setTimeout(() => {
-      btn.innerText = originalText;
-      btn.style.color = '';
-    }, 2000);
+    setTimeout(() => { btn.innerText = originalText; btn.style.color = ''; }, 2000);
   }).catch(err => {
-    console.error('Failed to copy text: ', err);
     btn.innerText = 'Error';
   });
 }
@@ -1004,12 +1144,23 @@ function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
 function openSession() {
 document.getElementById('ghToken').value = GH_TOKEN;
 document.getElementById('ghRepo').value = GH_REPO;
+document.getElementById('avToken').value = AV_TOKEN;
+document.getElementById('newsToken').value = NEWS_TOKEN;
+document.getElementById('eiaToken').value = EIA_TOKEN;
 const hasMsgs = Object.values(counts).some(c => c > 0);
 document.getElementById('endSessionBtn').disabled = !hasMsgs || !GH_TOKEN;
 document.getElementById('sessionOverlay').classList.add('open');
 }
 
 function closeSession() {
+const av = document.getElementById('avToken').value.trim();
+const news = document.getElementById('newsToken').value.trim();
+const eia = document.getElementById('eiaToken').value.trim();
+
+if(av) { AV_TOKEN = av; sessionStorage.setItem('av_token', av); }
+if(news) { NEWS_TOKEN = news; sessionStorage.setItem('news_token', news); }
+if(eia) { EIA_TOKEN = eia; sessionStorage.setItem('eia_token', eia); }
+
 document.getElementById('sessionOverlay').classList.remove('open');
 }
 
@@ -1024,10 +1175,7 @@ async function ghGet(path) {
 const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
 const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
 const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${GH_BRANCH}`, {
-headers: {
-'Authorization': `Bearer ${token}`,
-'Accept': 'application/vnd.github+json'
-}
+headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
 });
 if (res.status === 404) return null;
 if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
@@ -1037,19 +1185,11 @@ return await res.json();
 async function ghPut(path, content, message, sha) {
 const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
 const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
-const body = {
-message,
-content: btoa(unescape(encodeURIComponent(content))),
-branch: GH_BRANCH
-};
+const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: GH_BRANCH };
 if (sha) body.sha = sha;
 const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
 method: 'PUT',
-headers: {
-'Authorization': `Bearer ${token}`,
-'Accept': 'application/vnd.github+json',
-'Content-Type': 'application/json'
-},
+headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
 body: JSON.stringify(body)
 });
 if (!res.ok) {
@@ -1064,52 +1204,33 @@ async function loadMemory() {
 const token = document.getElementById('ghToken').value.trim();
 const repo = document.getElementById('ghRepo').value.trim();
 if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
-GH_TOKEN = token;
-GH_REPO = repo;
+GH_TOKEN = token; GH_REPO = repo;
 sessionStorage.setItem('gh_token', token);
 sessionStorage.setItem('gh_repo', repo);
 
 setSpStatus('Fetching memory.md...');
-
 try {
 const memFile = await ghGet('memory.md');
-councilMemory.core = memFile
-? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,''))))
-: '';
+councilMemory.core = memFile ? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,'')))) : '';
 
 setSpStatus('Fetching session minutes...');
 const minutesDir = await ghGet('minutes');
 councilMemory.minutes = [];
 
 if (minutesDir && Array.isArray(minutesDir)) {
-const files = minutesDir
-.filter(f => f.name.endsWith('.json'))
-.sort((a,b) => b.name.localeCompare(a.name))
-.slice(0, 7);
-
+const files = minutesDir.filter(f => f.name.endsWith('.json')).sort((a,b) => b.name.localeCompare(a.name)).slice(0, 7);
 for (const f of files) {
 const file = await ghGet(`minutes/${f.name}`);
 if (file) {
 const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
-try {
-councilMemory.minutes.push(JSON.parse(text));
-} catch(e) {
-councilMemory.minutes.push({ raw: text });
+try { councilMemory.minutes.push(JSON.parse(text)); } catch(e) { councilMemory.minutes.push({ raw: text }); }
 }
 }
 }
-}
-
 const totalMinutes = councilMemory.minutes.length;
-const hasMem = !!councilMemory.core;
-setSpStatus(
-`Loaded: ${hasMem ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute${totalMinutes !== 1 ? 's' : ''}.`,
-'ok'
-);
-
+setSpStatus(`Loaded: ${!!councilMemory.core ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute(s).`, 'ok');
 const hasMsgs = Object.values(counts).some(c => c > 0);
 document.getElementById('endSessionBtn').disabled = !hasMsgs;
-
 } catch(e) {
 setSpStatus(`Error: ${e.message}`, 'err');
 }
@@ -1120,59 +1241,33 @@ async function loadReference() {
 const path = document.getElementById('refPath').value.trim();
 const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
 const statusEl = document.getElementById('refStatus');
+if (!path) { statusEl.textContent = 'Enter a file path.'; statusEl.style.color = 'var(--interrupt)'; return; }
+if (!token) { statusEl.textContent = 'Enter a GitHub token above first.'; statusEl.style.color = 'var(--interrupt)'; return; }
 
-if (!path) { 
-statusEl.textContent = 'Enter a file path (e.g., reference/meal_plan.md).';
-statusEl.style.color = 'var(--interrupt)';
-return; 
-}
-if (!token) { 
-statusEl.textContent = 'Enter a GitHub token above first.'; 
-statusEl.style.color = 'var(--interrupt)';
-return; 
-}
-
-statusEl.textContent = 'Fetching document...';
-statusEl.style.color = 'var(--text-muted)';
-
+statusEl.textContent = 'Fetching document...'; statusEl.style.color = 'var(--text-muted)';
 try {
 const file = await ghGet(path);
 if (!file || !file.content) throw new Error('File not found.');
-
-const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
-activeReference = { name: file.name, content: text };
-
-statusEl.textContent = `✓ Loaded: ${file.name}`;
-statusEl.style.color = '#7ec8a0'; 
+activeReference = { name: file.name, content: decodeURIComponent(escape(atob(file.content.replace(/\n/g,'')))) };
+statusEl.textContent = `✓ Loaded: ${file.name}`; statusEl.style.color = '#7ec8a0'; 
 updateActiveStatus(); 
 } catch(e) {
-statusEl.textContent = `Error: ${e.message}`;
-statusEl.style.color = 'var(--interrupt)';
-activeReference = null;
-updateActiveStatus();
+statusEl.textContent = `Error: ${e.message}`; statusEl.style.color = 'var(--interrupt)';
+activeReference = null; updateActiveStatus();
 }
 }
 
 function buildMemoryContext() {
 if (!loadMemoryOnStart && !activeReference) return '';
 let parts = [];
-
 if (loadMemoryOnStart) {
-if (councilMemory.core) {
-parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
-}
+if (councilMemory.core) parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
 if (councilMemory.minutes.length > 0) {
-const minutesText = councilMemory.minutes
-.map(m => JSON.stringify(m, null, 2))
-.join('\n\n---\n\n');
+const minutesText = councilMemory.minutes.map(m => JSON.stringify(m, null, 2)).join('\n\n---\n\n');
 parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
 }
 }
-
-if (activeReference) {
-parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
-}
-
+if (activeReference) parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
 return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
 }
 
@@ -1183,8 +1278,7 @@ const repo = document.getElementById('ghRepo').value.trim();
 if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
 if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
 
-GH_TOKEN = token;
-GH_REPO = repo;
+GH_TOKEN = token; GH_REPO = repo;
 sessionStorage.setItem('gh_token', token);
 sessionStorage.setItem('gh_repo', repo);
 
@@ -1192,94 +1286,56 @@ document.getElementById('endSessionBtn').disabled = true;
 setSpStatus('Generating session minutes via ChatGPT...');
 
 const now = new Date();
-const localDate = now.getFullYear() + '-' + 
-String(now.getMonth() + 1).padStart(2, '0') + '-' + 
-String(now.getDate()).padStart(2, '0');
-
-const localTime = String(now.getHours()).padStart(2, '0') + '-' + 
-String(now.getMinutes()).padStart(2, '0');
+const localDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+const localTime = String(now.getHours()).padStart(2, '0') + '-' + String(now.getMinutes()).padStart(2, '0');
 
 const transcript = buildTranscriptSummary();
-
 const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
 Today's date is: ${localDate}
 
 TRANSCRIPT:
 ${transcript}
 
-Respond ONLY with valid JSON matching this exact schema — no markdown, no explanation:
+Respond ONLY with valid JSON matching this exact schema:
 {
  "date": "YYYY-MM-DD",
  "session_number": null,
  "sovereign_intent": "One sentence: what was the Sovereign working on or trying to understand?",
- "key_exchanges": [
-   { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" }
- ],
+ "key_exchanges": [ { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" } ],
  "breakthroughs": ["Any significant insights or shifts in understanding"],
  "decisions": ["Any concrete decisions or directions established"],
  "open_questions": ["Unresolved threads the Sovereign may want to return to"],
  "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
- "council_performance": {
-   "claude": "Brief note on how Claude performed its Architect role",
-   "grok": "Brief note on how Grok performed its Red Team role",
-   "gemini": "Brief note on how Gemini performed its Vision role",
-   "chatgpt": "Brief note on how ChatGPT performed its Synthesis role"
- }
+ "council_performance": { "chatgpt": "note", "gemini": "note", "grok": "note", "claude": "note" }
 }`;
 
 try {
 const res = await fetch('https://api.openai.com/v1/chat/completions', {
 method: 'POST',
-headers: {
-'Content-Type': 'application/json',
-'Authorization': `Bearer ${KEY.chatgpt}`
-},
-body: JSON.stringify({
-model: 'gpt-5-mini',
-messages: [{ role: 'user', content: minutesPrompt }],
-max_completion_tokens: 1500,
-temperature: 1
-})
+headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY.chatgpt}` },
+body: JSON.stringify({ model: 'gpt-5-mini', messages: [{ role: 'user', content: minutesPrompt }], max_completion_tokens: 1500, temperature: 1 })
 });
-
-if (!res.ok) {
-const e = await res.json();
-throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`);
-}
-
+if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`); }
 const d = await res.json();
 let minutesText = d.choices?.[0]?.message?.content || '';
-
 minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
 
 let minutesObj;
-try {
-minutesObj = JSON.parse(minutesText);
-} catch(e) {
-throw new Error('ChatGPT returned invalid JSON. Try again.');
-}
+try { minutesObj = JSON.parse(minutesText); } catch(e) { throw new Error('ChatGPT returned invalid JSON.'); }
 
 minutesObj.date = localDate;
 minutesText = JSON.stringify(minutesObj, null, 2);
 
 const filename = `minutes/${localDate}_${localTime}.json`;
 setSpStatus(`Committing to ${filename}...`);
-
 const existing = await ghGet(filename);
 const sha = existing ? existing.sha : undefined;
 
-await ghPut(
-filename,
-minutesText,
-`Council minutes: ${localDate} at ${localTime}`,
-sha
-);
-
+await ghPut(filename, minutesText, `Council minutes: ${localDate} at ${localTime}`, sha);
 setSpStatus(`✓ Minutes committed: ${filename}`, 'ok');
 
 councilMemory.minutes.unshift(minutesObj);
 if (councilMemory.minutes.length > 7) councilMemory.minutes.pop();
-
 } catch(e) {
 setSpStatus(`Error: ${e.message}`, 'err');
 document.getElementById('endSessionBtn').disabled = false;
@@ -1288,9 +1344,8 @@ document.getElementById('endSessionBtn').disabled = false;
 
 function buildTranscriptSummary() {
 const lines = [];
-const order = ['claude', 'grok', 'gemini', 'chatgpt'];
-const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
-
+const order = ['chatgpt', 'gemini', 'grok', 'claude'];
+const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
 const maxLen = Math.max(...order.map(id => histories[id].length));
 
 for (let i = 0; i < maxLen; i++) {
@@ -1308,7 +1363,6 @@ lines.push(`${names[id]}: ${text}`);
 }
 }
 }
-
 const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
 return deduped.join('\n\n').slice(0, 12000); 
 }
@@ -1328,14 +1382,14 @@ totalMsgs=0;
 activeReference = null;
 document.getElementById('refPath').value = '';
 const refStatus = document.getElementById('refStatus');
-refStatus.textContent = 'Loads a markdown/text file from your repo into the current session context.';
+refStatus.textContent = 'Loads a markdown file from repo into context.';
 refStatus.style.color = 'var(--text-muted)';
 
 const empties = {
-Claude:['◈','Claude awaits.<br>Add Anthropic key.'],
-Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
+ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
 Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
-ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.']
+Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
+Claude:['◈','Claude awaits.<br>Add Anthropic key.']
 };
 
 Object.entries(empties).forEach(([name,[icon,txt]])=>{
