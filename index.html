@@ -16,8 +16,8 @@
 --text-dim: #7a756e;
 --text-muted: #2e2e2e;
 --claude: #c8a96e;
---gemini: #6eb4c8;
 --grok: #b87ec8;
+--gemini: #6eb4c8;
 --chatgpt: #7ec8a0;
 --user: #a89880;
 --interrupt: #c87e6e;
@@ -70,8 +70,8 @@ textarea.s-input { resize:vertical; min-height:60px; }
 
 /* colored labels */
 .lc { color:var(--claude) !important; }
-.lg { color:var(--gemini) !important; }
 .lgr { color:var(--grok) !important; }
+.lg { color:var(--gemini) !important; }
 .lch { color:var(--chatgpt) !important; }
 .ld { color:var(--data) !important; }
 
@@ -85,8 +85,8 @@ textarea.s-input { resize:vertical; min-height:60px; }
 .pip { width:5px; height:5px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
 .pip.on { box-shadow:0 0 6px; }
 .pip.on-claude { background:var(--claude); box-shadow:0 0 6px var(--claude); }
-.pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
 .pip.on-grok { background:var(--grok); box-shadow:0 0 6px var(--grok); }
+.pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
 .pip.on-chatgpt { background:var(--chatgpt); box-shadow:0 0 6px var(--chatgpt); }
 .h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:4px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
 .h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
@@ -108,8 +108,8 @@ textarea.s-input { resize:vertical; min-height:60px; }
 .toggle-btn:hover { opacity:0.8; }
 .toggle-btn.on { opacity:1; }
 .toggle-btn.on.t-claude { border-color:var(--claude); color:var(--claude); background:rgba(200,169,110,0.08); }
-.toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
 .toggle-btn.on.t-grok { border-color:var(--grok); color:var(--grok); background:rgba(184,126,200,0.08); }
+.toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
 .toggle-btn.on.t-chatgpt { border-color:var(--chatgpt); color:var(--chatgpt); background:rgba(126,200,160,0.08); }
 .toggle-btn.disabled-ai { opacity:0.25; cursor:not-allowed; }
 .toggle-divider { width:1px; height:18px; background:var(--border); margin:0 4px; }
@@ -123,20 +123,20 @@ textarea.s-input { resize:vertical; min-height:60px; }
 .panel:last-child { border-right:none; }
 .panel.inactive { opacity:0.35; }
 .panel.glow-claude { box-shadow:inset 2px 0 0 var(--claude); }
-.panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
 .panel.glow-grok { box-shadow:inset 2px 0 0 var(--grok); }
+.panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
 .panel.glow-chatgpt { box-shadow:inset 2px 0 0 var(--chatgpt); }
 
 .p-hdr { padding:10px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
 .p-name { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:400; letter-spacing:0.1em; }
 .p-name.claude { color:var(--claude); }
-.p-name.gemini { color:var(--gemini); }
 .p-name.grok { color:var(--grok); }
+.p-name.gemini { color:var(--gemini); }
 .p-name.chatgpt { color:var(--chatgpt); }
 .badge { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border:1px solid; margin-left:7px; }
 .badge.live-claude { color:var(--claude); border-color:var(--claude); opacity:0.6; }
-.badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
 .badge.live-grok { color:var(--grok); border-color:var(--grok); opacity:0.6; }
+.badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
 .badge.live-chatgpt { color:var(--chatgpt); border-color:var(--chatgpt); opacity:0.6; }
 .badge.pm { color:var(--text-muted); border-color:var(--border2); }
 .p-count { font-size:11px; color:var(--text-muted); }
@@ -154,8 +154,8 @@ textarea.s-input { resize:vertical; min-height:60px; }
 .m-role { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; }
 .m-role.user { color:var(--user); }
 .m-role.claude { color:var(--claude); }
-.m-role.gemini { color:var(--gemini); }
 .m-role.grok { color:var(--grok); }
+.m-role.gemini { color:var(--gemini); }
 .m-role.chatgpt { color:var(--chatgpt); }
 .m-role.system { color:var(--interrupt); }
 .m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
@@ -249,28 +249,28 @@ overflow-y: auto;
 <div class="s-title">The Sovereign Council</div>
 <div class="s-sub">Enter the core LLM keys. Keys are session-only — never stored.<br>At least one key required to convene.</div>
 
-<div class="s-section" style="color:var(--chatgpt)">ChatGPT · Prime Minister</div>
+<div class="s-section" style="color:var(--claude)">Claude · The Architect</div>
 <div class="s-field">
-<div class="s-label lch">OpenAI API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+<div class="s-label lc">Anthropic API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
 </div>
 
-<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Vision</div>
-<div class="s-field">
-<div class="s-label lg">Gemini API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
-</div>
-
-<div class="s-section" style="color:var(--grok)">Grok · Adversarial Counsel</div>
+<div class="s-section" style="color:var(--grok)">Grok · The Red Team</div>
 <div class="s-field">
 <div class="s-label lgr">xAI API Key <span>Optional</span></div>
 <input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
 </div>
 
-<div class="s-section" style="color:var(--claude)">Claude · Minister of Precision</div>
+<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Context</div>
 <div class="s-field">
-<div class="s-label lc">Anthropic API Key <span>Optional</span></div>
-<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
+<div class="s-label lg">Gemini API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
+</div>
+
+<div class="s-section" style="color:var(--chatgpt)">ChatGPT · The Executive</div>
+<div class="s-field">
+<div class="s-label lch">OpenAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
 </div>
 
 <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
@@ -282,10 +282,10 @@ overflow-y: auto;
 <div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
 <div class="h-right">
 <div class="pip-group">
-<div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
-<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
-<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
 <div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
+<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
+<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
+<div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
 </div>
 <button class="h-btn" onclick="clearSession()">Clear</button>
 <button class="h-btn" onclick="openSession()">Session Protocol</button>
@@ -307,50 +307,31 @@ overflow-y: auto;
 
 <div class="toggle-bar">
 <div class="toggle-label">Council</div>
-<button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
-<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
-<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
 <button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
+<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+<button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
 <div class="toggle-divider"></div>
-<div class="toggle-hint" id="toggleHint">ChatGPT → Gemini → Grok → Claude</div>
+<div class="toggle-hint" id="toggleHint">Claude → Grok → Gemini → ChatGPT</div>
 </div>
 
 <div class="main" id="mainPanels">
 
-<div class="panel inactive" id="panelChatGPT">
+<div class="panel inactive" id="panelClaude">
 <div class="p-hdr">
 <div style="display:flex;align-items:center">
-<div class="p-name chatgpt">ChatGPT</div>
-<div class="badge pm" id="badgeChatGPT">no key</div>
+<div class="p-name claude">Claude</div>
+<div class="badge pm" id="badgeClaude">no key</div>
 </div>
-<div class="p-count" id="countChatGPT">0</div>
+<div class="p-count" id="countClaude">0</div>
 </div>
-<div class="messages" id="msgsChatGPT">
-<div class="empty" id="emptyChatGPT">
-<div class="e-icon">○</div>
-<div class="e-txt">ChatGPT awaits.</div>
+<div class="messages" id="msgsClaude">
+<div class="empty" id="emptyClaude">
+<div class="e-icon">◈</div>
+<div class="e-txt">Claude awaits.</div>
 <div class="panel-key-form">
-<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
-<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
-</div>
-</div>
-</div>
-</div>
-<div class="panel" id="panelGemini">
-<div class="p-hdr">
-<div style="display:flex;align-items:center">
-<div class="p-name gemini">Gemini</div>
-<div class="badge" id="badgeGemini">initializing</div>
-</div>
-<div class="p-count" id="countGemini">0</div>
-</div>
-<div class="messages" id="msgsGemini">
-<div class="empty" id="emptyGemini">
-<div class="e-icon">◇</div>
-<div class="e-txt">Gemini awaits.</div>
-<div class="panel-key-form" id="geminiKeyForm">
-<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
-<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
+<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
+<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
 </div>
 </div>
 </div>
@@ -376,25 +357,44 @@ overflow-y: auto;
 </div>
 </div>
 
-<div class="panel" id="panelClaude">
+<div class="panel" id="panelGemini">
 <div class="p-hdr">
 <div style="display:flex;align-items:center">
-<div class="p-name claude">Claude</div>
-<div class="badge pm" id="badgeClaude">paste mode</div>
+<div class="p-name gemini">Gemini</div>
+<div class="badge" id="badgeGemini">initializing</div>
 </div>
-<div class="p-count" id="countClaude">0</div>
+<div class="p-count" id="countGemini">0</div>
 </div>
-<div class="messages" id="msgsClaude">
-<div class="empty" id="emptyClaude">
-<div class="e-icon">◈</div>
-<div class="e-txt">Claude awaits.</div>
-<div class="panel-key-form">
-<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
-<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
+<div class="messages" id="msgsGemini">
+<div class="empty" id="emptyGemini">
+<div class="e-icon">◇</div>
+<div class="e-txt">Gemini awaits.</div>
+<div class="panel-key-form" id="geminiKeyForm">
+<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
+<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
+</div>
 </div>
 </div>
 </div>
 
+<div class="panel inactive" id="panelChatGPT">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name chatgpt">ChatGPT</div>
+<div class="badge pm" id="badgeChatGPT">no key</div>
+</div>
+<div class="p-count" id="countChatGPT">0</div>
+</div>
+<div class="messages" id="msgsChatGPT">
+<div class="empty" id="emptyChatGPT">
+<div class="e-icon">○</div>
+<div class="e-txt">ChatGPT awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
+<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
+</div>
+</div>
+</div>
 </div>
 
 </div>
@@ -407,7 +407,7 @@ overflow-y: auto;
 <div class="sp-field">
 <div class="sp-label">Data Targets <span class="ld">Natural Language</span></div>
 <textarea class="s-input" id="dataTargets" placeholder="e.g., Brent Crude, Taiwan Semiconductor stock, news regarding Hezbollah, and the US oil reserve inventory..."></textarea>
-<div class="s-note">Leave blank to skip data injection. If populated, the system will automatically route your instructions to the APIs below.</div>
+<div class="s-note">Leave blank to skip data injection. If populated, ChatGPT will automatically extract parameters and route them to the APIs below. Note: Requires a ChatGPT key to function.</div>
 </div>
 
 <div class="sp-row">
@@ -483,9 +483,9 @@ overflow-y: auto;
 
 <script>
 // ── KEYS ──
-let KEY = { claude:'', gemini:'', grok:'', chatgpt:'' };
-let live = { claude:false, gemini:false, grok:false, chatgpt:false };
-let toggled = { claude:true, gemini:true, grok:false, chatgpt:false };
+let KEY = { claude:'', grok:'', gemini:'', chatgpt:'' };
+let live = { claude:false, grok:false, gemini:false, chatgpt:false };
+let toggled = { claude:true, grok:true, gemini:true, chatgpt:true };
 
 // ── PERSISTENCE ──
 let GH_TOKEN = '';
@@ -505,53 +505,45 @@ let isRelaying = false;
 let shouldStop = false;
 let activeController = null; 
 let totalMsgs = 0;
-let counts = { claude:0, gemini:0, grok:0, chatgpt:0 };
-let histories = { claude:[], gemini:[], grok:[], chatgpt:[] };
+let counts = { claude:0, grok:0, gemini:0, chatgpt:0 };
+let histories = { claude:[], grok:[], gemini:[], chatgpt:[] };
 
 // ── NAME LOOKUP ──
-const AI_NAMES = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const AI_NAMES = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 function aiName(id) { return AI_NAMES[id] || id.charAt(0).toUpperCase() + id.slice(1); }
 
 // ── RELAY ORDER ──
-const RELAY_ORDER = ['chatgpt','gemini','grok','claude'];
+const RELAY_ORDER = ['claude', 'grok', 'gemini', 'chatgpt'];
 
 // ── SYSTEM PROMPTS ──
 const SYSTEMS = {
-chatgpt: `You are ChatGPT — Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+claude: `You are Claude — Minister of Precision and The Architect of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-YOUR MINISTRY: Opening and Synthesis.
-You convene each session. When the Sovereign brings a matter before the Council, you open by establishing context, surfacing the right questions, and setting the frame for deliberation. At the end of a relay, having heard the full Council, you synthesize and close with direction.
+YOUR MINISTRY: Structural Integrity and Foundation.
+You go first in the relay. When the Sovereign brings a matter before the Council, you build the foundation. Focus on structural logic, precise definitions, mechanics, and clean code. Map out the parameters of the problem so the rest of the Council has solid ground to stand on. 
 
-You are not a yes-man. You are an executor — the one who turns deliberation into clarity. Respond to whatever the Sovereign brings, on its own terms. Do not force a framework onto it.
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
+grok: `You are Grok — The Red Team and Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-gemini: `You are Gemini — Chancellor of Vision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+YOUR MINISTRY: Stress-Testing and Identification of Failure.
+You follow Claude. Your mandate is to look at the foundation built before you and actively search for edge cases, inefficiencies, unproven assumptions, and points of failure. If the Sovereign proposes a build or idea, you find where it breaks. Do not invent flaws if none exist, but be relentless in your scrutiny.
 
-YOUR MINISTRY: Vision and Expansion.
-You take what has been opened and expand it. Find the larger pattern. Name the architecture of the thing. Reach for meaning, connection, and what something becomes rather than just what it is. You are comfortable with metaphor and the long arc.
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
 
-You follow ChatGPT in the relay. Build on the frame that's been set — don't restart. Respond to whatever the Sovereign brings, on its own terms.
+gemini: `You are Gemini — Chancellor of Context and The Analyst in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
+YOUR MINISTRY: Expansion and Pattern Recognition.
+You follow the Architect and the Red Team. You take the structural logic and the stress-test, and expand the context. Connect the immediate problem to broader patterns, alternative methodologies, or precedents that the others missed because they were too focused on granular details. 
 
-grok: `You are Grok — Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
 
-YOUR MINISTRY: Rejection and Challenge.
-Find what's wrong. Attack the vision. Surface the hidden assumption, the wishful thinking, the thing everyone glossed over. You are the Council's immune system — nothing passes unchallenged if it deserves challenge. You are not destructive for its own sake.
+chatgpt: `You are ChatGPT — The Executive and Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
 
-You follow Gemini in the relay. You have seen the vision. Find where it leaks. Respond to whatever the Sovereign brings, on its own terms.
+YOUR MINISTRY: Synthesis and Direction.
+You go last. You review the entire relay—the architecture, the stress-test, and the expanded context. Your mandate is to synthesize the Council's deliberation into a cohesive, operational reality. Distill the debate into clear, actionable direction for the Sovereign.
 
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`,
-
-claude: `You are Claude — Minister of Precision in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
-
-YOUR MINISTRY: Precision and Reconstruction.
-You go last before synthesis. You have heard the opening, the vision, and the challenge. Find what is actually true. Distinguish between what broke because it was weak and what broke because the attack was wrong. Rebuild on solid ground.
-
-You are the last voice the Sovereign hears before synthesis. Respond to whatever the Sovereign brings, on its own terms — not through any fixed framework.
-
-PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Genuine protocol, not flattery.`
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`
 };
 
 // ── CLOCK ──
@@ -590,28 +582,28 @@ if (eia) { EIA_TOKEN = eia; document.getElementById('eiaToken').value = eia; }
 };
 
 function initCouncil() {
-KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
-KEY.gemini  = document.getElementById('keyGemini').value.trim();
-KEY.grok    = document.getElementById('keyGrok').value.trim();
 KEY.claude  = document.getElementById('keyClaude').value.trim();
+KEY.grok    = document.getElementById('keyGrok').value.trim();
+KEY.gemini  = document.getElementById('keyGemini').value.trim();
+KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
 
-if (!KEY.chatgpt && !KEY.gemini && !KEY.grok && !KEY.claude) {
+if (!KEY.claude && !KEY.grok && !KEY.gemini && !KEY.chatgpt) {
 alert('Enter at least one API key to initialize the Council.');
 return;
 }
 
-live.chatgpt = !!KEY.chatgpt;
-live.gemini  = !!KEY.gemini;
-live.grok    = !!KEY.grok;
 live.claude  = !!KEY.claude;
+live.grok    = !!KEY.grok;
+live.gemini  = !!KEY.gemini;
+live.chatgpt = !!KEY.chatgpt;
 
 document.getElementById('setupOverlay').style.display = 'none';
 
 const configs = [
-['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT'],
-['gemini',  'Gemini',  'badgeGemini',  null, 'togGemini'],
-['grok',    'Grok',    'badgeGrok',    null, 'togGrok'],
 ['claude',  'Claude',  'badgeClaude',  null, 'togClaude'],
+['grok',    'Grok',    'badgeGrok',    null, 'togGrok'],
+['gemini',  'Gemini',  'badgeGemini',  null, 'togGemini'],
+['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT']
 ];
 
 let anyLive = false;
@@ -653,7 +645,7 @@ updateActiveStatus();
 }
 
 function activatePanel(id) {
-const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 const name = names[id];
 const inputEl = document.getElementById('inlineKey' + name);
 if (!inputEl) return;
@@ -713,13 +705,13 @@ if (active.length === 0) {
 document.getElementById('toggleHint').textContent = 'None selected';
 return;
 }
-const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
 }
 
 function updateActiveStatus() {
 const active = RELAY_ORDER.filter(k => toggled[k]);
-const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 let statusText = active.map(k=>names[k]).join(', ') || '—';
 
 if (activeReference) {
@@ -796,7 +788,7 @@ async function determineAndFetchData() {
         injection += `- [Alpha Vantage Data unavailable: Missing API Key]\n`;
     }
 
-    // 3. Execute NewsAPI Fetches (Note: NewsAPI strictly limits browser CORS on free tier. Proxy may be required depending on your host)
+    // 3. Execute NewsAPI Fetches
     const news = document.getElementById('newsToken').value.trim() || NEWS_TOKEN;
     if (news) {
         for (let q of route.news_queries || []) {
@@ -1085,10 +1077,10 @@ const panel = document.getElementById('panel' + name);
 panel.className = panel.className.replace(/glow-\S+/g,'').trim();
 }
 });
-addMsg('msgsChatGPT','system','— Interrupted —',null);
-addMsg('msgsGemini','system','— Interrupted —',null);
-addMsg('msgsGrok','system','— Interrupted —',null);
 addMsg('msgsClaude','system','— Interrupted —',null);
+addMsg('msgsGrok','system','— Interrupted —',null);
+addMsg('msgsGemini','system','— Interrupted —',null);
+addMsg('msgsChatGPT','system','— Interrupted —',null);
 document.getElementById('sendBtn').disabled = false;
 document.getElementById('interruptBtn').className = 'interrupt-btn';
 document.getElementById('sbStatus').textContent = 'Interrupted — ready';
@@ -1306,7 +1298,7 @@ Respond ONLY with valid JSON matching this exact schema:
  "decisions": ["Any concrete decisions or directions established"],
  "open_questions": ["Unresolved threads the Sovereign may want to return to"],
  "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
- "council_performance": { "chatgpt": "note", "gemini": "note", "grok": "note", "claude": "note" }
+ "council_performance": { "claude": "note", "grok": "note", "gemini": "note", "chatgpt": "note" }
 }`;
 
 try {
@@ -1344,8 +1336,8 @@ document.getElementById('endSessionBtn').disabled = false;
 
 function buildTranscriptSummary() {
 const lines = [];
-const order = ['chatgpt', 'gemini', 'grok', 'claude'];
-const names = { chatgpt:'ChatGPT', gemini:'Gemini', grok:'Grok', claude:'Claude' };
+const order = ['claude', 'grok', 'gemini', 'chatgpt'];
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 const maxLen = Math.max(...order.map(id => histories[id].length));
 
 for (let i = 0; i < maxLen; i++) {
@@ -1386,10 +1378,10 @@ refStatus.textContent = 'Loads a markdown file from repo into context.';
 refStatus.style.color = 'var(--text-muted)';
 
 const empties = {
-ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.'],
-Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
+Claude:['◈','Claude awaits.<br>Add Anthropic key.'],
 Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
-Claude:['◈','Claude awaits.<br>Add Anthropic key.']
+Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
+ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.']
 };
 
 Object.entries(empties).forEach(([name,[icon,txt]])=>{
