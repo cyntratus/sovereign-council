@@ -156,6 +156,8 @@ margin:auto;
 .m-role.chatgpt { color:var(--chatgpt); }
 .m-role.system { color:var(--interrupt); }
 .m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
+.m-copy { background:transparent; border:none; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; text-transform:uppercase; transition:color 0.15s; margin-left:auto; letter-spacing:0.1em; }
+.m-copy:hover { color:var(--text); }
 .m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; font-size:15px; }
 .m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; }
 .m-body.sb { color:var(--interrupt); font-size:13px; }
@@ -956,14 +958,33 @@ const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.ch
 const m = document.createElement('div');
 m.className='msg';
 m.innerHTML=`
-   <div class="m-meta">
+   <div class="m-meta" style="display:flex; align-items:center; width:100%;">
      <div class="m-role ${role}">${roleLabel}</div>
-     ${tag?`<div class="m-tag">${tag}</div>`:''}
+     ${tag?`<div class="m-tag" style="margin-left:8px;">${tag}</div>`:''}
+     <button class="m-copy" onclick="copyMsgText(this)">Copy</button>
    </div>
    <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
  `;
 c.appendChild(m);
 c.scrollTop=c.scrollHeight;
+}
+
+function copyMsgText(btn) {
+  const msgBody = btn.closest('.msg').querySelector('.m-body');
+  const text = msgBody.innerText;
+  
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.innerText;
+    btn.innerText = 'Copied';
+    btn.style.color = '#7ec8a0';
+    setTimeout(() => {
+      btn.innerText = originalText;
+      btn.style.color = '';
+    }, 2000);
+  }).catch(err => {
+    console.error('Failed to copy text: ', err);
+    btn.innerText = 'Error';
+  });
 }
 
 function addThinking(cid, label) {
