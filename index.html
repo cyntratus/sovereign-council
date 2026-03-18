@@ -247,7 +247,7 @@ overflow-y: auto;
 <div class="setup-panel">
 <div class="s-eye">Initialization Protocol</div>
 <div class="s-title">The Sovereign Council</div>
-<div class="s-sub">Enter the core LLM keys. Keys are session-only — never stored.<br>At least one key required to convene.</div>
+<div class="s-sub">Enter the core LLM keys. At least one key required to convene.</div>
 
 <div class="s-section" style="color:var(--claude)">Claude · The Architect</div>
 <div class="s-field">
@@ -271,6 +271,11 @@ overflow-y: auto;
 <div class="s-field">
 <div class="s-label lch">OpenAI API Key <span>Optional</span></div>
 <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+</div>
+
+<div class="sp-toggle-row" style="margin-top:24px; justify-content:center;">
+  <div class="sp-toggle" id="rememberKeysToggle" onclick="toggleRememberKeys()"></div>
+  <div class="sp-toggle-lbl" style="color:var(--text-dim);">Save all keys in this browser</div>
 </div>
 
 <button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
@@ -486,6 +491,7 @@ overflow-y: auto;
 let KEY = { claude:'', grok:'', gemini:'', chatgpt:'' };
 let live = { claude:false, grok:false, gemini:false, chatgpt:false };
 let toggled = { claude:true, grok:true, gemini:true, chatgpt:true };
+let rememberKeys = false;
 
 // ── PERSISTENCE ──
 let GH_TOKEN = '';
@@ -572,21 +578,43 @@ return `Current date/time: ${new Date().toLocaleString('en-US', {
  })}${buildMemoryContext()}`;
 }
 
+function toggleRememberKeys() {
+    rememberKeys = !rememberKeys;
+    const el = document.getElementById('rememberKeysToggle');
+    el.classList.toggle('on', rememberKeys);
+}
+
 // ── INIT ──
 window.onload = () => {
 updateToggleHint();
-const savedToken = sessionStorage.getItem('gh_token');
-const savedRepo = sessionStorage.getItem('gh_repo');
-if (savedToken) { GH_TOKEN = savedToken; document.getElementById('ghToken').value = savedToken; }
-if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
 
-// Load saved data API keys
-const av = sessionStorage.getItem('av_token');
-const news = sessionStorage.getItem('news_token');
-const eia = sessionStorage.getItem('eia_token');
-if (av) { AV_TOKEN = av; document.getElementById('avToken').value = av; }
-if (news) { NEWS_TOKEN = news; document.getElementById('newsToken').value = news; }
-if (eia) { EIA_TOKEN = eia; document.getElementById('eiaToken').value = eia; }
+// Check local storage for unified key retention
+const savedClaude = localStorage.getItem('key_claude');
+const savedGrok = localStorage.getItem('key_grok');
+const savedGemini = localStorage.getItem('key_gemini');
+const savedChatgpt = localStorage.getItem('key_chatgpt');
+
+const savedGH = localStorage.getItem('gh_token');
+const savedRepo = localStorage.getItem('gh_repo');
+const savedAv = localStorage.getItem('av_token');
+const savedNews = localStorage.getItem('news_token');
+const savedEia = localStorage.getItem('eia_token');
+
+if (savedClaude || savedGrok || savedGemini || savedChatgpt || savedGH || savedAv || savedNews || savedEia) {
+    rememberKeys = true;
+    document.getElementById('rememberKeysToggle').classList.add('on');
+    
+    if (savedClaude) document.getElementById('keyClaude').value = savedClaude;
+    if (savedGrok) document.getElementById('keyGrok').value = savedGrok;
+    if (savedGemini) document.getElementById('keyGemini').value = savedGemini;
+    if (savedChatgpt) document.getElementById('keyChatGPT').value = savedChatgpt;
+    
+    if (savedGH) { GH_TOKEN = savedGH; document.getElementById('ghToken').value = savedGH; }
+    if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
+    if (savedAv) { AV_TOKEN = savedAv; document.getElementById('avToken').value = savedAv; }
+    if (savedNews) { NEWS_TOKEN = savedNews; document.getElementById('newsToken').value = savedNews; }
+    if (savedEia) { EIA_TOKEN = savedEia; document.getElementById('eiaToken').value = savedEia; }
+}
 };
 
 function initCouncil() {
@@ -598,6 +626,23 @@ KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
 if (!KEY.claude && !KEY.grok && !KEY.gemini && !KEY.chatgpt) {
 alert('Enter at least one API key to initialize the Council.');
 return;
+}
+
+if (rememberKeys) {
+    if (KEY.claude) localStorage.setItem('key_claude', KEY.claude);
+    if (KEY.grok) localStorage.setItem('key_grok', KEY.grok);
+    if (KEY.gemini) localStorage.setItem('key_gemini', KEY.gemini);
+    if (KEY.chatgpt) localStorage.setItem('key_chatgpt', KEY.chatgpt);
+} else {
+    localStorage.removeItem('key_claude');
+    localStorage.removeItem('key_grok');
+    localStorage.removeItem('key_gemini');
+    localStorage.removeItem('key_chatgpt');
+    localStorage.removeItem('gh_token');
+    localStorage.removeItem('gh_repo');
+    localStorage.removeItem('av_token');
+    localStorage.removeItem('news_token');
+    localStorage.removeItem('eia_token');
 }
 
 live.claude  = !!KEY.claude;
@@ -661,6 +706,8 @@ const key = inputEl.value.trim();
 if (!key) { inputEl.focus(); return; }
 
 KEY[id] = key;
+if (rememberKeys) localStorage.setItem('key_' + id, key);
+
 live[id] = true;
 toggled[id] = true;
 document.getElementById('pip' + name).className = `pip on-${id}`;
@@ -732,7 +779,7 @@ document.getElementById('sbActive').textContent = statusText;
 // ── NATURAL LANGUAGE DATA ROUTER ──
 async function determineAndFetchData() {
     const targets = document.getElementById('dataTargets').value.trim();
-    if (!targets) return ''; // No data requested
+    if (!targets) return ''; 
 
     if (!KEY.chatgpt) {
         return "[SYSTEM INJECTION FAILED: ChatGPT key required to run Natural Language Data Router.]";
@@ -740,7 +787,6 @@ async function determineAndFetchData() {
 
     document.getElementById('sbStatus').textContent = 'Routing data requirements...';
     
-    // 1. Ask ChatGPT to extract the parameters into JSON
     const routerPrompt = `You are the data extraction router for an automated intelligence system. 
     The Sovereign has given these data instructions: "${targets}"
     
@@ -775,7 +821,6 @@ async function determineAndFetchData() {
     document.getElementById('sbStatus').textContent = 'Fetching physical truth...';
     let injection = "[SYSTEM INJECTION - LIVE DATA FETCHED]:\n";
 
-    // 2. Execute Alpha Vantage Fetches
     const av = document.getElementById('avToken').value.trim() || AV_TOKEN;
     if (av) {
         for (let c of route.commodities || []) {
@@ -796,7 +841,6 @@ async function determineAndFetchData() {
         injection += `- [Alpha Vantage Data unavailable: Missing API Key]\n`;
     }
 
-    // 3. Execute NewsAPI Fetches
     const news = document.getElementById('newsToken').value.trim() || NEWS_TOKEN;
     if (news) {
         for (let q of route.news_queries || []) {
@@ -815,7 +859,6 @@ async function determineAndFetchData() {
         injection += `- [News Data unavailable: Missing NewsAPI Key]\n`;
     }
 
-    // 4. Execute EIA Fetch (SPR)
     const eia = document.getElementById('eiaToken').value.trim() || EIA_TOKEN;
     if (eia && route.requires_spr) {
         try {
@@ -848,7 +891,6 @@ input.style.height = 'auto';
 document.getElementById('sendBtn').disabled = true;
 document.getElementById('interruptBtn').className = 'interrupt-btn visible';
 
-// Fetch Live Data dynamically via Natural Language Router
 let dataContext = await determineAndFetchData();
 document.getElementById('sbStatus').textContent = 'Relaying...';
 
@@ -1157,9 +1199,14 @@ const av = document.getElementById('avToken').value.trim();
 const news = document.getElementById('newsToken').value.trim();
 const eia = document.getElementById('eiaToken').value.trim();
 
-if(av) { AV_TOKEN = av; sessionStorage.setItem('av_token', av); }
-if(news) { NEWS_TOKEN = news; sessionStorage.setItem('news_token', news); }
-if(eia) { EIA_TOKEN = eia; sessionStorage.setItem('eia_token', eia); }
+if(av) { AV_TOKEN = av; if(rememberKeys) localStorage.setItem('av_token', av); }
+if(news) { NEWS_TOKEN = news; if(rememberKeys) localStorage.setItem('news_token', news); }
+if(eia) { EIA_TOKEN = eia; if(rememberKeys) localStorage.setItem('eia_token', eia); }
+
+const gh = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if(gh) { GH_TOKEN = gh; if(rememberKeys) localStorage.setItem('gh_token', gh); }
+if(repo) { GH_REPO = repo; if(rememberKeys) localStorage.setItem('gh_repo', repo); }
 
 document.getElementById('sessionOverlay').classList.remove('open');
 }
@@ -1205,8 +1252,10 @@ const token = document.getElementById('ghToken').value.trim();
 const repo = document.getElementById('ghRepo').value.trim();
 if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
 GH_TOKEN = token; GH_REPO = repo;
-sessionStorage.setItem('gh_token', token);
-sessionStorage.setItem('gh_repo', repo);
+if (rememberKeys) {
+    localStorage.setItem('gh_token', token);
+    localStorage.setItem('gh_repo', repo);
+}
 
 setSpStatus('Fetching memory.md...');
 try {
@@ -1279,8 +1328,10 @@ if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
 if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
 
 GH_TOKEN = token; GH_REPO = repo;
-sessionStorage.setItem('gh_token', token);
-sessionStorage.setItem('gh_repo', repo);
+if (rememberKeys) {
+    localStorage.setItem('gh_token', token);
+    localStorage.setItem('gh_repo', repo);
+}
 
 document.getElementById('endSessionBtn').disabled = true;
 setSpStatus('Generating session minutes via ChatGPT...');
