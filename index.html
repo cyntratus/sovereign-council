@@ -419,16 +419,16 @@ overflow-y: auto;
 </div>
 
 <div class="sp-row">
-<div class="sp-field" style="flex:1;">
-<div class="sp-label">Alpha Vantage API <span style="color:var(--text-muted)">Prices</span></div>
+<div class="sp-field" style="flex:1; min-width:0;">
+<div class="sp-label" style="white-space:nowrap;">AlphaVantage <span style="color:var(--text-muted); margin-left:auto;">Prices</span></div>
 <input class="sp-input" type="password" id="avToken" placeholder="Optional">
 </div>
-<div class="sp-field" style="flex:1;">
-<div class="sp-label">NewsAPI <span style="color:var(--text-muted)">Entropy</span></div>
+<div class="sp-field" style="flex:1; min-width:0;">
+<div class="sp-label" style="white-space:nowrap;">NewsAPI <span style="color:var(--text-muted); margin-left:auto;">Entropy</span></div>
 <input class="sp-input" type="password" id="newsToken" placeholder="Optional">
 </div>
-<div class="sp-field" style="flex:1;">
-<div class="sp-label">EIA API <span style="color:var(--text-muted)">Physical</span></div>
+<div class="sp-field" style="flex:1; min-width:0;">
+<div class="sp-label" style="white-space:nowrap;">EIA API <span style="color:var(--text-muted); margin-left:auto;">Physical</span></div>
 <input class="sp-input" type="password" id="eiaToken" placeholder="Optional">
 </div>
 </div>
@@ -857,21 +857,22 @@ async function determineAndFetchData() {
             } catch(e) {}
         }
     } else if ((route.commodities?.length > 0 || route.equities?.length > 0)) {
-        injection += `- [Alpha Vantage Data unavailable: Missing API Key]\n`;
+        injection += `- [AlphaVantage Data unavailable: Missing API Key]\n`;
     }
 
     const news = document.getElementById('newsToken').value.trim() || NEWS_TOKEN;
     if (news) {
         for (let q of route.news_queries || []) {
             try {
-                const r = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&sortBy=publishedAt&pageSize=3&apiKey=${news}`);
+                // Route through Cloudflare Pages backend to bypass browser CORS block
+                const r = await fetch(`/api/news?q=${encodeURIComponent(q)}&apiKey=${news}`);
                 const data = await r.json();
                 if(data.articles && data.articles.length > 0) {
                     injection += `- Recent news for "${q}":\n`;
                     data.articles.forEach(a => injection += `  * ${a.title}\n`);
                 }
             } catch(e) {
-                injection += `- [NewsAPI fetch failed for "${q}" - Free tier CORS restriction likely.]\n`;
+                injection += `- [NewsAPI fetch failed for "${q}"]\n`;
             }
         }
     } else if (route.news_queries?.length > 0) {
