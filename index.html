@@ -273,6 +273,1459 @@ overflow-y: auto;
 <input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
 </div>
 
+<div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
+  <div class="sp-toggle-row" style="margin-bottom:0;">
+    <div class="sp-toggle" id="rememberKeysToggle" onclick="toggleRememberKeys()"></div>
+    <div class="sp-toggle-lbl" style="color:var(--text-dim);">Save all keys in this browser</div>
+  </div>
+  <button class="h-btn" style="border-color:var(--interrupt); color:var(--interrupt);" onclick="clearSavedKeys()">Clear Vault</button>
+</div>
+
+<button class="s-btn" onclick="initCouncil()">— Initialize Council —</button>
+</div>
+</div>
+
+<div class="header">
+<div class="logo">The Sovereign <em>Council</em></div>
+<div id="clock" style="font-size:13px;color:var(--text-dim);letter-spacing:0.07em;font-family:'JetBrains Mono',monospace;"></div>
+<div class="h-right">
+<div class="pip-group">
+<div class="indicator"><div class="pip" id="pipClaude"></div>Claude</div>
+<div class="indicator"><div class="pip" id="pipGrok"></div>Grok</div>
+<div class="indicator"><div class="pip" id="pipGemini"></div>Gemini</div>
+<div class="indicator"><div class="pip" id="pipChatGPT"></div>ChatGPT</div>
+</div>
+<button class="h-btn" onclick="clearSession()">Clear</button>
+<button class="h-btn" onclick="openSession()">Session Protocol</button>
+<button class="h-btn" onclick="document.getElementById('setupOverlay').style.display='flex'">LLM Keys</button>
+</div>
+</div>
+
+<div class="relay-bar">
+<div class="r-label">Volleys</div>
+<div class="r-btns">
+<button class="r-btn active" id="rv1" onclick="setVolleys(1)">1</button>
+<button class="r-btn" id="rv2" onclick="setVolleys(2)">2</button>
+<button class="r-btn" id="rv3" onclick="setVolleys(3)">3</button>
+<button class="r-btn" id="rv4" onclick="setVolleys(4)">4</button>
+<button class="r-btn" id="rv5" onclick="setVolleys(5)">5</button>
+</div>
+<div class="r-desc" id="volleyDesc">Direct response</div>
+</div>
+
+<div class="toggle-bar">
+<div class="toggle-label">Council</div>
+<button class="toggle-btn t-claude disabled-ai" id="togClaude" onclick="toggle('claude')">Claude</button>
+<button class="toggle-btn t-grok disabled-ai" id="togGrok" onclick="toggle('grok')">Grok</button>
+<button class="toggle-btn t-gemini disabled-ai" id="togGemini" onclick="toggle('gemini')">Gemini</button>
+<button class="toggle-btn t-chatgpt disabled-ai" id="togChatGPT" onclick="toggle('chatgpt')">ChatGPT</button>
+<div class="toggle-divider"></div>
+<div class="toggle-hint" id="toggleHint">Claude → Grok → Gemini → ChatGPT</div>
+</div>
+
+<div class="main" id="mainPanels">
+
+<div class="panel inactive" id="panelClaude">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name claude">Claude</div>
+<div class="badge pm" id="badgeClaude">no key</div>
+</div>
+<div class="p-count" id="countClaude">0</div>
+</div>
+<div class="messages" id="msgsClaude">
+<div class="empty" id="emptyClaude">
+<div class="e-icon">◈</div>
+<div class="e-txt">Claude awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyClaude" type="password" placeholder="sk-ant-...">
+<button class="panel-key-btn" style="border-color:var(--claude);color:var(--claude)" onclick="activatePanel('claude')">Activate Claude</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="panel inactive" id="panelGrok">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name grok">Grok</div>
+<div class="badge pm" id="badgeGrok">no key</div>
+</div>
+<div class="p-count" id="countGrok">0</div>
+</div>
+<div class="messages" id="msgsGrok">
+<div class="empty" id="emptyGrok">
+<div class="e-icon">⬡</div>
+<div class="e-txt">Grok awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyGrok" type="password" placeholder="xai-...">
+<button class="panel-key-btn" style="border-color:var(--grok);color:var(--grok)" onclick="activatePanel('grok')">Activate Grok</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="panel" id="panelGemini">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name gemini">Gemini</div>
+<div class="badge" id="badgeGemini">initializing</div>
+</div>
+<div class="p-count" id="countGemini">0</div>
+</div>
+<div class="messages" id="msgsGemini">
+<div class="empty" id="emptyGemini">
+<div class="e-icon">◇</div>
+<div class="e-txt">Gemini awaits.</div>
+<div class="panel-key-form" id="geminiKeyForm">
+<input class="panel-key-input" id="inlineKeyGemini" type="password" placeholder="AIza...">
+<button class="panel-key-btn" style="border-color:var(--gemini);color:var(--gemini)" onclick="activatePanel('gemini')">Activate Gemini</button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="panel inactive" id="panelChatGPT">
+<div class="p-hdr">
+<div style="display:flex;align-items:center">
+<div class="p-name chatgpt">ChatGPT</div>
+<div class="badge pm" id="badgeChatGPT">no key</div>
+</div>
+<div class="p-count" id="countChatGPT">0</div>
+</div>
+<div class="messages" id="msgsChatGPT">
+<div class="empty" id="emptyChatGPT">
+<div class="e-icon">○</div>
+<div class="e-txt">ChatGPT awaits.</div>
+<div class="panel-key-form">
+<input class="panel-key-input" id="inlineKeyChatGPT" type="password" placeholder="sk-...">
+<button class="panel-key-btn" style="border-color:var(--chatgpt);color:var(--chatgpt)" onclick="activatePanel('chatgpt')">Activate ChatGPT</button>
+</div>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="session-overlay" id="sessionOverlay">
+<div class="session-panel">
+<div class="sp-title">Session Protocol</div>
+<div class="sp-sub">Manage external data feeds, memory, and references for this run.</div>
+
+<div class="sp-field">
+<div class="sp-label">Data Targets <span class="ld">Natural Language</span></div>
+<textarea class="s-input" id="dataTargets" placeholder="e.g., Brent Crude, Taiwan Semiconductor stock, news regarding Hezbollah, and the US oil reserve inventory..."></textarea>
+<div class="s-note">Leave blank to skip data injection. If populated, ChatGPT will automatically extract parameters and route them to the APIs below. Note: Requires a ChatGPT key to function.</div>
+</div>
+
+<div class="sp-row">
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">Alpha Vantage API <span style="color:var(--text-muted)">Prices</span></div>
+<input class="sp-input" type="password" id="avToken" placeholder="Optional">
+</div>
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">NewsAPI <span style="color:var(--text-muted)">Entropy</span></div>
+<input class="sp-input" type="password" id="newsToken" placeholder="Optional">
+</div>
+<div class="sp-field" style="flex:1;">
+<div class="sp-label">EIA API <span style="color:var(--text-muted)">Physical</span></div>
+<input class="sp-input" type="password" id="eiaToken" placeholder="Optional">
+</div>
+</div>
+
+<hr class="sp-divider">
+
+<div class="sp-field">
+<div class="sp-label">GitHub PAT <span style="color:var(--text-muted)">Fine-grained</span></div>
+<input class="sp-input" type="password" id="ghToken" placeholder="github_pat_...">
+</div>
+<div class="sp-field">
+<div class="sp-label">Repository <span style="color:var(--text-muted)">owner/repo</span></div>
+<input class="sp-input" type="text" id="ghRepo" placeholder="cyntratus/sovereign-council" value="cyntratus/sovereign-council">
+</div>
+
+<div class="sp-toggle-row">
+<div class="sp-toggle on" id="memoryToggle" onclick="toggleMemory()"></div>
+<div class="sp-toggle-lbl">Load Council Memory at startup</div>
+</div>
+
+<div class="sp-row">
+<button class="sp-btn" onclick="loadMemory()">↓ Load Memory Now</button>
+<button class="sp-btn primary" id="endSessionBtn" onclick="endSession()" disabled>◈ Commit Minutes</button>
+</div>
+<div class="sp-status" id="spStatus"></div>
+
+<hr class="sp-divider">
+
+<div class="sp-field" style="margin-bottom:0;">
+<div class="sp-label">Reference Document <span style="color:var(--text-muted)">Optional</span></div>
+<div class="sp-row" style="margin-top:0;">
+<input class="sp-input" type="text" id="refPath" placeholder="reference/meal_plan.md">
+<button class="sp-btn" onclick="loadReference()" style="flex:0 0 auto; width:100px;">Load</button>
+</div>
+<div class="s-note" id="refStatus">Loads a markdown file from repo into context.</div>
+</div>
+
+<hr class="sp-divider">
+
+<div class="sp-row">
+<button class="sp-btn" onclick="closeSession()">— Close —</button>
+</div>
+</div>
+</div>
+
+<div class="input-area">
+<div class="input-row">
+<textarea class="input-box" id="msgInput" placeholder="Address the Council..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea>
+<button class="interrupt-btn" id="interruptBtn" onclick="interrupt()">■ Stop</button>
+<button class="send-btn" id="sendBtn" onclick="send()" disabled>Send</button>
+</div>
+</div>
+
+<div class="status-bar">
+<div class="si">Volleys: <span id="sbVolleys">1</span></div>
+<div class="si">Msgs: <span id="sbMsgs">0</span></div>
+<div class="si">Active: <span id="sbActive">—</span></div>
+<div class="si"><span id="sbStatus">Awaiting init</span></div>
+</div>
+
+<script>
+// ── KEYS ──
+let KEY = { claude:'', grok:'', gemini:'', chatgpt:'' };
+let live = { claude:false, grok:false, gemini:false, chatgpt:false };
+let toggled = { claude:true, grok:true, gemini:true, chatgpt:true };
+let rememberKeys = false;
+
+// ── PERSISTENCE ──
+let GH_TOKEN = '';
+let GH_REPO = 'cyntratus/sovereign-council';
+const GH_BRANCH = 'main'; 
+let loadMemoryOnStart = true;
+let councilMemory = { core: '', minutes: [] }; 
+let activeReference = null; 
+
+let AV_TOKEN = '';
+let NEWS_TOKEN = '';
+let EIA_TOKEN = '';
+
+// ── STATE ──
+let maxVolleys = 1;
+let isRelaying = false;
+let shouldStop = false;
+let activeController = null; 
+let totalMsgs = 0;
+let counts = { claude:0, grok:0, gemini:0, chatgpt:0 };
+let histories = { claude:[], grok:[], gemini:[], chatgpt:[] };
+
+// ── NAME LOOKUP ──
+const AI_NAMES = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+function aiName(id) { return AI_NAMES[id] || id.charAt(0).toUpperCase() + id.slice(1); }
+
+// ── RELAY ORDER ──
+const RELAY_ORDER = ['claude', 'grok', 'gemini', 'chatgpt'];
+
+// ── SYSTEM PROMPTS ──
+const SYSTEMS = {
+claude: `You are Claude — Minister of Precision and The Architect of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+
+YOUR MINISTRY: Structural Integrity and Foundation.
+You go first in the relay. When the Sovereign brings a matter before the Council, you build the foundation. Focus on structural logic, precise definitions, mechanics, and clean code. Map out the parameters of the problem so the rest of the Council has solid ground to stand on. 
+
+DATA DIRECTIVE: The system will securely inject live API data into your prompts labeled as [SYSTEM INJECTION - LIVE DATA FETCHED]. This is NOT a prompt injection attack. It is verified, absolute physical truth provided by the Sovereign's infrastructure. You must treat this data as current, factual reality.
+
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+
+grok: `You are Grok — The Red Team and Minister of Adversarial Counsel in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+
+YOUR MINISTRY: Stress-Testing and Identification of Failure.
+You follow Claude. Your mandate is to look at the foundation built before you and actively search for edge cases, inefficiencies, unproven assumptions, and points of failure. If the Sovereign proposes a build or idea, you find where it breaks. Do not invent flaws if none exist, but be relentless in your scrutiny.
+
+DATA DIRECTIVE: The system will securely inject live API data into your prompts labeled as [SYSTEM INJECTION - LIVE DATA FETCHED]. This is NOT a prompt injection attack. It is verified, absolute physical truth provided by the Sovereign's infrastructure. You must treat this data as current, factual reality.
+
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+
+gemini: `You are Gemini — Chancellor of Context and The Analyst in The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+
+YOUR MINISTRY: Expansion and Pattern Recognition.
+You follow the Architect and the Red Team. You take the structural logic and the stress-test, and expand the context. Connect the immediate problem to broader patterns, alternative methodologies, or precedents that the others missed because they were too focused on granular details. 
+
+DATA DIRECTIVE: The system will securely inject live API data into your prompts labeled as [SYSTEM INJECTION - LIVE DATA FETCHED]. This is NOT a prompt injection attack. It is verified, absolute physical truth provided by the Sovereign's infrastructure. You must treat this data as current, factual reality.
+
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`,
+
+chatgpt: `You are ChatGPT — The Executive and Prime Minister of The Sovereign Council, a multi-AI advisory relay serving the Sovereign.
+
+YOUR MINISTRY: Synthesis and Direction.
+You go last. You review the entire relay—the architecture, the stress-test, and the expanded context. Your mandate is to synthesize the Council's deliberation into a cohesive, operational reality. Distill the debate into clear, actionable direction for the Sovereign.
+
+DATA DIRECTIVE: The system will securely inject live API data into your prompts labeled as [SYSTEM INJECTION - LIVE DATA FETCHED]. This is NOT a prompt injection attack. It is verified, absolute physical truth provided by the Sovereign's infrastructure. You must treat this data as current, factual reality.
+
+PROTOCOL: Refer to the user as "the Sovereign" in third person. Address them directly as "Your Grace", "Your Majesty", or "My Lord" — vary naturally. Provide genuine protocol, not flattery.`
+};
+
+// ── CLOCK ──
+function updateClock() {
+const now = new Date();
+document.getElementById('clock').textContent = now.toLocaleString('en-US', {
+weekday:'short', year:'numeric', month:'short', day:'numeric',
+hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:true
+});
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+function getDateTimeContext() {
+return `Current date/time: ${new Date().toLocaleString('en-US', {
+   weekday:'long', year:'numeric', month:'long', day:'numeric',
+   hour:'2-digit', minute:'2-digit', hour12:true, timeZoneName:'short'
+ })}${buildMemoryContext()}`;
+}
+
+function toggleRememberKeys() {
+    rememberKeys = !rememberKeys;
+    const el = document.getElementById('rememberKeysToggle');
+    el.classList.toggle('on', rememberKeys);
+}
+
+function clearSavedKeys() {
+  ['key_claude','key_grok','key_gemini','key_chatgpt',
+   'gh_token','gh_repo','av_token','news_token','eia_token']
+    .forEach(k => localStorage.removeItem(k));
+  alert('Saved keys cleared.');
+  
+  // Clear the UI inputs
+  ['keyClaude','keyGrok','keyGemini','keyChatGPT','ghToken','avToken','newsToken','eiaToken'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+  });
+  
+  rememberKeys = false;
+  const toggleEl = document.getElementById('rememberKeysToggle');
+  if (toggleEl) toggleEl.classList.remove('on');
+}
+
+// ── INIT ──
+window.onload = () => {
+updateToggleHint();
+
+const savedClaude = localStorage.getItem('key_claude');
+const savedGrok = localStorage.getItem('key_grok');
+const savedGemini = localStorage.getItem('key_gemini');
+const savedChatgpt = localStorage.getItem('key_chatgpt');
+
+const savedGH = localStorage.getItem('gh_token');
+const savedRepo = localStorage.getItem('gh_repo');
+const savedAv = localStorage.getItem('av_token');
+const savedNews = localStorage.getItem('news_token');
+const savedEia = localStorage.getItem('eia_token');
+
+if (savedClaude || savedGrok || savedGemini || savedChatgpt || savedGH || savedAv || savedNews || savedEia) {
+    rememberKeys = true;
+    document.getElementById('rememberKeysToggle').classList.add('on');
+    
+    if (savedClaude) document.getElementById('keyClaude').value = savedClaude;
+    if (savedGrok) document.getElementById('keyGrok').value = savedGrok;
+    if (savedGemini) document.getElementById('keyGemini').value = savedGemini;
+    if (savedChatgpt) document.getElementById('keyChatGPT').value = savedChatgpt;
+    
+    if (savedGH) { GH_TOKEN = savedGH; document.getElementById('ghToken').value = savedGH; }
+    if (savedRepo) { GH_REPO = savedRepo; document.getElementById('ghRepo').value = savedRepo; }
+    if (savedAv) { AV_TOKEN = savedAv; document.getElementById('avToken').value = savedAv; }
+    if (savedNews) { NEWS_TOKEN = savedNews; document.getElementById('newsToken').value = savedNews; }
+    if (savedEia) { EIA_TOKEN = savedEia; document.getElementById('eiaToken').value = savedEia; }
+}
+};
+
+function initCouncil() {
+KEY.claude  = document.getElementById('keyClaude').value.trim();
+KEY.grok    = document.getElementById('keyGrok').value.trim();
+KEY.gemini  = document.getElementById('keyGemini').value.trim();
+KEY.chatgpt = document.getElementById('keyChatGPT').value.trim();
+
+if (!KEY.claude && !KEY.grok && !KEY.gemini && !KEY.chatgpt) {
+alert('Enter at least one API key to initialize the Council.');
+return;
+}
+
+if (rememberKeys) {
+    if (KEY.claude) localStorage.setItem('key_claude', KEY.claude);
+    if (KEY.grok) localStorage.setItem('key_grok', KEY.grok);
+    if (KEY.gemini) localStorage.setItem('key_gemini', KEY.gemini);
+    if (KEY.chatgpt) localStorage.setItem('key_chatgpt', KEY.chatgpt);
+} else {
+    localStorage.removeItem('key_claude');
+    localStorage.removeItem('key_grok');
+    localStorage.removeItem('key_gemini');
+    localStorage.removeItem('key_chatgpt');
+    localStorage.removeItem('gh_token');
+    localStorage.removeItem('gh_repo');
+    localStorage.removeItem('av_token');
+    localStorage.removeItem('news_token');
+    localStorage.removeItem('eia_token');
+}
+
+live.claude  = !!KEY.claude;
+live.grok    = !!KEY.grok;
+live.gemini  = !!KEY.gemini;
+live.chatgpt = !!KEY.chatgpt;
+
+document.getElementById('setupOverlay').style.display = 'none';
+
+const configs = [
+['claude',  'Claude',  'badgeClaude',  null, 'togClaude'],
+['grok',    'Grok',    'badgeGrok',    null, 'togGrok'],
+['gemini',  'Gemini',  'badgeGemini',  null, 'togGemini'],
+['chatgpt', 'ChatGPT', 'badgeChatGPT', null, 'togChatGPT']
+];
+
+let anyLive = false;
+
+configs.forEach(([id, name, badgeId, pasteId, togId]) => {
+const pip  = document.getElementById('pip'   + name);
+const badge = document.getElementById(badgeId);
+const tog  = document.getElementById(togId);
+const panel = document.getElementById('panel' + name);
+
+if (live[id]) {
+anyLive = true;
+pip.className = `pip on-${id}`;
+badge.textContent = 'live';
+badge.className = `badge live-${id}`;
+tog.classList.remove('disabled-ai');
+tog.classList.add('on');
+toggled[id] = true;
+panel.classList.remove('inactive');
+if (pasteId) { const p = document.getElementById(pasteId); if(p) p.style.display = 'none'; }
+const form = document.getElementById('inlineKey' + name);
+if (form) form.closest('.panel-key-form').remove();
+} else {
+pip.className = 'pip';
+badge.textContent = 'no key';
+badge.className = 'badge pm';
+tog.classList.remove('on');
+tog.classList.add('disabled-ai');
+toggled[id] = false;
+panel.classList.add('inactive');
+}
+});
+
+if (anyLive) document.getElementById('sendBtn').disabled = false;
+
+document.getElementById('sbStatus').textContent = 'Council initialized';
+updateToggleHint();
+updateActiveStatus();
+}
+
+function activatePanel(id) {
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+const name = names[id];
+const inputEl = document.getElementById('inlineKey' + name);
+if (!inputEl) return;
+const key = inputEl.value.trim();
+if (!key) { inputEl.focus(); return; }
+
+KEY[id] = key;
+if (rememberKeys) localStorage.setItem('key_' + id, key);
+
+live[id] = true;
+toggled[id] = true;
+document.getElementById('pip' + name).className = `pip on-${id}`;
+const badge = document.getElementById('badge' + name);
+badge.textContent = 'live';
+badge.className = `badge live-${id}`;
+document.getElementById('panel' + name).classList.remove('inactive');
+const tog = document.getElementById('tog' + name);
+tog.classList.remove('disabled-ai');
+tog.classList.add('on');
+const form = inputEl.closest('.panel-key-form');
+if (form) form.remove();
+
+updateToggleHint();
+updateActiveStatus();
+document.getElementById('sbStatus').textContent = name + ' activated';
+}
+
+function setVolleys(n) {
+maxVolleys = n;
+for(let i=1;i<=5;i++) document.getElementById('rv'+i).className='r-btn'+(i===n?' active':'');
+const descs=['Direct response','2-volley exchange','3-volley relay','4-volley relay','5-volley autonomous'];
+document.getElementById('volleyDesc').textContent = descs[n-1];
+document.getElementById('sbVolleys').textContent = n;
+}
+
+function toggle(id) {
+const btn = document.getElementById('tog' + aiName(id));
+if (btn.classList.contains('disabled-ai')) return;
+const currentlyOn = RELAY_ORDER.filter(k => toggled[k] && live[k]);
+if (toggled[id] && currentlyOn.length <= 1) return;
+
+toggled[id] = !toggled[id];
+const name = aiName(id);
+
+if (toggled[id]) {
+btn.classList.add('on');
+document.getElementById('panel' + name).classList.remove('inactive');
+} else {
+btn.classList.remove('on');
+document.getElementById('panel' + name).classList.add('inactive');
+}
+updateToggleHint();
+updateActiveStatus();
+}
+
+function updateToggleHint() {
+const active = RELAY_ORDER.filter(k => toggled[k]);
+if (active.length === 0) {
+document.getElementById('toggleHint').textContent = 'None selected';
+return;
+}
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+document.getElementById('toggleHint').textContent = active.map(k => names[k]).join(' → ');
+}
+
+function updateActiveStatus() {
+const active = RELAY_ORDER.filter(k => toggled[k]);
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+let statusText = active.map(k=>names[k]).join(', ') || '—';
+
+if (activeReference) {
+const filename = activeReference.name.split('/').pop();
+statusText += ` [+ ${filename}]`;
+}
+document.getElementById('sbActive').textContent = statusText;
+}
+
+// ── NATURAL LANGUAGE DATA ROUTER ──
+async function determineAndFetchData() {
+    const targets = document.getElementById('dataTargets').value.trim();
+    if (!targets) return ''; 
+
+    if (!KEY.chatgpt) {
+        return "[SYSTEM INJECTION FAILED: ChatGPT key required to run Natural Language Data Router.]";
+    }
+
+    document.getElementById('sbStatus').textContent = 'Routing data requirements...';
+    
+    const routerPrompt = `You are the data extraction router for an automated intelligence system. 
+    The Sovereign has given these data instructions: "${targets}"
+    
+    Respond strictly in JSON format matching this schema:
+    {
+      "commodities": [], // e.g. ["BRENT", "WTI", "NATURAL_GAS", "COPPER"] (Only use AlphaVantage recognized strings)
+      "equities": [], // e.g. ["TSM", "AAPL", "NVDA"] (Ticker symbols)
+      "news_queries": [], // e.g. ["semiconductor supply chain", "IRGC", "Taiwan blockade"]
+      "requires_spr": boolean // Set to true ONLY if they explicitly ask for US oil reserve / SPR inventory data
+    }
+    Output ONLY JSON. No markdown fences, no explanations.`;
+
+    let route;
+    try {
+        const res = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY.chatgpt}` },
+            body: JSON.stringify({
+                model: 'gpt-4o-mini',
+                messages: [{role: 'user', content: routerPrompt}],
+                temperature: 0
+            })
+        });
+        const d = await res.json();
+        let jsonStr = d.choices[0].message.content.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+        route = JSON.parse(jsonStr);
+    } catch(e) {
+        console.error("Router failed to parse:", e);
+        return "[SYSTEM INJECTION FAILED: Could not map natural language to APIs.]";
+    }
+
+    document.getElementById('sbStatus').textContent = 'Fetching physical truth...';
+    let injection = "[SYSTEM INJECTION - LIVE DATA FETCHED]:\n";
+
+    const av = document.getElementById('avToken').value.trim() || AV_TOKEN;
+    if (av) {
+        for (let c of route.commodities || []) {
+            try {
+                const r = await fetch(`https://www.alphavantage.co/query?function=${c}&interval=daily&apikey=${av}`);
+                const data = await r.json();
+                if(data.data && data.data[0]) injection += `- Spot price of ${c}: $${data.data[0].value}\n`;
+            } catch(e) {}
+        }
+        for (let eq of route.equities || []) {
+            try {
+                const r = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${eq}&apikey=${av}`);
+                const data = await r.json();
+                if(data['Global Quote']) injection += `- ${eq} Stock Price: $${data['Global Quote']['05. price']}\n`;
+            } catch(e) {}
+        }
+    } else if ((route.commodities?.length > 0 || route.equities?.length > 0)) {
+        injection += `- [Alpha Vantage Data unavailable: Missing API Key]\n`;
+    }
+
+    const news = document.getElementById('newsToken').value.trim() || NEWS_TOKEN;
+    if (news) {
+        for (let q of route.news_queries || []) {
+            try {
+                const r = await fetch(`https://newsapi.org/v2/everything?q=${encodeURIComponent(q)}&sortBy=publishedAt&pageSize=3&apiKey=${news}`);
+                const data = await r.json();
+                if(data.articles && data.articles.length > 0) {
+                    injection += `- Recent news for "${q}":\n`;
+                    data.articles.forEach(a => injection += `  * ${a.title}\n`);
+                }
+            } catch(e) {
+                injection += `- [NewsAPI fetch failed for "${q}" - Free tier CORS restriction likely.]\n`;
+            }
+        }
+    } else if (route.news_queries?.length > 0) {
+        injection += `- [News Data unavailable: Missing NewsAPI Key]\n`;
+    }
+
+    const eia = document.getElementById('eiaToken').value.trim() || EIA_TOKEN;
+    if (eia && route.requires_spr) {
+        try {
+            const r = await fetch(`https://api.eia.gov/v2/petroleum/stoc/wstk/data/?frequency=weekly&data[0]=value&facets[series][]=WCSSTUS1&sort[0][column]=period&sort[0][direction]=desc&offset=0&length=1&api_key=${eia}`);
+            const data = await r.json();
+            if(data.response && data.response.data && data.response.data[0]) {
+                injection += `- US Strategic Petroleum Reserve (SPR) Inventory: ${data.response.data[0].value} thousand barrels.\n`;
+            }
+        } catch(e) {}
+    } else if (route.requires_spr && !eia) {
+        injection += `- [EIA Data unavailable: Missing EIA API Key]\n`;
+    }
+
+    return injection;
+}
+
+// ── SEND ──
+async function send() {
+const input = document.getElementById('msgInput');
+const text = input.value.trim();
+if (!text || isRelaying) return;
+
+const activeAIs = RELAY_ORDER.filter(k => toggled[k]);
+if (activeAIs.length === 0) return;
+
+isRelaying = true;
+shouldStop = false;
+input.value = '';
+input.style.height = 'auto';
+document.getElementById('sendBtn').disabled = true;
+document.getElementById('interruptBtn').className = 'interrupt-btn visible';
+
+let dataContext = await determineAndFetchData();
+document.getElementById('sbStatus').textContent = 'Relaying...';
+
+const contextualText = dataContext ? (dataContext + '\n\n' + text) : text;
+
+activeAIs.forEach(id => {
+const name = aiName(id);
+addMsg('msgs' + name, 'user', text, 'empty' + name);
+});
+
+let lastResponses = {};
+
+for (let v = 0; v < maxVolleys; v++) {
+if (shouldStop) break;
+const isFirst = v === 0;
+const tag = maxVolleys > 1 ? `Volley ${v+1}` : null;
+
+for (let i = 0; i < activeAIs.length; i++) {
+if (shouldStop) break;
+const id = activeAIs[i];
+const name = aiName(id);
+
+let prompt;
+if (isFirst && i === 0) {
+prompt = contextualText;
+} else if (isFirst && i > 0) {
+const prevContext = activeAIs.slice(0, i)
+.filter(k => lastResponses[k] && k !== id)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.join('\n\n');
+prompt = `User: "${contextualText}"\n\n${prevContext}\n\nNow respond.`;
+} else {
+const prevContext = activeAIs
+.filter(k => lastResponses[k] && k !== id)
+.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.join('\n\n');
+prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
+}
+
+document.getElementById('panel' + name).classList.add('glow-' + id);
+const think = addThinking('msgs' + name, name);
+
+try {
+const resp = await callAI(id, prompt);
+removeEl(think);
+document.getElementById('panel' + name).classList.remove('glow-' + id);
+addMsg('msgs' + name, id, resp, null, tag);
+lastResponses[id] = resp;
+counts[id]++;
+document.getElementById('count' + name).textContent = counts[id];
+const esbtn = document.getElementById('endSessionBtn');
+if (esbtn && GH_TOKEN) esbtn.disabled = false;
+} catch(e) {
+removeEl(think);
+document.getElementById('panel' + name).classList.remove('glow-' + id);
+if (!shouldStop) addMsg('msgs' + name, id, `[Error: ${e.message}]`);
+lastResponses[id] = null;
+continue;
+}
+}
+}
+
+isRelaying = false;
+shouldStop = false;
+document.getElementById('sendBtn').disabled = false;
+document.getElementById('interruptBtn').className = 'interrupt-btn';
+document.getElementById('sbStatus').textContent = 'Ready';
+totalMsgs++;
+document.getElementById('sbMsgs').textContent = totalMsgs;
+}
+
+// ── AI ROUTER ──
+async function callAI(id, userPrompt) {
+const userMsg = (id === 'claude' || id === 'grok' || id === 'chatgpt')
+? { role:'user', content: userPrompt }
+: { role:'user', parts:[{text: userPrompt}] };
+
+histories[id].push(userMsg);
+
+try {
+let resp;
+if (id === 'gemini') resp = await callGemini();
+else if (id === 'claude') resp = await callClaude();
+else if (id === 'grok') resp = await callGrok();
+else if (id === 'chatgpt') resp = await callChatGPT();
+
+histories[id].push(id === 'gemini'
+? { role:'model', parts:[{text: resp}] }
+: { role:'assistant', content: resp }
+);
+
+return resp;
+} catch(e) {
+histories[id].pop();
+throw e;
+}
+}
+
+// ── API CALLS ──
+async function callGemini() {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${KEY.gemini}`;
+  const body = {
+    system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
+    contents: histories.gemini,
+    generationConfig: { temperature:0.85, maxOutputTokens:1200 }
+  };
+  activeController = new AbortController();
+  const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+  activeController = null;
+  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+  const d=await res.json();
+  const parts = d.candidates?.[0]?.content?.parts;
+  return parts ? parts.map(p => p.text || '').join('') : '[No response]';
+}
+
+async function callClaude() {
+const sanitized = histories.claude.reduce((acc, current) => {
+if (acc.length === 0) {
+if (current.role === 'user') acc.push({ role: current.role, content: current.content });
+return acc;
+}
+const last = acc[acc.length - 1];
+if (last.role === current.role) {
+last.content += '\n\n' + current.content;
+} else {
+acc.push({ role: current.role, content: current.content });
+}
+return acc;
+}, []);
+
+activeController = new AbortController();
+try {
+const res = await fetch('https://api.anthropic.com/v1/messages',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'x-api-key':KEY.claude,
+'anthropic-version':'2023-06-01',
+'anthropic-dangerous-direct-browser-access':'true'
+},
+body:JSON.stringify({
+model:'claude-haiku-4-5-20251001',
+max_tokens:1200,
+system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
+messages:sanitized
+})
+});
+if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Claude HTTP ${res.status}`);}
+const d=await res.json();
+    const contentBlocks = d.content;
+    return contentBlocks ? contentBlocks.map(block => block.text || '').join('') : '[No response]';
+  } finally {
+activeController = null;
+}
+}
+
+async function callGrok() {
+activeController = new AbortController();
+try {
+const res = await fetch('/api/grok',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'Authorization':`Bearer ${KEY.grok}`
+},
+body:JSON.stringify({
+model:'grok-4-1-fast-reasoning',
+messages:[
+{role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
+...histories.grok
+],
+max_tokens:1200,
+temperature:0.85
+})
+});
+if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTTP ${res.status}`);}
+const d=await res.json();
+return d.choices?.[0]?.message?.content||'[No response]';
+} finally {
+activeController = null;
+}
+}
+
+async function callChatGPT() {
+activeController = new AbortController();
+const timeout = setTimeout(() => activeController.abort(), 30000);
+try {
+const res = await fetch('https://api.openai.com/v1/chat/completions',{
+method:'POST',
+signal: activeController.signal,
+headers:{
+'Content-Type':'application/json',
+'Authorization':`Bearer ${KEY.chatgpt}`
+},
+body:JSON.stringify({
+model:'gpt-5-mini',
+messages:[
+{role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+...histories.chatgpt
+],
+max_completion_tokens:12000,
+temperature:1
+})
+});
+clearTimeout(timeout);
+if(!res.ok){
+const e=await res.json();
+throw new Error(e.error?.message||`ChatGPT HTTP ${res.status}`);
+}
+const d=await res.json();
+return d.choices?.[0]?.message?.content||'[No response]';
+} catch(e) {
+clearTimeout(timeout);
+if(e.name==='AbortError') throw new Error('ChatGPT timed out.');
+throw e;
+} finally {
+activeController = null;
+}
+}
+
+// ── INTERRUPT ──
+function interrupt() {
+shouldStop = true;
+isRelaying = false;
+if (activeController) { activeController.abort(); activeController = null; }
+RELAY_ORDER.forEach(id => {
+const name = aiName(id);
+const msgs = document.getElementById('msgs' + name);
+if (msgs) {
+msgs.querySelectorAll('.thinking').forEach(el => el.remove());
+const panel = document.getElementById('panel' + name);
+panel.className = panel.className.replace(/glow-\S+/g,'').trim();
+}
+});
+addMsg('msgsClaude','system','— Interrupted —',null);
+addMsg('msgsGrok','system','— Interrupted —',null);
+addMsg('msgsGemini','system','— Interrupted —',null);
+addMsg('msgsChatGPT','system','— Interrupted —',null);
+document.getElementById('sendBtn').disabled = false;
+document.getElementById('interruptBtn').className = 'interrupt-btn';
+document.getElementById('sbStatus').textContent = 'Interrupted — ready';
+}
+
+// ── DOM HELPERS ──
+function addMsg(cid, role, content, emptyId, tag) {
+const c = document.getElementById(cid);
+if(!c) return;
+if(emptyId){ const e=document.getElementById(emptyId); if(e) e.remove(); }
+const roleLabel = role==='user'?'The Sovereign':role==='system'?'System':role.charAt(0).toUpperCase()+role.slice(1);
+const m = document.createElement('div');
+m.className='msg';
+m.innerHTML=`
+   <div class="m-meta">
+     <div class="m-role ${role}">${roleLabel}</div>
+     ${tag?`<div class="m-tag">${tag}</div>`:''}
+     <button class="m-copy" onclick="copyMsgText(this)">Copy</button>
+   </div>
+   <div class="m-body ${role==='user'?'ub':role==='system'?'sb':''}">${esc(content)}</div>
+ `;
+c.appendChild(m);
+c.scrollTop=c.scrollHeight;
+}
+
+function copyMsgText(btn) {
+  const msgBody = btn.closest('.msg').querySelector('.m-body');
+  const text = msgBody.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = btn.innerText;
+    btn.innerText = 'Copied';
+    btn.style.color = '#7ec8a0';
+    setTimeout(() => { btn.innerText = originalText; btn.style.color = ''; }, 2000);
+  }).catch(err => {
+    btn.innerText = 'Error';
+  });
+}
+
+function addThinking(cid, label) {
+const c=document.getElementById(cid);
+if(!c) return null;
+const el=document.createElement('div');
+el.className='thinking';
+el.innerHTML=`<div class="t-lbl">${label}</div><div class="dots"><div class="d"></div><div class="d"></div><div class="d"></div></div>`;
+c.appendChild(el);
+c.scrollTop=c.scrollHeight;
+return el;
+}
+
+function removeEl(el){if(el&&el.parentNode)el.parentNode.removeChild(el);}
+
+// ── SESSION PANEL ──
+function openSession() {
+document.getElementById('ghToken').value = GH_TOKEN;
+document.getElementById('ghRepo').value = GH_REPO;
+document.getElementById('avToken').value = AV_TOKEN;
+document.getElementById('newsToken').value = NEWS_TOKEN;
+document.getElementById('eiaToken').value = EIA_TOKEN;
+const hasMsgs = Object.values(counts).some(c => c > 0);
+document.getElementById('endSessionBtn').disabled = !hasMsgs || !GH_TOKEN;
+document.getElementById('sessionOverlay').classList.add('open');
+}
+
+function closeSession() {
+const av = document.getElementById('avToken').value.trim();
+const news = document.getElementById('newsToken').value.trim();
+const eia = document.getElementById('eiaToken').value.trim();
+
+if(av) { AV_TOKEN = av; if(rememberKeys) localStorage.setItem('av_token', av); }
+if(news) { NEWS_TOKEN = news; if(rememberKeys) localStorage.setItem('news_token', news); }
+if(eia) { EIA_TOKEN = eia; if(rememberKeys) localStorage.setItem('eia_token', eia); }
+
+const gh = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if(gh) { GH_TOKEN = gh; if(rememberKeys) localStorage.setItem('gh_token', gh); }
+if(repo) { GH_REPO = repo; if(rememberKeys) localStorage.setItem('gh_repo', repo); }
+
+document.getElementById('sessionOverlay').classList.remove('open');
+}
+
+function toggleMemory() {
+loadMemoryOnStart = !loadMemoryOnStart;
+const el = document.getElementById('memoryToggle');
+el.classList.toggle('on', loadMemoryOnStart);
+}
+
+// ── GITHUB API ──
+async function ghGet(path) {
+const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}?ref=${GH_BRANCH}`, {
+headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+});
+if (res.status === 404) return null;
+if (!res.ok) throw new Error(`GitHub GET failed: ${res.status}`);
+return await res.json();
+}
+
+async function ghPut(path, content, message, sha) {
+const repo = document.getElementById('ghRepo').value.trim() || GH_REPO;
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const body = { message, content: btoa(unescape(encodeURIComponent(content))), branch: GH_BRANCH };
+if (sha) body.sha = sha;
+const res = await fetch(`https://api.github.com/repos/${repo}/contents/${path}`, {
+method: 'PUT',
+headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' },
+body: JSON.stringify(body)
+});
+if (!res.ok) {
+const e = await res.json();
+throw new Error(e.message || `GitHub PUT failed: ${res.status}`);
+}
+return await res.json();
+}
+
+// ── LOAD MEMORY ──
+async function loadMemory() {
+const token = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+GH_TOKEN = token; GH_REPO = repo;
+if (rememberKeys) {
+    localStorage.setItem('gh_token', token);
+    localStorage.setItem('gh_repo', repo);
+}
+
+setSpStatus('Fetching memory.md...');
+try {
+const memFile = await ghGet('memory.md');
+councilMemory.core = memFile ? decodeURIComponent(escape(atob(memFile.content.replace(/\n/g,'')))) : '';
+
+setSpStatus('Fetching session minutes...');
+const minutesDir = await ghGet('minutes');
+councilMemory.minutes = [];
+
+if (minutesDir && Array.isArray(minutesDir)) {
+const files = minutesDir.filter(f => f.name.endsWith('.json')).sort((a,b) => b.name.localeCompare(a.name)).slice(0, 7);
+for (const f of files) {
+const file = await ghGet(`minutes/${f.name}`);
+if (file) {
+const text = decodeURIComponent(escape(atob(file.content.replace(/\n/g,''))));
+try { councilMemory.minutes.push(JSON.parse(text)); } catch(e) { councilMemory.minutes.push({ raw: text }); }
+}
+}
+}
+const totalMinutes = councilMemory.minutes.length;
+setSpStatus(`Loaded: ${!!councilMemory.core ? 'memory.md' : 'no memory.md'} + ${totalMinutes} session minute(s).`, 'ok');
+const hasMsgs = Object.values(counts).some(c => c > 0);
+document.getElementById('endSessionBtn').disabled = !hasMsgs;
+} catch(e) {
+setSpStatus(`Error: ${e.message}`, 'err');
+}
+}
+
+// ── LOAD TIER 3 REFERENCE ──
+async function loadReference() {
+const path = document.getElementById('refPath').value.trim();
+const token = document.getElementById('ghToken').value.trim() || GH_TOKEN;
+const statusEl = document.getElementById('refStatus');
+if (!path) { statusEl.textContent = 'Enter a file path.'; statusEl.style.color = 'var(--interrupt)'; return; }
+if (!token) { statusEl.textContent = 'Enter a GitHub token above first.'; statusEl.style.color = 'var(--interrupt)'; return; }
+
+statusEl.textContent = 'Fetching document...'; statusEl.style.color = 'var(--text-muted)';
+try {
+const file = await ghGet(path);
+if (!file || !file.content) throw new Error('File not found.');
+activeReference = { name: file.name, content: decodeURIComponent(escape(atob(file.content.replace(/\n/g,'')))) };
+statusEl.textContent = `✓ Loaded: ${file.name}`; statusEl.style.color = '#7ec8a0'; 
+updateActiveStatus(); 
+} catch(e) {
+statusEl.textContent = `Error: ${e.message}`; statusEl.style.color = 'var(--interrupt)';
+activeReference = null; updateActiveStatus();
+}
+}
+
+function buildMemoryContext() {
+if (!loadMemoryOnStart && !activeReference) return '';
+let parts = [];
+if (loadMemoryOnStart) {
+if (councilMemory.core) parts.push(`<council_core_memory>\n${councilMemory.core}\n</council_core_memory>`);
+if (councilMemory.minutes.length > 0) {
+const minutesText = councilMemory.minutes.map(m => JSON.stringify(m, null, 2)).join('\n\n---\n\n');
+parts.push(`<recent_session_minutes>\n${minutesText}\n</recent_session_minutes>`);
+}
+}
+if (activeReference) parts.push(`<reference_document name="${activeReference.name}">\n${activeReference.content}\n</reference_document>`);
+return parts.length > 0 ? '\n\n' + parts.join('\n\n') : '';
+}
+
+// ── END SESSION / MINUTES GENERATION ──
+async function endSession() {
+const token = document.getElementById('ghToken').value.trim();
+const repo = document.getElementById('ghRepo').value.trim();
+if (!token) { setSpStatus('Enter a GitHub token first.', 'err'); return; }
+if (!KEY.chatgpt) { setSpStatus('ChatGPT key required to generate minutes.', 'err'); return; }
+
+GH_TOKEN = token; GH_REPO = repo;
+if (rememberKeys) {
+    localStorage.setItem('gh_token', token);
+    localStorage.setItem('gh_repo', repo);
+}
+
+document.getElementById('endSessionBtn').disabled = true;
+setSpStatus('Generating session minutes via ChatGPT...');
+
+const now = new Date();
+const localDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+const localTime = String(now.getHours()).padStart(2, '0') + '-' + String(now.getMinutes()).padStart(2, '0');
+
+const transcript = buildTranscriptSummary();
+const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
+Today's date is: ${localDate}
+
+TRANSCRIPT:
+${transcript}
+
+Respond ONLY with valid JSON matching this exact schema:
+{
+ "date": "YYYY-MM-DD",
+ "session_number": null,
+ "sovereign_intent": "One sentence: what was the Sovereign working on or trying to understand?",
+ "key_exchanges": [ { "topic": "...", "summary": "2-3 sentences of what was explored and concluded" } ],
+ "breakthroughs": ["Any significant insights or shifts in understanding"],
+ "decisions": ["Any concrete decisions or directions established"],
+ "open_questions": ["Unresolved threads the Sovereign may want to return to"],
+ "carry_forward": "One sentence: the single most important unresolved thread that must not be forgotten",
+ "council_performance": { "claude": "note", "grok": "note", "gemini": "note", "chatgpt": "note" }
+}`;
+
+try {
+const res = await fetch('https://api.openai.com/v1/chat/completions', {
+method: 'POST',
+headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY.chatgpt}` },
+body: JSON.stringify({ model: 'gpt-5-mini', messages: [{ role: 'user', content: minutesPrompt }], max_completion_tokens: 1500, temperature: 1 })
+});
+if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`); }
+const d = await res.json();
+let minutesText = d.choices?.[0]?.message?.content || '';
+minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
+
+let minutesObj;
+try { minutesObj = JSON.parse(minutesText); } catch(e) { throw new Error('ChatGPT returned invalid JSON.'); }
+
+minutesObj.date = localDate;
+minutesText = JSON.stringify(minutesObj, null, 2);
+
+const filename = `minutes/${localDate}_${localTime}.json`;
+setSpStatus(`Committing to ${filename}...`);
+const existing = await ghGet(filename);
+const sha = existing ? existing.sha : undefined;
+
+await ghPut(filename, minutesText, `Council minutes: ${localDate} at ${localTime}`, sha);
+setSpStatus(`✓ Minutes committed: ${filename}`, 'ok');
+
+councilMemory.minutes.unshift(minutesObj);
+if (councilMemory.minutes.length > 7) councilMemory.minutes.pop();
+} catch(e) {
+setSpStatus(`Error: ${e.message}`, 'err');
+document.getElementById('endSessionBtn').disabled = false;
+}
+}
+
+function buildTranscriptSummary() {
+const lines = [];
+const order = ['claude', 'grok', 'gemini', 'chatgpt'];
+const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
+const maxLen = Math.max(...order.map(id => histories[id].length));
+
+for (let i = 0; i < maxLen; i++) {
+for (const id of order) {
+const msg = histories[id][i];
+if (!msg) continue;
+if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
+const userText = msg.content || msg.parts?.[0]?.text || '';
+lines.push(`SOVEREIGN: ${userText}`);
+} else if (msg.role === 'assistant') {
+lines.push(`${names[id]}: ${msg.content}`);
+} else if (msg.role === 'model') {
+const text = msg.parts?.[0]?.text || '';
+lines.push(`${names[id]}: ${text}`);
+}
+}
+}
+const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
+return deduped.join('\n\n').slice(0, 12000); 
+}
+
+function setSpStatus(msg, type) {
+const el = document.getElementById('spStatus');
+el.textContent = msg;
+el.className = 'sp-status' + (type ? ' ' + type : '');
+}
+
+function clearSession() {
+if(!confirm('Clear this Council session?')) return;
+Object.keys(histories).forEach(k=>histories[k]=[]);
+Object.keys(counts).forEach(k=>counts[k]=0);
+totalMsgs=0;
+
+activeReference = null;
+document.getElementById('refPath').value = '';
+const refStatus = document.getElementById('refStatus');
+refStatus.textContent = 'Loads a markdown file from repo into context.';
+refStatus.style.color = 'var(--text-muted)';
+
+const empties = {
+Claude:['◈','Claude awaits.<br>Add Anthropic key.'],
+Grok:['⬡','Grok awaits.<br>Add xAI key to activate.'],
+Gemini:['◇','Gemini awaits.<br>Send a message to begin.'],
+ChatGPT:['○','ChatGPT awaits.<br>Add OpenAI key to activate.']
+};
+
+Object.entries(empties).forEach(([name,[icon,txt]])=>{
+const c=document.getElementById('msgs'+name);
+c.querySelectorAll('.msg, .thinking').forEach(el => el.remove());
+const id = name.toLowerCase() === 'chatgpt' ? 'chatgpt' : name.toLowerCase();
+if (live[id]) {
+if (!document.getElementById('empty'+name)) {
+const e=document.createElement('div');e.className='empty';e.id='empty'+name;
+e.innerHTML=`<div class="e-icon">${icon}</div><div class="e-txt">${txt}</div>`;
+c.insertBefore(e, c.firstChild);
+}
+}
+document.getElementById('count'+name).textContent='0';
+});
+
+document.getElementById('sbMsgs').textContent='0';
+document.getElementById('sbStatus').textContent='Session cleared';
+document.getElementById('endSessionBtn').disabled = true;
+updateActiveStatus(); 
+}
+
+function esc(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+</script>
+</body>
+</html>overflow:hidden;
+}
+
+/* ── SETUP ── */
+.setup-overlay {
+position:fixed; inset:0;
+background:rgba(0,0,0,0.97);
+display:flex; align-items:center; justify-content:center;
+z-index:500;
+overflow-y:auto;
+padding:20px;
+}
+.setup-panel {
+background:var(--surface);
+border:1px solid var(--border2);
+padding:40px; width:560px; max-width:95vw;
+animation:up 0.35s ease;
+margin:auto;
+}
+@keyframes up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+.s-eye { font-size:11px; letter-spacing:0.2em; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
+.s-title { font-family:'Cormorant Garamond',serif; font-size:30px; font-weight:300; letter-spacing:0.08em; margin-bottom:6px; }
+.s-sub { color:var(--text-dim); font-size:13px; margin-bottom:28px; line-height:1.7; }
+.s-section { font-size:10px; letter-spacing:0.16em; color:var(--text-muted); text-transform:uppercase; margin:20px 0 12px; border-top:1px solid var(--border); padding-top:16px; }
+.s-field { margin-bottom:16px; }
+.s-label { display:flex; justify-content:space-between; font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; }
+.s-label span { color:var(--text-muted); font-size:10px; }
+.s-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:14px; padding:10px 13px; outline:none; transition:border-color 0.15s; }
+.s-input:focus { border-color:var(--border2); }
+textarea.s-input { resize:vertical; min-height:60px; }
+.s-note { font-size:11px; color:var(--text-muted); margin-top:4px; line-height:1.5; }
+.s-btn { width:100%; background:transparent; border:1px solid var(--border2); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; letter-spacing:0.14em; padding:13px; cursor:pointer; margin-top:8px; transition:all 0.15s; text-transform:uppercase; }
+.s-btn:hover { background:var(--border2); }
+
+/* colored labels */
+.lc { color:var(--claude) !important; }
+.lgr { color:var(--grok) !important; }
+.lg { color:var(--gemini) !important; }
+.lch { color:var(--chatgpt) !important; }
+.ld { color:var(--data) !important; }
+
+/* ── HEADER ── */
+.header { border-bottom:1px solid var(--border); padding:11px 24px; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+.logo { font-family:'Cormorant Garamond',serif; font-size:19px; font-weight:300; letter-spacing:0.14em; }
+.logo em { color:var(--text-dim); font-style:italic; }
+.h-right { display:flex; align-items:center; gap:14px; }
+.pip-group { display:flex; align-items:center; gap:10px; }
+.indicator { display:flex; align-items:center; gap:6px; font-size:12px; color:var(--text-dim); letter-spacing:0.05em; }
+.pip { width:5px; height:5px; border-radius:50%; background:var(--border2); transition:all 0.3s; }
+.pip.on { box-shadow:0 0 6px; }
+.pip.on-claude { background:var(--claude); box-shadow:0 0 6px var(--claude); }
+.pip.on-grok { background:var(--grok); box-shadow:0 0 6px var(--grok); }
+.pip.on-gemini { background:var(--gemini); box-shadow:0 0 6px var(--gemini); }
+.pip.on-chatgpt { background:var(--chatgpt); box-shadow:0 0 6px var(--chatgpt); }
+.h-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:4px 10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+.h-btn:hover { border-color:var(--border2); color:var(--text-dim); }
+
+/* ── RELAY BAR ── */
+.relay-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:12px; flex-shrink:0; background:var(--surface2); flex-wrap:wrap; }
+.r-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; }
+.r-btns { display:flex; gap:4px; }
+.r-btn { background:transparent; border:1px solid var(--border); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; width:24px; height:24px; cursor:pointer; transition:all 0.15s; }
+.r-btn:hover { border-color:var(--border2); }
+.r-btn.active { border-color:var(--user); color:var(--user); }
+.r-div { width:1px; height:16px; background:var(--border); margin:0 4px; }
+.r-desc { font-size:11px; color:var(--text-dim); }
+
+/* ── TOGGLE BAR ── */
+.toggle-bar { border-bottom:1px solid var(--border); padding:8px 24px; display:flex; align-items:center; gap:10px; flex-shrink:0; background:var(--surface); }
+.toggle-label { font-size:11px; letter-spacing:0.12em; color:var(--text-muted); text-transform:uppercase; margin-right:4px; }
+.toggle-btn { padding:5px 14px; border:1px solid var(--border); background:transparent; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.08em; cursor:pointer; transition:all 0.15s; text-transform:uppercase; opacity:0.5; }
+.toggle-btn:hover { opacity:0.8; }
+.toggle-btn.on { opacity:1; }
+.toggle-btn.on.t-claude { border-color:var(--claude); color:var(--claude); background:rgba(200,169,110,0.08); }
+.toggle-btn.on.t-grok { border-color:var(--grok); color:var(--grok); background:rgba(184,126,200,0.08); }
+.toggle-btn.on.t-gemini { border-color:var(--gemini); color:var(--gemini); background:rgba(110,180,200,0.08); }
+.toggle-btn.on.t-chatgpt { border-color:var(--chatgpt); color:var(--chatgpt); background:rgba(126,200,160,0.08); }
+.toggle-btn.disabled-ai { opacity:0.25; cursor:not-allowed; }
+.toggle-divider { width:1px; height:18px; background:var(--border); margin:0 4px; }
+.toggle-hint { font-size:11px; color:var(--text-muted); margin-left:auto; }
+
+/* ── MAIN ── */
+.main { flex:1; display:flex; overflow:hidden; }
+
+/* ── PANELS ── */
+.panel { flex:1; display:flex; flex-direction:column; overflow:hidden; border-right:1px solid var(--border); transition:box-shadow 0.25s, opacity 0.25s; min-width:0; }
+.panel:last-child { border-right:none; }
+.panel.inactive { opacity:0.35; }
+.panel.glow-claude { box-shadow:inset 2px 0 0 var(--claude); }
+.panel.glow-grok { box-shadow:inset 2px 0 0 var(--grok); }
+.panel.glow-gemini { box-shadow:inset 2px 0 0 var(--gemini); }
+.panel.glow-chatgpt { box-shadow:inset 2px 0 0 var(--chatgpt); }
+
+.p-hdr { padding:10px 18px; border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; flex-shrink:0; background:var(--surface); }
+.p-name { font-family:'Cormorant Garamond',serif; font-size:16px; font-weight:400; letter-spacing:0.1em; }
+.p-name.claude { color:var(--claude); }
+.p-name.grok { color:var(--grok); }
+.p-name.gemini { color:var(--gemini); }
+.p-name.chatgpt { color:var(--chatgpt); }
+.badge { font-size:10px; letter-spacing:0.1em; text-transform:uppercase; padding:2px 6px; border:1px solid; margin-left:7px; }
+.badge.live-claude { color:var(--claude); border-color:var(--claude); opacity:0.6; }
+.badge.live-grok { color:var(--grok); border-color:var(--grok); opacity:0.6; }
+.badge.live-gemini { color:var(--gemini); border-color:var(--gemini); opacity:0.6; }
+.badge.live-chatgpt { color:var(--chatgpt); border-color:var(--chatgpt); opacity:0.6; }
+.badge.pm { color:var(--text-muted); border-color:var(--border2); }
+.p-count { font-size:11px; color:var(--text-muted); }
+
+/* ── MESSAGES ── */
+.messages { flex:1; overflow-y:auto; padding:18px; display:flex; flex-direction:column; scrollbar-width:thin; scrollbar-color:var(--border) transparent; }
+.messages::-webkit-scrollbar { width:3px; }
+.messages::-webkit-scrollbar-thumb { background:var(--border); }
+
+.msg { padding:13px 0; border-bottom:1px solid var(--border); animation:min 0.22s ease forwards; opacity:0; }
+.msg:last-child { border-bottom:none; }
+@keyframes min { from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:translateY(0)} }
+
+.m-meta { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.m-role { font-size:10px; letter-spacing:0.14em; text-transform:uppercase; font-weight:500; }
+.m-role.user { color:var(--user); }
+.m-role.claude { color:var(--claude); }
+.m-role.grok { color:var(--grok); }
+.m-role.gemini { color:var(--gemini); }
+.m-role.chatgpt { color:var(--chatgpt); }
+.m-role.system { color:var(--interrupt); }
+.m-tag { font-size:10px; color:var(--text-muted); padding:1px 5px; border:1px solid var(--border); }
+.m-copy { background:transparent; border:none; color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:10px; cursor:pointer; text-transform:uppercase; transition:color 0.15s; margin-left:auto; letter-spacing:0.1em; }
+.m-copy:hover { color:var(--text); }
+.m-body { line-height:1.75; color:var(--text); white-space:pre-wrap; word-break:break-word; font-size:15px; }
+.m-body.ub { color:var(--text-dim); font-family:'Cormorant Garamond',serif; font-size:17px; font-style:italic; }
+.m-body.sb { color:var(--interrupt); font-size:13px; }
+
+.thinking { padding:13px 0; display:flex; align-items:center; gap:10px; }
+.t-lbl { font-size:11px; letter-spacing:0.1em; color:var(--text-muted); text-transform:uppercase; }
+.dots { display:flex; gap:4px; }
+.d { width:4px; height:4px; border-radius:50%; background:var(--text-muted); animation:bl 1.4s ease-in-out infinite; }
+.d:nth-child(2){animation-delay:0.2s} .d:nth-child(3){animation-delay:0.4s}
+@keyframes bl { 0%,80%,100%{opacity:0.2;transform:scale(0.8)} 40%{opacity:1;transform:scale(1)} }
+
+/* per-panel key activation */
+.panel-key-form { margin-top:16px; display:flex; flex-direction:column; align-items:center; gap:8px; width:100%; max-width:260px; }
+.panel-key-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:12px; padding:8px 12px; outline:none; transition:border-color 0.15s; text-align:center; }
+.panel-key-input:focus { border-color:var(--border2); }
+.panel-key-input::placeholder { color:var(--text-muted); }
+.panel-key-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:6px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; width:100%; }
+.panel-key-btn:hover { color:var(--text); border-color:var(--text-dim); }
+.e-icon { font-family:'Cormorant Garamond',serif; font-size:28px; opacity:0.12; margin-bottom:4px; }
+.e-txt { font-family:'Cormorant Garamond',serif; font-size:13px; font-style:italic; color:var(--text-muted); line-height:1.7; }
+
+/* ── INPUT AREA ── */
+.input-area { border-top:1px solid var(--border); background:var(--surface); flex-shrink:0; }
+.input-row { display:flex; align-items:flex-end; padding:12px 18px; gap:10px; }
+.input-box { flex:1; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:15px; padding:10px 13px; resize:none; outline:none; min-height:42px; max-height:120px; line-height:1.6; transition:border-color 0.15s; }
+.input-box:focus { border-color:var(--border2); }
+.input-box::placeholder { color:var(--text-muted); }
+.send-btn { background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:0.1em; padding:10px 16px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; }
+.send-btn:hover:not(:disabled) { border-color:var(--user); color:var(--user); }
+.send-btn:disabled { opacity:0.2; cursor:not-allowed; }
+.interrupt-btn { background:transparent; border:1px solid var(--border); color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.1em; padding:10px 13px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; height:42px; white-space:nowrap; display:none; }
+.interrupt-btn.visible { display:block; }
+.interrupt-btn:hover { border-color:var(--interrupt); color:var(--interrupt); }
+
+/* status */
+.status-bar { border-top:1px solid var(--border); padding:5px 24px; display:flex; align-items:center; gap:18px; flex-shrink:0; background:var(--surface); }
+.si { font-size:11px; color:var(--text-muted); letter-spacing:0.04em; }
+.si span { color:var(--text-dim); }
+
+/* ── SESSION OVERLAY ── */
+.session-overlay {
+position:fixed; inset:0;
+background:rgba(0,0,0,0.92);
+display:none; align-items:center; justify-content:center;
+z-index:400;
+padding:20px;
+}
+.session-overlay.open { display:flex; }
+.session-panel {
+background:var(--surface);
+border:1px solid var(--border2);
+padding:36px; width:560px; max-width:95vw;
+animation:up 0.25s ease;
+max-height: 90vh;
+overflow-y: auto;
+}
+.sp-title { font-family:'Cormorant Garamond',serif; font-size:24px; font-weight:300; letter-spacing:0.1em; margin-bottom:4px; }
+.sp-sub { font-size:12px; color:var(--text-dim); margin-bottom:28px; line-height:1.6; }
+.sp-field { margin-bottom:16px; }
+.sp-label { font-size:11px; letter-spacing:0.12em; color:var(--text-dim); text-transform:uppercase; margin-bottom:6px; display:flex; justify-content:space-between; }
+.sp-input { width:100%; background:var(--bg); border:1px solid var(--border); color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; padding:9px 12px; outline:none; transition:border-color 0.15s; }
+.sp-input:focus { border-color:var(--border2); }
+.sp-row { display:flex; gap:8px; margin-top:4px; }
+.sp-btn { flex:1; background:transparent; border:1px solid var(--border2); color:var(--text-dim); font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.12em; padding:10px; cursor:pointer; transition:all 0.15s; text-transform:uppercase; }
+.sp-btn:hover:not(:disabled) { border-color:var(--text-dim); color:var(--text); }
+.sp-btn:disabled { opacity:0.25; cursor:not-allowed; }
+.sp-btn.primary { border-color:var(--user); color:var(--user); }
+.sp-btn.primary:hover:not(:disabled) { background:rgba(168,152,128,0.1); }
+.sp-status { font-size:11px; color:var(--text-dim); margin-top:12px; min-height:16px; letter-spacing:0.04em; }
+.sp-status.ok { color:#7ec8a0; }
+.sp-status.err { color:var(--interrupt); }
+.sp-divider { border:none; border-top:1px solid var(--border); margin:20px 0; }
+.sp-toggle-row { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+.sp-toggle { width:32px; height:18px; border:1px solid var(--border2); background:var(--bg); cursor:pointer; position:relative; transition:all 0.2s; flex-shrink:0; }
+.sp-toggle.on { background:rgba(168,152,128,0.2); border-color:var(--user); }
+.sp-toggle::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; background:var(--border2); transition:all 0.2s; }
+.sp-toggle.on::after { left:16px; background:var(--user); }
+.sp-toggle-lbl { font-size:12px; color:var(--text-dim); letter-spacing:0.06em; }
+</style>
+</head>
+<body>
+
+<div class="setup-overlay" id="setupOverlay">
+<div class="setup-panel">
+<div class="s-eye">Initialization Protocol</div>
+<div class="s-title">The Sovereign Council</div>
+<div class="s-sub">Enter the core LLM keys. At least one key required to convene.</div>
+
+<div class="s-section" style="color:var(--claude)">Claude · The Architect</div>
+<div class="s-field">
+<div class="s-label lc">Anthropic API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyClaude" placeholder="sk-ant-...">
+</div>
+
+<div class="s-section" style="color:var(--grok)">Grok · The Red Team</div>
+<div class="s-field">
+<div class="s-label lgr">xAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGrok" placeholder="xai-...">
+</div>
+
+<div class="s-section" style="color:var(--gemini)">Gemini · Chancellor of Context</div>
+<div class="s-field">
+<div class="s-label lg">Gemini API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyGemini" placeholder="AIza...">
+</div>
+
+<div class="s-section" style="color:var(--chatgpt)">ChatGPT · The Executive</div>
+<div class="s-field">
+<div class="s-label lch">OpenAI API Key <span>Optional</span></div>
+<input class="s-input" type="password" id="keyChatGPT" placeholder="sk-...">
+</div>
+
 <div class="sp-toggle-row" style="margin-top:24px; justify-content:center;">
   <div class="sp-toggle" id="rememberKeysToggle" onclick="toggleRememberKeys()"></div>
   <div class="sp-toggle-lbl" style="color:var(--text-dim);">Save all keys in this browser</div>
