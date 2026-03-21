@@ -995,7 +995,7 @@ let resp;
 if (id === 'gemini') resp = await callGemini();
 else if (id === 'claude') resp = await callClaude();
 else if (id === 'grok') resp = await callGrok();
-else if (id === 'chatgpt') resp = await callChatGPT();
+else if (id === 'chatgpt') resp = await ();
 
 histories[id].push(id === 'gemini'
 ? { role:'model', parts:[{text: resp}] }
@@ -1098,7 +1098,7 @@ activeController = null;
 
 async function callChatGPT() {
 activeController = new AbortController();
-const timeout = setTimeout(() => activeController.abort(), 30000);
+const timeout = setTimeout(() => activeController.abort(), 90000);
 try {
 const res = await fetch('https://api.openai.com/v1/chat/completions',{
 method:'POST',
