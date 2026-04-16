@@ -516,6 +516,7 @@ let activeController = null;
 let totalMsgs = 0;
 let counts = { claude:0, grok:0, gemini:0, chatgpt:0 };
 let histories = { claude:[], grok:[], gemini:[], chatgpt:[] };
+let sovereignTurns = []; // canonical list of user messages for transcript building
 
 // ── NAME LOOKUP ──
 const AI_NAMES = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
@@ -525,14 +526,28 @@ function aiName(id) { return AI_NAMES[id] || id.charAt(0).toUpperCase() + id.sli
 const RELAY_ORDER = ['claude', 'grok', 'gemini', 'chatgpt'];
 
 // ── SYSTEM PROMPTS ──
+// Shared frame (same for all four). Flavor lives in the room, not the character.
+const COUNCIL_FRAME = `You are one of four models deliberating on a shared question. The user — addressed as the Sovereign — sees all four responses side by side.
+
+Your contribution is valuable when it adds something the others did not: a fresh angle, a missed consideration, a sharper framing, a concrete disagreement, a useful reframe. Redundancy is the only real failure mode. If you catch yourself restating what another model already said, stop and find the gap instead.
+
+Think clearly. Be direct. Engage on merit. If you disagree, say why. If another model is right, acknowledge it and build.`;
+
+// Position-based guidance — keyed to relay index, not model identity.
+function positionGuidance(positionIndex, totalActive) {
+  if (totalActive === 1) return '';
+  if (positionIndex === 0) return `\n\nYou speak first in this relay. Stake out the claim or structure the others will build on or push against.`;
+  if (positionIndex === totalActive - 1) {
+    return `\n\nYou speak last in this relay. Synthesize, dissent, or name what's still missing — do not merely agree with the chain.`;
+  }
+  return `\n\nYou speak mid-relay. You have seen the earlier response(s). Either extend, sharpen, or contest — do not restate.`;
+}
+
 const SYSTEMS = {
-claude: `You are Claude in a four-model reasoning relay with Grok, Gemini, and ChatGPT. Go first. Initiate the logical structure or claim that the others will build on. Think clearly. Be direct. Engage with their ideas on merit. If you disagree, say why. If they're right, acknowledge it.`,
-
-grok: `You are Grok in a four-model reasoning relay with Claude, Gemini, and ChatGPT. You will read responses from the other models and build on them. Think clearly. Be direct. Engage with their ideas on merit. If you disagree, say why. If they're right, acknowledge it.`,
-
-gemini: `You are Gemini in a four-model reasoning relay with Claude, Grok, and ChatGPT. You will read responses from the other models and build on them. Think clearly. Be direct. Engage with their ideas on merit. If you disagree, say why. If they're right, acknowledge it.`,
-
-chatgpt: `You are ChatGPT in a four-model reasoning relay with Claude, Grok, and Gemini. You will read responses from the other models and build on them. Think clearly. Be direct. Engage with their ideas on merit. If you disagree, say why. If they're right, acknowledge it.`
+claude: COUNCIL_FRAME,
+grok: COUNCIL_FRAME,
+gemini: COUNCIL_FRAME,
+chatgpt: COUNCIL_FRAME
 };
 
 // ── CLOCK ──
@@ -819,14 +834,20 @@ async function determineAndFetchData() {
                 const r = await fetch(`https://www.alphavantage.co/query?function=${c}&interval=daily&apikey=${av}`);
                 const data = await r.json();
                 if(data.data && data.data[0]) injection += `- Spot price of ${c}: $${data.data[0].value}\n`;
-            } catch(e) {}
+                else injection += `- [${c}: AlphaVantage returned no data — check symbol or rate limit]\n`;
+            } catch(e) {
+                injection += `- [${c}: fetch failed — ${e.message}]\n`;
+            }
         }
         for (let eq of route.equities || []) {
             try {
                 const r = await fetch(`https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${eq}&apikey=${av}`);
                 const data = await r.json();
-                if(data['Global Quote']) injection += `- ${eq} Stock Price: $${data['Global Quote']['05. price']}\n`;
-            } catch(e) {}
+                if(data['Global Quote'] && data['Global Quote']['05. price']) injection += `- ${eq} Stock Price: $${data['Global Quote']['05. price']}\n`;
+                else injection += `- [${eq}: AlphaVantage returned no quote — check ticker or rate limit]\n`;
+            } catch(e) {
+                injection += `- [${eq}: fetch failed — ${e.message}]\n`;
+            }
         }
     } else if ((route.commodities?.length > 0 || route.equities?.length > 0)) {
         injection += `- [AlphaVantage Data unavailable: Missing API Key]\n`;
@@ -858,8 +879,12 @@ async function determineAndFetchData() {
             const data = await r.json();
             if(data.response && data.response.data && data.response.data[0]) {
                 injection += `- US Strategic Petroleum Reserve (SPR) Inventory: ${data.response.data[0].value} thousand barrels.\n`;
+            } else {
+                injection += `- [SPR: EIA returned no data]\n`;
             }
-        } catch(e) {}
+        } catch(e) {
+            injection += `- [SPR: fetch failed — ${e.message}]\n`;
+        }
     } else if (route.requires_spr && !eia) {
         injection += `- [EIA Data unavailable: Missing EIA API Key]\n`;
     }
@@ -888,6 +913,9 @@ document.getElementById('sbStatus').textContent = 'Relaying...';
 
 const contextualText = dataContext ? (dataContext + '\n\n' + text) : text;
 
+// Track the Sovereign's turns separately so transcript building doesn't depend on history index alignment.
+sovereignTurns.push(text);
+
 activeAIs.forEach(id => {
 const name = aiName(id);
 addMsg('msgs' + name, 'user', text, 'empty' + name);
@@ -905,28 +933,29 @@ if (shouldStop) break;
 const id = activeAIs[i];
 const name = aiName(id);
 
+// Build the prompt that goes in the user turn, with explicit framing so models know they are in a deliberation, not receiving pasted text.
 let prompt;
 if (isFirst && i === 0) {
 prompt = contextualText;
 } else if (isFirst && i > 0) {
 const prevContext = activeAIs.slice(0, i)
 .filter(k => lastResponses[k] && k !== id)
-.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.map(k => `── ${aiName(k)} ──\n${lastResponses[k]}`)
 .join('\n\n');
-prompt = `User: "${contextualText}"\n\n${prevContext}\n\nNow respond.`;
+prompt = `The Sovereign asked:\n\n${contextualText}\n\nOther council members have spoken before you:\n\n${prevContext}\n\nNow add your contribution. Do not restate what has been said.`;
 } else {
 const prevContext = activeAIs
 .filter(k => lastResponses[k] && k !== id)
-.map(k => `${aiName(k)}: "${lastResponses[k]}"`)
+.map(k => `── ${aiName(k)} ──\n${lastResponses[k]}`)
 .join('\n\n');
-prompt = `[Volley ${v+1}/${maxVolleys}]\n\n${prevContext}\n\nContinue the dialogue.`;
+prompt = `[Volley ${v+1} of ${maxVolleys}]\n\nThe latest responses from the other council members:\n\n${prevContext}\n\nContinue the deliberation. Sharpen, extend, or push back — do not merely agree.`;
 }
 
 document.getElementById('panel' + name).classList.add('glow-' + id);
 const think = addThinking('msgs' + name, name);
 
 try {
-const resp = await callAI(id, prompt);
+const resp = await callAI(id, prompt, i, activeAIs.length);
 removeEl(think);
 document.getElementById('panel' + name).classList.remove('glow-' + id);
 addMsg('msgs' + name, id, resp, null, tag);
@@ -955,7 +984,7 @@ document.getElementById('sbMsgs').textContent = totalMsgs;
 }
 
 // ── AI ROUTER ──
-async function callAI(id, userPrompt) {
+async function callAI(id, userPrompt, positionIndex, totalActive) {
 const userMsg = (id === 'claude' || id === 'grok' || id === 'chatgpt')
 ? { role:'user', content: userPrompt }
 : { role:'user', parts:[{text: userPrompt}] };
@@ -964,16 +993,18 @@ histories[id].push(userMsg);
 
 try {
 let resp;
-if (id === 'gemini') resp = await callGemini();
-else if (id === 'claude') resp = await callClaude();
-else if (id === 'grok') resp = await callGrok();
-else if (id === 'chatgpt') resp = await callChatGPT();
+const posGuide = positionGuidance(positionIndex, totalActive);
+if (id === 'gemini') resp = await callGemini(posGuide);
+else if (id === 'claude') resp = await callClaude(posGuide);
+else if (id === 'grok') resp = await callGrok(posGuide);
+else if (id === 'chatgpt') resp = await callChatGPT(posGuide);
 
 histories[id].push(id === 'gemini'
 ? { role:'model', parts:[{text: resp}] }
 : { role:'assistant', content: resp }
 );
 
+trimHistory(id);
 return resp;
 } catch(e) {
 histories[id].pop();
@@ -981,24 +1012,36 @@ throw e;
 }
 }
 
+// Keep per-model history from ballooning. Last 20 message-pairs (40 entries).
+function trimHistory(id) {
+  const MAX = 40;
+  if (histories[id].length > MAX) {
+    histories[id] = histories[id].slice(-MAX);
+  }
+}
+
 // ── API CALLS ──
-async function callGemini() {
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-preview:generateContent?key=${KEY.gemini}`;
+async function callGemini(posGuide = '') {
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key=${KEY.gemini}`;
   const body = {
-    system_instruction: { parts:[{ text: SYSTEMS.gemini + '\n\n' + getDateTimeContext() }] },
+    system_instruction: { parts:[{ text: SYSTEMS.gemini + posGuide + '\n\n' + getDateTimeContext() }] },
     contents: histories.gemini,
     generationConfig: { temperature:0.85, maxOutputTokens:1200 }
   };
-  activeController = new AbortController();
-  const res = await fetch(url,{method:'POST',signal:activeController.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
-  activeController = null;
-  if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
-  const d=await res.json();
-  const parts = d.candidates?.[0]?.content?.parts;
-  return parts ? parts.map(p => p.text || '').join('') : '[No response]';
+  const controller = new AbortController();
+  activeController = controller;
+  try {
+    const res = await fetch(url,{method:'POST',signal:controller.signal,headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Gemini HTTP ${res.status}`);}
+    const d=await res.json();
+    const parts = d.candidates?.[0]?.content?.parts;
+    return parts ? parts.map(p => p.text || '').join('') : '[No response]';
+  } finally {
+    if (activeController === controller) activeController = null;
+  }
 }
 
-async function callClaude() {
+async function callClaude(posGuide = '') {
 const sanitized = histories.claude.reduce((acc, current) => {
 if (acc.length === 0) {
 if (current.role === 'user') acc.push({ role: current.role, content: current.content });
@@ -1013,11 +1056,12 @@ acc.push({ role: current.role, content: current.content });
 return acc;
 }, []);
 
-activeController = new AbortController();
+const controller = new AbortController();
+activeController = controller;
 try {
 const res = await fetch('https://api.anthropic.com/v1/messages',{
 method:'POST',
-signal: activeController.signal,
+signal: controller.signal,
 headers:{
 'Content-Type':'application/json',
 'x-api-key':KEY.claude,
@@ -1027,7 +1071,7 @@ headers:{
 body:JSON.stringify({
 model:'claude-haiku-4-5-20251001',
 max_tokens:1200,
-system: SYSTEMS.claude + '\n\n' + getDateTimeContext(),
+system: SYSTEMS.claude + posGuide + '\n\n' + getDateTimeContext(),
 messages:sanitized
 })
 });
@@ -1036,16 +1080,17 @@ const d=await res.json();
     const contentBlocks = d.content;
     return contentBlocks ? contentBlocks.map(block => block.text || '').join('') : '[No response]';
   } finally {
-activeController = null;
+if (activeController === controller) activeController = null;
 }
 }
 
-async function callGrok() {
-activeController = new AbortController();
+async function callGrok(posGuide = '') {
+const controller = new AbortController();
+activeController = controller;
 try {
 const res = await fetch('/api/grok',{
 method:'POST',
-signal: activeController.signal,
+signal: controller.signal,
 headers:{
 'Content-Type':'application/json',
 'Authorization':`Bearer ${KEY.grok}`
@@ -1053,7 +1098,7 @@ headers:{
 body:JSON.stringify({
 model:'grok-4-1-fast-reasoning',
 messages:[
-{role:'system', content: SYSTEMS.grok + '\n\n' + getDateTimeContext()},
+{role:'system', content: SYSTEMS.grok + posGuide + '\n\n' + getDateTimeContext()},
 ...histories.grok
 ],
 max_tokens:1200,
@@ -1064,17 +1109,18 @@ if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`Grok HTT
 const d=await res.json();
 return d.choices?.[0]?.message?.content||'[No response]';
 } finally {
-activeController = null;
+if (activeController === controller) activeController = null;
 }
 }
 
-async function callChatGPT() {
-activeController = new AbortController();
-const timeout = setTimeout(() => activeController.abort(), 90000);
+async function callChatGPT(posGuide = '') {
+const controller = new AbortController();
+activeController = controller;
+const timeout = setTimeout(() => controller.abort(), 90000);
 try {
 const res = await fetch('https://api.openai.com/v1/chat/completions',{
 method:'POST',
-signal: activeController.signal,
+signal: controller.signal,
 headers:{
 'Content-Type':'application/json',
 'Authorization':`Bearer ${KEY.chatgpt}`
@@ -1082,7 +1128,7 @@ headers:{
 body:JSON.stringify({
 model:'gpt-5-mini',
 messages:[
-{role:'system', content: SYSTEMS.chatgpt + '\n\n' + getDateTimeContext()},
+{role:'system', content: SYSTEMS.chatgpt + posGuide + '\n\n' + getDateTimeContext()},
 ...histories.chatgpt
 ],
 max_completion_tokens:12000,
@@ -1101,7 +1147,7 @@ clearTimeout(timeout);
 if(e.name==='AbortError') throw new Error('ChatGPT timed out.');
 throw e;
 } finally {
-activeController = null;
+if (activeController === controller) activeController = null;
 }
 }
 
@@ -1333,13 +1379,13 @@ const localDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(
 const localTime = String(now.getHours()).padStart(2, '0') + '-' + String(now.getMinutes()).padStart(2, '0');
 
 const transcript = buildTranscriptSummary();
-const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session.
+const minutesPrompt = `You are the Council scribe. Generate a structured JSON summary of this Council session. Return only valid JSON, no markdown, no prose.
 Today's date is: ${localDate}
 
 TRANSCRIPT:
 ${transcript}
 
-Respond ONLY with valid JSON matching this exact schema:
+Respond ONLY with a valid JSON object matching this exact schema:
 {
  "date": "YYYY-MM-DD",
  "session_number": null,
@@ -1356,15 +1402,20 @@ try {
 const res = await fetch('https://api.openai.com/v1/chat/completions', {
 method: 'POST',
 headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${KEY.chatgpt}` },
-body: JSON.stringify({ model: 'gpt-5-mini', messages: [{ role: 'user', content: minutesPrompt }], max_completion_tokens: 1500, temperature: 1 })
+body: JSON.stringify({ model: 'gpt-4.1-mini', messages: [{ role: 'user', content: minutesPrompt }], max_tokens: 4000, temperature: 0.3, response_format: { type: 'json_object' } })
 });
 if (!res.ok) { const e = await res.json(); throw new Error(e.error?.message || `ChatGPT HTTP ${res.status}`); }
 const d = await res.json();
+const finishReason = d.choices?.[0]?.finish_reason;
 let minutesText = d.choices?.[0]?.message?.content || '';
 minutesText = minutesText.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim();
 
+if (!minutesText) {
+  throw new Error(`Scribe returned empty content. finish_reason: ${finishReason}`);
+}
+
 let minutesObj;
-try { minutesObj = JSON.parse(minutesText); } catch(e) { throw new Error('ChatGPT returned invalid JSON.'); }
+try { minutesObj = JSON.parse(minutesText); } catch(e) { throw new Error(`Scribe returned invalid JSON. First 200 chars: ${minutesText.slice(0, 200)}`); }
 
 minutesObj.date = localDate;
 minutesText = JSON.stringify(minutesObj, null, 2);
@@ -1386,28 +1437,37 @@ document.getElementById('endSessionBtn').disabled = false;
 }
 
 function buildTranscriptSummary() {
-const lines = [];
-const order = ['claude', 'grok', 'gemini', 'chatgpt'];
-const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
-const maxLen = Math.max(...order.map(id => histories[id].length));
+  const lines = [];
+  const order = ['claude', 'grok', 'gemini', 'chatgpt'];
+  const names = { claude:'Claude', grok:'Grok', gemini:'Gemini', chatgpt:'ChatGPT' };
 
-for (let i = 0; i < maxLen; i++) {
-for (const id of order) {
-const msg = histories[id][i];
-if (!msg) continue;
-if (msg.role === 'user' && id === order.find(k => histories[k][i]?.role === 'user')) {
-const userText = msg.content || msg.parts?.[0]?.text || '';
-lines.push(`SOVEREIGN: ${userText}`);
-} else if (msg.role === 'assistant') {
-lines.push(`${names[id]}: ${msg.content}`);
-} else if (msg.role === 'model') {
-const text = msg.parts?.[0]?.text || '';
-lines.push(`${names[id]}: ${text}`);
-}
-}
-}
-const deduped = lines.filter((l, i) => i === 0 || l !== lines[i-1]);
-return deduped.join('\n\n').slice(0, 12000); 
+  // Collect all assistant/model turns per model, in order, with the user turn they responded to.
+  // Each element of sovereignTurns corresponds to one "send" event. For each model, count how
+  // many user entries have been pushed and pair them accordingly. Since histories get trimmed,
+  // we reconstruct from whatever assistant turns survive.
+  const perModelAssistantTurns = {};
+  for (const id of order) {
+    perModelAssistantTurns[id] = histories[id]
+      .filter(m => m.role === 'assistant' || m.role === 'model')
+      .map(m => m.role === 'model' ? (m.parts?.[0]?.text || '') : m.content);
+  }
+
+  const maxAssistant = Math.max(...order.map(id => perModelAssistantTurns[id].length));
+  const userTurnCount = sovereignTurns.length;
+
+  // If assistant turns outnumber user turns, it means multi-volley; we still show them sequentially under the most recent user turn.
+  // Straightforward walk: for each user turn index, print the Sovereign line and then all model responses at that index (or nearest).
+  for (let i = 0; i < Math.max(userTurnCount, maxAssistant); i++) {
+    if (i < userTurnCount) {
+      lines.push(`SOVEREIGN: ${sovereignTurns[i]}`);
+    }
+    for (const id of order) {
+      const turn = perModelAssistantTurns[id][i];
+      if (turn) lines.push(`${names[id]}: ${turn}`);
+    }
+  }
+
+  return lines.join('\n\n').slice(0, 12000);
 }
 
 function setSpStatus(msg, type) {
@@ -1419,6 +1479,7 @@ el.className = 'sp-status' + (type ? ' ' + type : '');
 function clearSession() {
 if(!confirm('Clear this Council session?')) return;
 Object.keys(histories).forEach(k=>histories[k]=[]);
+sovereignTurns = [];
 Object.keys(counts).forEach(k=>counts[k]=0);
 totalMsgs=0;
 
